@@ -149,6 +149,7 @@ export default function Web() {
   const [types, setTypes] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [test, setTest] = useState(false);
 
   useEffect(() => {
     axios.get('api/rules')
@@ -185,10 +186,10 @@ export default function Web() {
           <div className="p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)] rounded-lg flex flex-wrap justify-center">
             <div className="text-center mb-5 text-xl">Debtors</div>
 
-            <Profile colour="text-blue-800" />
-            <Profile colour="text-gray-300" />
-            <Profile colour="text-gray-300" />
-            <Profile colour="text-gray-300" />
+            <Profile colour={test ? "text-gray-300" : "text-blue-300"} />
+            <Profile colour={test ? "text-gray-300" : "text-green-600"} />
+            <Profile colour={test ? "text-gray-300" : "text-yellow-400"} />
+            <Profile colour={test ? "text-gray-300" : "text-orange-600"} />
 
           </div>
         </div>
