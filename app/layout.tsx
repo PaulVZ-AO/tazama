@@ -6,7 +6,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        <div className="bg-gradient-to-b from-gray-100 to-gray-200 shadow-lg px-10 py-5 flex">
+        <div className="bg-gradient-to-b rounded-t-lg from-gray-100 to-gray-200 shadow-lg px-10 py-5 flex">
           <Link href={"/"}>
             <Image
               src="https://tazama.org/logo.svg"
