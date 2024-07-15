@@ -26,7 +26,6 @@ export const RandomSurname = async () => {
 
 export const RandomCellNumber = async () => {
   const phoneNumber: any[] = []
-  const re = new RegExp("\\+[0-9]{1,3}-[0-9()+\\-]{1,30}")
   for (let i = 0; i < 10; i++) {
     if (i === 0) {
       let randomIndex = Math.floor(Math.random() * countries.length)
