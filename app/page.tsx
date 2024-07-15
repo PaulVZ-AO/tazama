@@ -2,16 +2,18 @@
 
 import axios from "axios"
 import Image from "next/image"
-import { useEffect, useState } from "react"
+import { Context, useContext, useEffect, useState } from "react"
 import { Modal } from "components/Modal/Modal"
 import { ProcessIndicator } from "components/ProcessIndicator/ProcessIndicator"
 import { Profile } from "components/Profile/Profile"
 import { StatusIndicator } from "components/StatusIndicator/StatusIndicator"
+import EntityContext from "store/entities/entity.context"
 
 export default function Web() {
   const [hoveredRule, setHoveredRule] = useState(null)
   const [hoveredType, setHoveredType] = useState(null)
   const [showModal, setModal] = useState(false)
+  const entityCtx = useContext(EntityContext)
 
   const handleRuleMouseEnter = (type: any) => {
     setHoveredType(null) // fallback if stats is stuck
@@ -169,7 +171,7 @@ export default function Web() {
   const [types, setTypes] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [test, setTest] = useState(false)
+  const [selectedEntity, setSelectedEntity] = useState<number>(0)
 
   useEffect(() => {
     axios
@@ -196,6 +198,13 @@ export default function Web() {
         setLoading(false)
       })
   }, [])
+  useEffect(() => {
+    console.log(selectedEntity)
+  }, [selectedEntity])
+
+  useEffect(() => {
+    console.log(entityCtx.entities)
+  }, [entityCtx.entities])
 
   if (loading) return <p>Loading...</p>
   if (error) return <p>Error: {error}</p>
@@ -209,28 +218,28 @@ export default function Web() {
             <div className="mb-5 text-center text-xl">Debtors</div>
 
             <Profile
-              colour={test ? "text-gray-300" : "text-blue-300"}
-              createEntity={() => null}
-              entity={null}
+              colour={!entityCtx.entities[0] ? "text-gray-300" : "text-blue-300"}
+              entity={entityCtx.entities[0]}
               setModalVisible={setModal}
+              setSelectedEntity={() => setSelectedEntity(0)}
             />
             <Profile
-              colour={test ? "text-gray-300" : "text-green-600"}
-              createEntity={() => null}
-              entity={null}
+              colour={!entityCtx.entities[1] ? "text-gray-300" : "text-green-600"}
+              entity={entityCtx.entities[1]}
               setModalVisible={setModal}
+              setSelectedEntity={() => setSelectedEntity(1)}
             />
             <Profile
-              colour={test ? "text-gray-300" : "text-yellow-400"}
-              createEntity={() => null}
-              entity={null}
+              colour={!entityCtx.entities[2] ? "text-gray-300" : "text-yellow-400"}
+              entity={entityCtx.entities[2]}
               setModalVisible={setModal}
+              setSelectedEntity={() => setSelectedEntity(2)}
             />
             <Profile
-              colour={test ? "text-gray-300" : "text-orange-600"}
-              createEntity={() => null}
-              entity={null}
+              colour={!entityCtx.entities[3] ? "text-gray-300" : "text-orange-600"}
+              entity={entityCtx.entities[3]}
               setModalVisible={setModal}
+              setSelectedEntity={() => setSelectedEntity(3)}
             />
           </div>
         </div>
@@ -258,9 +267,9 @@ export default function Web() {
             <Profile
               colour="text-gray-300"
               reverse={true}
-              createEntity={() => null}
               entity={null}
               setModalVisible={setModal}
+              setSelectedEntity={() => null}
             />
           </div>
         </div>
@@ -337,7 +346,12 @@ export default function Web() {
         </div>
       </div>
 
-      <Modal showModal={showModal} setModal={setModal} />
+      <Modal
+        showModal={showModal}
+        setModal={setModal}
+        entity={entityCtx.entities[selectedEntity]}
+        selectedEntity={selectedEntity}
+      />
     </div>
   )
 }

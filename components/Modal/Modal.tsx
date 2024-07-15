@@ -1,7 +1,10 @@
 "use client"
 
+import { DebtorEntity } from "store/entities/entity.interface"
+
 interface Props {
-  modal: boolean
+  entity?: DebtorEntity
+  selectedEntity?: number
   showModal: boolean
   setModal: (value: boolean) => void
 }
@@ -47,7 +50,20 @@ export function Modal(props: Props) {
               </div>
 
               <div className="col-span-3 flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-20">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill={
+                    props.selectedEntity === 0
+                      ? "lightblue"
+                      : props.selectedEntity === 1
+                      ? "lightgreen"
+                      : props.selectedEntity === 2
+                      ? "yellow"
+                      : "orange"
+                  }
+                  className="size-20"
+                >
                   <path
                     fillRule="evenodd"
                     d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z"
@@ -63,30 +79,55 @@ export function Modal(props: Props) {
               >
                 <div className="mt-5">
                   <label htmlFor="modal-Nm">Full Name</label>
-                  <input type="text" id="modal-Nm" className="w-full" />
+                  <input type="text" id="modal-Nm" className="w-full" defaultValue={props.entity?.Dbtr.Nm} />
                 </div>
 
                 <div>
                   <label htmlFor="modal-BirthDt">Birth Date</label>
-                  <input type="text" id="modal-BirthDt" className="w-full" />
+                  <input
+                    type="text"
+                    id="modal-BirthDt"
+                    className="w-full"
+                    defaultValue={props.entity?.Dbtr.Id.PrvId.DtAndPlcOfBirth.BirthDt}
+                  />
                 </div>
                 <div>
                   <label htmlFor="modal-CityOfBirth">City of Birth</label>
-                  <input type="text" id="modal-CityOfBirth" className="w-full" />
+                  <input
+                    type="text"
+                    id="modal-CityOfBirth"
+                    className="w-full"
+                    defaultValue={props.entity?.Dbtr.Id.PrvId.DtAndPlcOfBirth.CityOfBirth}
+                  />
                 </div>
                 <div>
                   <label htmlFor="modal-CtryOfBirth">Country of Birth</label>
-                  <input type="text" id="modal-CtryOfBirth" className="w-full" />
+                  <input
+                    type="text"
+                    id="modal-CtryOfBirth"
+                    className="w-full"
+                    defaultValue={props.entity?.Dbtr.Id.PrvId.DtAndPlcOfBirth.CtryOfBirth}
+                  />
                 </div>
 
                 <div>
                   <label htmlFor="modal-ID">ID number</label>
-                  <input type="text" id="modal-ID" className="w-full" />
+                  <input
+                    type="text"
+                    id="modal-ID"
+                    className="w-full"
+                    defaultValue={props.entity?.Dbtr.Id.PrvId.Othr.Id}
+                  />
                 </div>
 
                 <div>
                   <label htmlFor="modal-MobNb">Mobile number</label>
-                  <input type="text" id="modal-MobNb" className="w-full" value="+27821231234" />
+                  <input
+                    type="text"
+                    id="modal-MobNb"
+                    className="w-full"
+                    defaultValue={props.entity?.Dbtr.CtctDtls.MobNb}
+                  />
                 </div>
               </div>
 

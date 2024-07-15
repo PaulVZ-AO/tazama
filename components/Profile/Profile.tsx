@@ -1,16 +1,19 @@
 "use client"
 
+import { useContext } from "react"
+import EntityContext from "store/entities/entity.context"
 import { DebtorEntity } from "store/entities/entity.interface"
 
 export interface ProfileProps {
   reverse?: boolean
   colour?: string
   entity?: DebtorEntity | null
-  createEntity?: () => void | null
   setModalVisible: (value: boolean) => void
+  setSelectedEntity: () => void
 }
 
 export function Profile({ ...props }: ProfileProps) {
+  const entityCtx = useContext(EntityContext)
   let reverse = ""
   if (props.reverse) {
     reverse = "flex-row-reverse text-right"
@@ -23,10 +26,12 @@ export function Profile({ ...props }: ProfileProps) {
       <button
         className="text-black"
         onClick={async () => {
+          if (!props.entity) {
+            await entityCtx.createEntity()
+          }
+          console.log("ENTITY: ", props.entity)
           if (props.entity !== null) {
-            props.setModalVisible(true)
-          } else {
-            // await props.createEntity()
+            props.setSelectedEntity()
             props.setModalVisible(true)
           }
         }}
