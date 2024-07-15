@@ -2,18 +2,15 @@
 
 import axios from "axios"
 import Image from "next/image"
-import { useContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { Modal } from "components/Modal/Modal"
 import { ProcessIndicator } from "components/ProcessIndicator/ProcessIndicator"
 import { Profile } from "components/Profile/Profile"
 import { StatusIndicator } from "components/StatusIndicator/StatusIndicator"
-import EntityContext from "store/entities/entity.context"
-import EntityProvider from "store/entities/entity.provider"
 
 export default function Web() {
   const [hoveredRule, setHoveredRule] = useState(null)
   const [hoveredType, setHoveredType] = useState(null)
-  const entityCtx = useContext(EntityContext)
 
   const handleRuleMouseEnter = (type: any) => {
     setHoveredType(null) // fallback if stats is stuck
@@ -198,14 +195,6 @@ export default function Web() {
         setLoading(false)
       })
   }, [])
-
-  useEffect(() => {
-    entityCtx.createEntity()
-  }, [])
-
-  useEffect(() => {
-    console.log("ENTITIES: ", entityCtx.entities)
-  }, [entityCtx.entities])
 
   if (loading) return <p>Loading...</p>
   if (error) return <p>Error: {error}</p>
