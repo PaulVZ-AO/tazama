@@ -11,6 +11,7 @@ import { StatusIndicator } from "components/StatusIndicator/StatusIndicator"
 export default function Web() {
   const [hoveredRule, setHoveredRule] = useState(null)
   const [hoveredType, setHoveredType] = useState(null)
+  const [showModal, setModal] = useState(false)
 
   const handleRuleMouseEnter = (type: any) => {
     setHoveredType(null) // fallback if stats is stuck
@@ -207,10 +208,30 @@ export default function Web() {
           <div className="flex flex-wrap justify-center rounded-lg p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
             <div className="mb-5 text-center text-xl">Debtors</div>
 
-            <Profile colour={test ? "text-gray-300" : "text-blue-300"} />
-            <Profile colour={test ? "text-gray-300" : "text-green-600"} />
-            <Profile colour={test ? "text-gray-300" : "text-yellow-400"} />
-            <Profile colour={test ? "text-gray-300" : "text-orange-600"} />
+            <Profile
+              colour={test ? "text-gray-300" : "text-blue-300"}
+              createEntity={() => null}
+              entity={null}
+              setModalVisible={setModal}
+            />
+            <Profile
+              colour={test ? "text-gray-300" : "text-green-600"}
+              createEntity={() => null}
+              entity={null}
+              setModalVisible={setModal}
+            />
+            <Profile
+              colour={test ? "text-gray-300" : "text-yellow-400"}
+              createEntity={() => null}
+              entity={null}
+              setModalVisible={setModal}
+            />
+            <Profile
+              colour={test ? "text-gray-300" : "text-orange-600"}
+              createEntity={() => null}
+              entity={null}
+              setModalVisible={setModal}
+            />
           </div>
         </div>
 
@@ -234,7 +255,13 @@ export default function Web() {
           <div className="flex flex-wrap justify-center rounded-lg p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
             <div className="mb-5 text-center text-xl">Creditors</div>
 
-            <Profile colour="text-gray-300" reverse={true} />
+            <Profile
+              colour="text-gray-300"
+              reverse={true}
+              createEntity={() => null}
+              entity={null}
+              setModalVisible={setModal}
+            />
           </div>
         </div>
       </div>
@@ -310,7 +337,7 @@ export default function Web() {
         </div>
       </div>
 
-      <Modal />
+      <Modal showModal={showModal} setModal={setModal} />
     </div>
   )
 }
