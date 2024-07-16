@@ -5,6 +5,7 @@ import EntityContext from "store/entities/entity.context"
 import { DebtorEntity } from "store/entities/entity.interface"
 
 export interface ProfileProps {
+  type: string
   reverse?: boolean
   colour?: string
   entity?: DebtorEntity | null
@@ -26,13 +27,17 @@ export function Profile({ ...props }: ProfileProps) {
       <button
         className="text-black"
         onClick={async () => {
-          if (!props.entity) {
-            await entityCtx.createEntity()
-          }
-          console.log("ENTITY: ", props.entity)
-          if (props.entity !== null) {
-            props.setSelectedEntity()
-            props.setModalVisible(true)
+          if (props.type === "debtor") {
+            if (!props.entity && entityCtx.entities.length < 4) {
+              await entityCtx.createEntity()
+            }
+            console.log("ENTITY: ", props.entity)
+            if (props.entity !== null) {
+              props.setSelectedEntity()
+              props.setModalVisible(true)
+            }
+          } else {
+            console.log("Creditor to be implemented!!")
           }
         }}
       >

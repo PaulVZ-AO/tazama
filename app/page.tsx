@@ -218,24 +218,28 @@ export default function Web() {
             <div className="mb-5 text-center text-xl">Debtors</div>
 
             <Profile
+              type="debtor"
               colour={!entityCtx.entities[0] ? "text-gray-300" : "text-blue-300"}
               entity={entityCtx.entities[0]}
               setModalVisible={setModal}
               setSelectedEntity={() => setSelectedEntity(0)}
             />
             <Profile
+              type="debtor"
               colour={!entityCtx.entities[1] ? "text-gray-300" : "text-green-600"}
               entity={entityCtx.entities[1]}
               setModalVisible={setModal}
               setSelectedEntity={() => setSelectedEntity(1)}
             />
             <Profile
+              type="debtor"
               colour={!entityCtx.entities[2] ? "text-gray-300" : "text-yellow-400"}
               entity={entityCtx.entities[2]}
               setModalVisible={setModal}
               setSelectedEntity={() => setSelectedEntity(2)}
             />
             <Profile
+              type="debtor"
               colour={!entityCtx.entities[3] ? "text-gray-300" : "text-orange-600"}
               entity={entityCtx.entities[3]}
               setModalVisible={setModal}
@@ -265,6 +269,7 @@ export default function Web() {
             <div className="mb-5 text-center text-xl">Creditors</div>
 
             <Profile
+              type="creditor"
               colour="text-gray-300"
               reverse={true}
               entity={null}
@@ -347,6 +352,15 @@ export default function Web() {
       </div>
 
       <Modal
+        colour={
+          selectedEntity === 0
+            ? "rgba(68, 114, 196, 1)"
+            : selectedEntity === 1
+            ? "rgba(112, 173, 71, 1)"
+            : selectedEntity === 2
+            ? "rgba(255, 192, 0, 1)"
+            : "rgba(237, 125, 49, 1)"
+        }
         showModal={showModal}
         setModal={setModal}
         entity={entityCtx.entities[selectedEntity]}

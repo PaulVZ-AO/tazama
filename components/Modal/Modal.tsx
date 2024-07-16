@@ -3,6 +3,7 @@
 import { DebtorEntity } from "store/entities/entity.interface"
 
 interface Props {
+  colour?: string
   entity?: DebtorEntity
   selectedEntity?: number
   showModal: boolean
@@ -54,13 +55,14 @@ export function Modal(props: Props) {
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
                   fill={
-                    props.selectedEntity === 0
-                      ? "lightblue"
-                      : props.selectedEntity === 1
-                      ? "lightgreen"
-                      : props.selectedEntity === 2
-                      ? "yellow"
-                      : "orange"
+                    props.colour
+                    // props.selectedEntity === 0
+                    //   ? "lightblue"
+                    //   : props.selectedEntity === 1
+                    //   ? "lightgreen"
+                    //   : props.selectedEntity === 2
+                    //   ? "yellow"
+                    //   : "orange"
                   }
                   className="size-20"
                 >
