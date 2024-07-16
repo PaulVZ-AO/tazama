@@ -171,7 +171,7 @@ export default function Web() {
   const [types, setTypes] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [selectedEntity, setSelectedEntity] = useState<number>(0)
+  const [selectedEntity, setSelectedEntity] = useState<number | any>(0)
 
   useEffect(() => {
     axios
@@ -220,30 +220,46 @@ export default function Web() {
             <Profile
               type="debtor"
               colour={!entityCtx.entities[0] ? "text-gray-300" : "text-blue-300"}
-              entity={entityCtx.entities[0]}
+              entity={entityCtx.entities[0]?.Entity}
+              accounts={entityCtx.entities[0]?.Accounts}
               setModalVisible={setModal}
               setSelectedEntity={() => setSelectedEntity(0)}
+              addAccount={async () => {
+                await entityCtx.createEntityAccount(0)
+              }}
             />
             <Profile
               type="debtor"
               colour={!entityCtx.entities[1] ? "text-gray-300" : "text-green-600"}
-              entity={entityCtx.entities[1]}
+              entity={entityCtx.entities[1]?.Entity}
+              accounts={entityCtx.entities[1]?.Accounts}
               setModalVisible={setModal}
               setSelectedEntity={() => setSelectedEntity(1)}
+              addAccount={async () => {
+                await entityCtx.createEntityAccount(1)
+              }}
             />
             <Profile
               type="debtor"
               colour={!entityCtx.entities[2] ? "text-gray-300" : "text-yellow-400"}
-              entity={entityCtx.entities[2]}
+              entity={entityCtx.entities[2]?.Entity}
+              accounts={entityCtx.entities[2]?.Accounts}
               setModalVisible={setModal}
               setSelectedEntity={() => setSelectedEntity(2)}
+              addAccount={async () => {
+                await entityCtx.createEntityAccount(2)
+              }}
             />
             <Profile
               type="debtor"
               colour={!entityCtx.entities[3] ? "text-gray-300" : "text-orange-600"}
-              entity={entityCtx.entities[3]}
+              entity={entityCtx.entities[3]?.Entity}
+              accounts={entityCtx.entities[3]?.Accounts}
               setModalVisible={setModal}
               setSelectedEntity={() => setSelectedEntity(3)}
+              addAccount={async () => {
+                await entityCtx.createEntityAccount(3)
+              }}
             />
           </div>
         </div>
@@ -275,6 +291,9 @@ export default function Web() {
               entity={null}
               setModalVisible={setModal}
               setSelectedEntity={() => null}
+              addAccount={function (): void {
+                throw new Error("Function not implemented.")
+              }}
             />
           </div>
         </div>
@@ -351,21 +370,23 @@ export default function Web() {
         </div>
       </div>
 
-      <Modal
-        colour={
-          selectedEntity === 0
-            ? "rgba(68, 114, 196, 1)"
-            : selectedEntity === 1
-            ? "rgba(112, 173, 71, 1)"
-            : selectedEntity === 2
-            ? "rgba(255, 192, 0, 1)"
-            : "rgba(237, 125, 49, 1)"
-        }
-        showModal={showModal}
-        setModal={setModal}
-        entity={entityCtx.entities[selectedEntity]}
-        selectedEntity={selectedEntity}
-      />
+      {showModal && (
+        <Modal
+          colour={
+            selectedEntity === 0
+              ? "rgba(68, 114, 196, 1)"
+              : selectedEntity === 1
+              ? "rgba(112, 173, 71, 1)"
+              : selectedEntity === 2
+              ? "rgba(255, 192, 0, 1)"
+              : "rgba(237, 125, 49, 1)"
+          }
+          showModal={showModal}
+          setModal={setModal}
+          entity={entityCtx.entities[selectedEntity]?.Entity}
+          selectedEntity={selectedEntity}
+        />
+      )}
     </div>
   )
 }

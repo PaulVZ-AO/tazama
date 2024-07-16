@@ -31,7 +31,6 @@ export const RandomCellNumber = async () => {
       let randomIndex = Math.floor(Math.random() * countries.length)
       phoneNumber.push(countries[randomIndex]?.dial_code + "-")
     } else if (i === 1) {
-      console.log("Number: ", Math.floor(Math.random() * (9 - 6 + 1) + 6))
       phoneNumber.push(Math.floor(Math.random() * (9 - 6 + 1) + 6))
     } else {
       phoneNumber.push(Math.floor(Math.random() * 10))

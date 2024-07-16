@@ -20,6 +20,25 @@ export interface DebtorEntity {
   }
 }
 
+export interface DebtorAccount {
+  DbtrAcct: {
+    Id: {
+      Othr: {
+        Id: string
+        SchmeNm: {
+          Prtry: string
+        }
+      }
+    }
+    Nm: string
+  }
+}
+
+export interface Entity {
+  Entity: DebtorEntity
+  Accounts: Array<DebtorAccount>
+}
+
 export interface CreditorEntity {
   Cdtr: {
     Nm: string

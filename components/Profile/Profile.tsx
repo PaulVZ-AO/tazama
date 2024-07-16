@@ -1,24 +1,44 @@
 "use client"
 
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 import EntityContext from "store/entities/entity.context"
-import { DebtorEntity } from "store/entities/entity.interface"
+import { DebtorAccount, DebtorEntity } from "store/entities/entity.interface"
 
 export interface ProfileProps {
   type: string
   reverse?: boolean
   colour?: string
   entity?: DebtorEntity | null
+  accounts?: Array<DebtorAccount> | null
+  selectedEntity?: number
   setModalVisible: (value: boolean) => void
   setSelectedEntity: () => void
+  addAccount: () => void
 }
 
-export function Profile({ ...props }: ProfileProps) {
+const AccountsComponent = () => {
+  return (
+    <button>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
+        <path d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625Z" />
+        <path d="M12.971 1.816A5.23 5.23 0 0 1 14.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 0 1 3.434 1.279 9.768 9.768 0 0 0-6.963-6.963Z" />
+      </svg>
+    </button>
+  )
+}
+
+export const Profile = ({ ...props }: ProfileProps) => {
   const entityCtx = useContext(EntityContext)
+
+  useEffect(() => {}, [entityCtx.entities])
   let reverse = ""
   if (props.reverse) {
     reverse = "flex-row-reverse text-right"
   }
+
+  const Accounts = props.accounts?.map((account) => {
+    return <AccountsComponent key={account.DbtrAcct.Id.Othr.Id} />
+  })
 
   return (
     <div
@@ -29,10 +49,10 @@ export function Profile({ ...props }: ProfileProps) {
         onClick={async () => {
           if (props.type === "debtor") {
             if (!props.entity && entityCtx.entities.length < 4) {
+              props.setSelectedEntity()
               await entityCtx.createEntity()
             }
-            console.log("ENTITY: ", props.entity)
-            if (props.entity !== null) {
+            if (props.entity !== undefined) {
               props.setSelectedEntity()
               props.setModalVisible(true)
             }
@@ -66,6 +86,7 @@ export function Profile({ ...props }: ProfileProps) {
           />
         </svg>
       </button>
+      {Accounts}
 
       {/* <button>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
@@ -80,11 +101,19 @@ export function Profile({ ...props }: ProfileProps) {
         </svg>
       </button> */}
 
-      <button data-modal-target="default-modal" data-modal-toggle="default-modal">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="size-5">
-          <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
-        </svg>
-      </button>
+      {props?.accounts !== null && props.accounts !== undefined && props?.accounts.length < 4 && (
+        <button
+          data-modal-target="default-modal"
+          data-modal-toggle="default-modal"
+          onClick={async () => {
+            props.addAccount()
+          }}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="size-5">
+            <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+          </svg>
+        </button>
+      )}
 
       <button>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">

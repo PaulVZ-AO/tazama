@@ -20,6 +20,44 @@ const EntityReducer = (state: any, action: any) => {
         createEntityLoading: false,
         entities: [],
       }
+
+    case ACTIONS.UPDATE_ENTITY_LOADING:
+      return {
+        ...state,
+        updateEntityLoading: true,
+        entities: [],
+      }
+    case ACTIONS.UPDATE_ENTITY_SUCCESS:
+      return {
+        ...state,
+        updateEntityLoading: false,
+        entities: action.payload,
+      }
+    case ACTIONS.UPDATE_ENTITY_FAIL:
+      return {
+        ...state,
+        updateEntityLoading: false,
+        entities: [],
+      }
+
+    case ACTIONS.CREATE_ENTITY_ACCOUNT_LOADING:
+      return {
+        ...state,
+        createAccountLoading: true,
+        entities: [],
+      }
+    case ACTIONS.CREATE_ENTITY_ACCOUNT_SUCCESS:
+      return {
+        ...state,
+        createAccountLoading: false,
+        entities: action.payload,
+      }
+    case ACTIONS.CREATE_ENTITY_ACCOUNT_FAIL:
+      return {
+        ...state,
+        createAccountLoading: false,
+        entities: [],
+      }
   }
 }
 
