@@ -46,7 +46,7 @@ export const CreditorProfile = ({ ...props }: ProfileProps) => {
       <button
         className="text-black"
         onClick={async () => {
-          if (!props.entity && entityCtx.entities.length < 4) {
+          if (!props.entity && entityCtx.creditorEntities.length < 4) {
             props.setSelectedEntity()
             await entityCtx.createCreditorEntity()
           }
