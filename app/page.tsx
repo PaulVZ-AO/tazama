@@ -230,6 +230,7 @@ export default function Web() {
               accounts={entityCtx.entities[0]?.Accounts}
               setModalVisible={setModal}
               setSelectedEntity={() => setSelectedEntity(0)}
+              selectedEntity={selectedEntity}
               addAccount={async () => {
                 await entityCtx.createEntityAccount(0)
               }}
@@ -240,6 +241,7 @@ export default function Web() {
               accounts={entityCtx.entities[1]?.Accounts}
               setModalVisible={setModal}
               setSelectedEntity={() => setSelectedEntity(1)}
+              selectedEntity={selectedEntity}
               addAccount={async () => {
                 await entityCtx.createEntityAccount(1)
               }}
@@ -250,6 +252,7 @@ export default function Web() {
               accounts={entityCtx.entities[2]?.Accounts}
               setModalVisible={setModal}
               setSelectedEntity={() => setSelectedEntity(2)}
+              selectedEntity={selectedEntity}
               addAccount={async () => {
                 await entityCtx.createEntityAccount(2)
               }}
@@ -260,6 +263,7 @@ export default function Web() {
               accounts={entityCtx.entities[3]?.Accounts}
               setModalVisible={setModal}
               setSelectedEntity={() => setSelectedEntity(3)}
+              selectedEntity={selectedEntity}
               addAccount={async () => {
                 await entityCtx.createEntityAccount(3)
               }}
@@ -309,6 +313,7 @@ export default function Web() {
               creditorAccounts={entityCtx.creditorEntities[0]?.CreditorAccounts}
               setModalVisible={setModal}
               setSelectedEntity={() => setSelectedCreditorEntity(0)}
+              selectedEntity={selectedCreditorEntity}
               addAccount={async () => {
                 await entityCtx.createCreditorEntityAccount(0)
               }}
@@ -320,6 +325,7 @@ export default function Web() {
               creditorAccounts={entityCtx.creditorEntities[1]?.CreditorAccounts}
               setModalVisible={setModal}
               setSelectedEntity={() => setSelectedCreditorEntity(1)}
+              selectedEntity={selectedCreditorEntity}
               addAccount={async () => {
                 await entityCtx.createCreditorEntityAccount(1)
               }}
@@ -331,6 +337,7 @@ export default function Web() {
               creditorAccounts={entityCtx.creditorEntities[2]?.CreditorAccounts}
               setModalVisible={setModal}
               setSelectedEntity={() => setSelectedCreditorEntity(2)}
+              selectedEntity={selectedCreditorEntity}
               addAccount={async () => {
                 await entityCtx.createCreditorEntityAccount(2)
               }}
@@ -342,6 +349,7 @@ export default function Web() {
               creditorAccounts={entityCtx.creditorEntities[3]?.CreditorAccounts}
               setModalVisible={setModal}
               setSelectedEntity={() => setSelectedCreditorEntity(3)}
+              selectedEntity={selectedCreditorEntity}
               addAccount={async () => {
                 await entityCtx.createCreditorEntityAccount(3)
               }}
@@ -353,7 +361,9 @@ export default function Web() {
       <div className="grid grid-cols-12 gap-5 pt-10">
         {/* CRSP */}
         <div className="col-span-2 rounded-md shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
-          <h2 className="mb-5 py-5 rounded-t-lg uppercase bg-gradient-to-r from-gray-100 to-gray-200 shadow-lg text-center">Event director</h2>
+          <h2 className="mb-5 rounded-t-lg bg-gradient-to-r from-gray-100 to-gray-200 py-5 text-center uppercase shadow-lg">
+            Event director
+          </h2>
 
           <div className="flex min-h-80 items-center justify-center">
             <StatusIndicator large={true} />

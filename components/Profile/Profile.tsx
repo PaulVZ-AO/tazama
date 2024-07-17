@@ -9,7 +9,7 @@ export interface ProfileProps {
   colour?: string
   entity?: DebtorEntity
   accounts?: Array<DebtorAccount> | null
-  selectedEntity?: number
+  selectedEntity: number
   setModalVisible: (value: boolean) => void
   setSelectedEntity: () => void
   addAccount: () => void
@@ -61,6 +61,7 @@ export const Profile = ({ ...props }: ProfileProps) => {
           if (!props.entity && entityCtx.entities.length < 4) {
             props.setSelectedEntity()
             await entityCtx.createEntity()
+            await entityCtx.setDebtorPacs008(props.selectedEntity)
           }
           if (props.entity !== undefined) {
             props.setSelectedEntity()
@@ -84,7 +85,15 @@ export const Profile = ({ ...props }: ProfileProps) => {
         </svg>
       </button>
 
-      <button>
+      <button
+        onClick={async () => {
+          console.log("ATTEMPTING PACS008 FROM DEBTORS SIDE")
+          props.setSelectedEntity()
+          console.log("SELECTED INDEX: " + props.selectedEntity)
+          console.log("ABOUT TO CALL THE setDebtorPacs008")
+          await entityCtx.setDebtorPacs008(props.selectedEntity)
+        }}
+      >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
           <path
             fillRule="evenodd"

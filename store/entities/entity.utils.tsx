@@ -4,6 +4,13 @@ const randomDate = (start: Date, end: Date) => {
   return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime())).toISOString().split("T")[0]
 }
 
+export const RandomNumbers = () => {
+  let randomNumber: number = Math.floor(Math.random() * 1000) + 100
+  let result: string = `${randomNumber}.00`
+  console.log("GENERATED NUMBER: ", result)
+  return result
+}
+
 export const GenerateBirthDate = async () => {
   const currentYear = new Date().getFullYear()
   let maxYear = currentYear - 20
