@@ -1,5 +1,6 @@
 import "styles/tailwind.css"
 import Image from "next/image"
+import Head from "next/head"
 import Link from "next/link"
 import EntityProvider from "store/entities/entity.provider"
 
@@ -7,10 +8,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <EntityProvider>
       <html lang="en">
+        <Head>
+          <title>Tazama | Debt Management</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
         <body>
           <div className="flex rounded-t-lg bg-gradient-to-b from-gray-100 to-gray-200 px-10 py-5 shadow-lg">
             <Link href={"/"}>
-              <Image src="https://tazama.org/logo.svg" width={200} height={41} alt="Tazama" />
+              <Image src="https://tazama.org/logo.svg" width={200} height={41} alt="Tazama" priority={true} />
             </Link>
 
             <Link

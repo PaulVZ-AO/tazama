@@ -275,13 +275,29 @@ export default function Web() {
         <div className="col-span-8">
           <div className="grid grid-cols-12 gap-1">
             <div className="col-span-4">
-              <Image src="/device.svg" height="200" width="200" className="ml-auto text-center" alt="" />
+              <Image
+                src="/device.svg"
+                height="200"
+                width="200"
+                className="ml-auto text-center"
+                alt=""
+                style={{ width: "auto", height: "auto" }}
+                priority={true}
+              />
             </div>
             <div className="col-span-4 flex items-center justify-between px-5">
               <ProcessIndicator />
             </div>
             <div className="col-span-4">
-              <Image src="/device.svg" height="200" width="200" className="text-center" alt="" />
+              <Image
+                src="/device.svg"
+                height="200"
+                width="200"
+                className="text-center"
+                alt=""
+                style={{ width: "auto", height: "auto" }}
+                priority={true}
+              />
             </div>
           </div>
         </div>
