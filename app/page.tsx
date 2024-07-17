@@ -223,7 +223,7 @@ export default function Web() {
       <div className="grid grid-cols-12 gap-5 pt-10">
         {/* CRSP */}
         <div className="col-span-2 rounded-md shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
-          <h2 className="mb-5 py-5 rounded-t-lg uppercase bg-gradient-to-r from-gray-100 to-gray-200 shadow-lg text-center">Crsp</h2>
+          <h2 className="mb-5 py-5 rounded-t-lg uppercase bg-gradient-to-r from-gray-100 to-gray-200 shadow-lg text-center">Event director</h2>
 
           <div className="flex items-center justify-center min-h-80">
             <StatusIndicator large={true} />
