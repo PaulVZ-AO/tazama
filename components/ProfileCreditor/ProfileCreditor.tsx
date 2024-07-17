@@ -2,20 +2,20 @@
 
 import { useContext, useEffect } from "react"
 import EntityContext from "store/entities/entity.context"
-import { DebtorAccount, DebtorEntity } from "store/entities/entity.interface"
+import { CreditorAccount, CreditorEntity } from "store/entities/entity.interface"
 
 export interface ProfileProps {
   reverse?: boolean
   colour?: string
-  entity?: DebtorEntity
-  accounts?: Array<DebtorAccount> | null
+  entity?: CreditorEntity | null
+  creditorAccounts?: Array<CreditorAccount> | null
   selectedEntity?: number
   setModalVisible: (value: boolean) => void
   setSelectedEntity: () => void
   addAccount: () => void
 }
 
-const AccountsComponent = () => {
+const CreditorAccountsComponent = () => {
   return (
     <button>
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
@@ -26,18 +26,8 @@ const AccountsComponent = () => {
   )
 }
 
-export const Profile = ({ ...props }: ProfileProps) => {
+export const CreditorProfile = ({ ...props }: ProfileProps) => {
   const entityCtx = useContext(EntityContext)
-  const handleClick = async () => {
-    if (!props.entity && entityCtx.entities.length < 4) {
-      props.setSelectedEntity()
-      await entityCtx.createEntity()
-    }
-    if (props.entity !== undefined) {
-      props.setSelectedEntity()
-      props.setModalVisible(true)
-    }
-  }
 
   useEffect(() => {}, [entityCtx.entities])
   let reverse = ""
@@ -45,10 +35,8 @@ export const Profile = ({ ...props }: ProfileProps) => {
     reverse = "flex-row-reverse text-right"
   }
 
-  const DebtorAccounts = props?.accounts?.map((account) => {
-    if (account !== null && account !== undefined) {
-      return <AccountsComponent key={crypto.randomUUID().replaceAll("-", "")} />
-    }
+  const CreditorAccounts = props.creditorAccounts?.map((account) => {
+    return <CreditorAccountsComponent key={crypto.randomUUID().replaceAll("-", "")} />
   })
 
   return (
@@ -60,7 +48,7 @@ export const Profile = ({ ...props }: ProfileProps) => {
         onClick={async () => {
           if (!props.entity && entityCtx.entities.length < 4) {
             props.setSelectedEntity()
-            await entityCtx.createEntity()
+            await entityCtx.createCreditorEntity()
           }
           if (props.entity !== undefined) {
             props.setSelectedEntity()
@@ -93,7 +81,7 @@ export const Profile = ({ ...props }: ProfileProps) => {
           />
         </svg>
       </button>
-      {DebtorAccounts}
+      {CreditorAccounts}
 
       {/* <button>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
@@ -108,19 +96,22 @@ export const Profile = ({ ...props }: ProfileProps) => {
         </svg>
       </button> */}
 
-      {props?.accounts !== null && props.accounts !== undefined && props?.accounts.length < 4 && (
-        <button
-          data-modal-target="default-modal"
-          data-modal-toggle="default-modal"
-          onClick={async () => {
-            props.addAccount()
-          }}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="size-5">
-            <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
-          </svg>
-        </button>
-      )}
+      {props?.creditorAccounts !== null &&
+        props.creditorAccounts !== undefined &&
+        props?.creditorAccounts.length < 4 && (
+          <button
+            data-modal-target="default-modal"
+            data-modal-toggle="default-modal"
+            onClick={async () => {
+              props.setSelectedEntity()
+              await props.addAccount()
+            }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="size-5">
+              <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+            </svg>
+          </button>
+        )}
 
       <button>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">

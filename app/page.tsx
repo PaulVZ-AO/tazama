@@ -2,10 +2,11 @@
 
 import axios from "axios"
 import Image from "next/image"
-import { Context, useContext, useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { Modal } from "components/Modal/Modal"
 import { ProcessIndicator } from "components/ProcessIndicator/ProcessIndicator"
 import { Profile } from "components/Profile/Profile"
+import { CreditorProfile } from "components/ProfileCreditor/ProfileCreditor"
 import { StatusIndicator } from "components/StatusIndicator/StatusIndicator"
 import EntityContext from "store/entities/entity.context"
 
@@ -172,6 +173,7 @@ export default function Web() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [selectedEntity, setSelectedEntity] = useState<number | any>(0)
+  const [selectedCreditorEntity, setSelectedCreditorEntity] = useState<number | any>(0)
 
   useEffect(() => {
     axios
@@ -199,12 +201,17 @@ export default function Web() {
       })
   }, [])
   useEffect(() => {
-    console.log(selectedEntity)
-  }, [selectedEntity])
+    console.log("SELECTED ENTITY: ", selectedEntity)
+    console.log("SELECTED CREDITOR ENTITY: ", selectedCreditorEntity)
+  }, [selectedEntity, selectedCreditorEntity])
 
   useEffect(() => {
-    console.log(entityCtx.entities)
+    console.log("DEBTORS: ", entityCtx.entities)
   }, [entityCtx.entities])
+
+  useEffect(() => {
+    console.log("CREDITORS: ", entityCtx.creditorEntities)
+  }, [entityCtx.creditorEntities])
 
   if (loading) return <p>Loading...</p>
   if (error) return <p>Error: {error}</p>
@@ -283,16 +290,48 @@ export default function Web() {
         <div className="col-span-2">
           <div className="flex flex-wrap justify-center rounded-lg p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
             <div className="mb-5 text-center text-xl">Creditors</div>
-
-            <Profile
-              type="creditor"
-              colour="text-gray-300"
+            <CreditorProfile
+              colour={!entityCtx.creditorEntities[0] ? "text-gray-300" : "text-blue-300"}
               reverse={true}
-              entity={null}
+              entity={entityCtx.creditorEntities[0]?.CreditorEntity}
+              creditorAccounts={entityCtx.creditorEntities[0]?.CreditorAccounts}
               setModalVisible={setModal}
-              setSelectedEntity={() => null}
-              addAccount={function (): void {
-                throw new Error("Function not implemented.")
+              setSelectedEntity={() => setSelectedCreditorEntity(0)}
+              addAccount={async () => {
+                await entityCtx.createCreditorEntityAccount(0)
+              }}
+            />
+            <CreditorProfile
+              colour={!entityCtx.creditorEntities[1] ? "text-gray-300" : "text-green-600"}
+              reverse={true}
+              entity={entityCtx.creditorEntities[1]?.CreditorEntity}
+              creditorAccounts={entityCtx.creditorEntities[1]?.CreditorAccounts}
+              setModalVisible={setModal}
+              setSelectedEntity={() => setSelectedCreditorEntity(1)}
+              addAccount={async () => {
+                await entityCtx.createCreditorEntityAccount(1)
+              }}
+            />
+            <CreditorProfile
+              colour={!entityCtx.creditorEntities[2] ? "text-gray-300" : "text-yellow-400"}
+              reverse={true}
+              entity={entityCtx.creditorEntities[2]?.CreditorEntity}
+              creditorAccounts={entityCtx.creditorEntities[2]?.CreditorAccounts}
+              setModalVisible={setModal}
+              setSelectedEntity={() => setSelectedCreditorEntity(2)}
+              addAccount={async () => {
+                await entityCtx.createCreditorEntityAccount(2)
+              }}
+            />
+            <CreditorProfile
+              colour={!entityCtx.creditorEntities[3] ? "text-gray-300" : "text-orange-600"}
+              reverse={true}
+              entity={entityCtx.creditorEntities[3]?.CreditorEntity}
+              creditorAccounts={entityCtx.creditorEntities[3]?.CreditorAccounts}
+              setModalVisible={setModal}
+              setSelectedEntity={() => setSelectedCreditorEntity(3)}
+              addAccount={async () => {
+                await entityCtx.createCreditorEntityAccount(3)
               }}
             />
           </div>

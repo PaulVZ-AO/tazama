@@ -34,9 +34,28 @@ export interface DebtorAccount {
   }
 }
 
+export interface CreditorAccount {
+  CdtrAcct: {
+    Id: {
+      Othr: {
+        Id: string
+        SchmeNm: {
+          Prtry: string
+        }
+      }
+    }
+    Nm: string
+  }
+}
+
 export interface Entity {
   Entity: DebtorEntity
   Accounts: Array<DebtorAccount>
+}
+
+export interface CdtrEntity {
+  CreditorEntity: CreditorEntity
+  CreditorAccounts: Array<CreditorAccount>
 }
 
 export interface CreditorEntity {

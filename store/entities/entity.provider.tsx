@@ -2,7 +2,7 @@
 import React, { ReactNode, useReducer } from "react"
 import { ACTIONS } from "./entity.actions"
 import EntityContext from "./entity.context"
-import { DebtorAccount, DebtorEntity, Entity } from "./entity.interface"
+import { CdtrEntity, CreditorAccount, CreditorEntity, DebtorAccount, DebtorEntity, Entity } from "./entity.interface"
 import EntityReducer from "./entity.reducer"
 import { GenerateBirthDate, RandomCellNumber, RandomName, RandomSurname } from "./entity.utils"
 
@@ -15,6 +15,8 @@ const EntityProvider = ({ children }: Props) => {
     createEntityLoading: false,
     updateEntityLoading: false,
     createAccountLoading: false,
+    createCreditorAccountLoading: false,
+    creditorEntities: [],
     entities: [],
   }
   const [state, dispatch] = useReducer(EntityReducer, initialEntityState)
@@ -89,9 +91,6 @@ const EntityProvider = ({ children }: Props) => {
         entitiesList.splice(entityIndex, 1, updatedEntity)
       }
 
-      console.log("UPDATED ENTITIES: ", entitiesList)
-      //   entitiesList.push(newEntity)
-
       dispatch({ type: ACTIONS.UPDATE_ENTITY_SUCCESS, payload: [...entitiesList] })
     } catch (error) {
       dispatch({ type: ACTIONS.UPDATE_ENTITY_FAIL })
@@ -143,11 +142,135 @@ const EntityProvider = ({ children }: Props) => {
         entitiesList.splice(entityIndex, 1, updatedEntityAccounts)
       }
 
-      console.log("UPDATED ENTITIES: ", entitiesList)
-
       dispatch({ type: ACTIONS.CREATE_ENTITY_ACCOUNT_SUCCESS, payload: [...entitiesList] })
     } catch (error) {
       dispatch({ type: ACTIONS.CREATE_ENTITY_ACCOUNT_FAIL })
+    }
+  }
+
+  const createCreditorEntity = async () => {
+    try {
+      dispatch({ type: ACTIONS.CREATE_CREDITOR_ENTITY_LOADING })
+      const newEntity: CreditorEntity = {
+        Cdtr: {
+          Nm: `${await RandomName()} ${await RandomSurname()}`,
+          Id: {
+            PrvId: {
+              DtAndPlcOfBirth: {
+                BirthDt: await GenerateBirthDate(),
+                CityOfBirth: "Unknown",
+                CtryOfBirth: "ZZ",
+              },
+              Othr: {
+                Id: crypto.randomUUID().replaceAll("-", ""),
+                SchmeNm: {
+                  Prtry: "TAZAMA_EID",
+                },
+              },
+            },
+          },
+          CtctDtls: { MobNb: await RandomCellNumber() },
+        },
+      }
+
+      const newAccount: CreditorAccount = {
+        CdtrAcct: {
+          Id: {
+            Othr: {
+              Id: crypto.randomUUID().replaceAll("-", ""),
+
+              SchmeNm: {
+                Prtry: "TAZAMA_EID",
+              },
+            },
+          },
+          Nm: newEntity.Cdtr.Nm.split(" ")[0] + "'s first account",
+        },
+      }
+
+      const payload: CdtrEntity = {
+        CreditorEntity: newEntity,
+        CreditorAccounts: [newAccount],
+      }
+
+      let entitiesList: Array<CdtrEntity> = state.creditorEntities
+
+      entitiesList.push(payload)
+
+      dispatch({ type: ACTIONS.CREATE_CREDITOR_ENTITY_SUCCESS, payload: [...entitiesList] })
+    } catch (error) {
+      dispatch({ type: ACTIONS.CREATE_CREDITOR_ENTITY_FAIL })
+    }
+  }
+
+  const updateCreditorEntity = async (entity: CreditorEntity, entityIndex: number) => {
+    try {
+      dispatch({ type: ACTIONS.UPDATE_CREDITOR_ENTITY_LOADING })
+
+      let updatedEntity: CdtrEntity = {
+        CreditorEntity: entity,
+        CreditorAccounts: state.creditorEntities[entityIndex].CreditorAccounts,
+      }
+
+      let entitiesList: Array<CdtrEntity> = state.creditorEntities
+      if (entitiesList[entityIndex]?.CreditorEntity && typeof entityIndex === "number") {
+        entitiesList.splice(entityIndex, 1, updatedEntity)
+      }
+
+      dispatch({ type: ACTIONS.UPDATE_CREDITOR_ENTITY_SUCCESS, payload: [...entitiesList] })
+    } catch (error) {
+      dispatch({ type: ACTIONS.UPDATE_CREDITOR_ENTITY_FAIL })
+    }
+  }
+
+  const createCreditorEntityAccount = async (entityIndex: number) => {
+    try {
+      dispatch({ type: ACTIONS.CREATE_CREDITOR_ENTITY_ACCOUNT_LOADING })
+
+      let accountsList: Array<CreditorAccount> = state.creditorEntities[entityIndex].CreditorAccounts
+
+      const AccountName: any = () => {
+        if (accountsList.length === 0) {
+          return `${state.creditorEntities[entityIndex].CreditorEntity.Cdtr.Nm.split(" ")[0]}'s first account`
+        } else if (accountsList.length === 1) {
+          return `${state.creditorEntities[entityIndex].CreditorEntity.Cdtr.Nm.split(" ")[0]}'s second account`
+        } else if (accountsList.length === 2) {
+          return `${state.creditorEntities[entityIndex].CreditorEntity.Cdtr.Nm.split(" ")[0]}'s third account`
+        } else if (accountsList.length === 3) {
+          return `${state.creditorEntities[entityIndex].CreditorEntity.Cdtr.Nm.split(" ")[0]}'s forth account`
+        }
+      }
+
+      const newAccount: CreditorAccount = {
+        CdtrAcct: {
+          Id: {
+            Othr: {
+              Id: crypto.randomUUID().replaceAll("-", ""),
+
+              SchmeNm: {
+                Prtry: "TAZAMA_EID",
+              },
+            },
+          },
+          Nm: AccountName(),
+        },
+      }
+
+      accountsList.push(newAccount)
+
+      let updatedEntityAccounts: CdtrEntity = {
+        CreditorEntity: state.creditorEntities[entityIndex]?.CreditorEntity,
+        CreditorAccounts: accountsList,
+      }
+
+      let entitiesList: Array<CdtrEntity> = state.creditorEntities
+      if (entitiesList[entityIndex]?.CreditorEntity && typeof entityIndex === "number") {
+        entitiesList.splice(entityIndex, 1, updatedEntityAccounts)
+      }
+
+      dispatch({ type: ACTIONS.CREATE_CREDITOR_ENTITY_ACCOUNT_SUCCESS, payload: [...entitiesList] })
+    } catch (error) {
+      dispatch({ type: ACTIONS.CREATE_CREDITOR_ENTITY_ACCOUNT_FAIL })
     }
   }
 
@@ -157,10 +280,15 @@ const EntityProvider = ({ children }: Props) => {
         createEntityLoading: state.createEntityLoading,
         updateEntityLoading: state.updateEntityLoading,
         createAccountLoading: state.createAccountLoading,
+        createCreditorAccountLoading: state.createCreditorAccountLoading,
+        creditorEntities: state.creditorEntities,
         entities: state.entities,
         createEntity,
         updateEntity,
         createEntityAccount,
+        createCreditorEntity,
+        updateCreditorEntity,
+        createCreditorEntityAccount,
       }}
     >
       {children}
