@@ -225,7 +225,6 @@ export default function Web() {
             <div className="mb-5 text-center text-xl">Debtors</div>
 
             <Profile
-              type="debtor"
               colour={!entityCtx.entities[0] ? "text-gray-300" : "text-blue-300"}
               entity={entityCtx.entities[0]?.Entity}
               accounts={entityCtx.entities[0]?.Accounts}
@@ -236,7 +235,6 @@ export default function Web() {
               }}
             />
             <Profile
-              type="debtor"
               colour={!entityCtx.entities[1] ? "text-gray-300" : "text-green-600"}
               entity={entityCtx.entities[1]?.Entity}
               accounts={entityCtx.entities[1]?.Accounts}
@@ -247,7 +245,6 @@ export default function Web() {
               }}
             />
             <Profile
-              type="debtor"
               colour={!entityCtx.entities[2] ? "text-gray-300" : "text-yellow-400"}
               entity={entityCtx.entities[2]?.Entity}
               accounts={entityCtx.entities[2]?.Accounts}
@@ -258,7 +255,6 @@ export default function Web() {
               }}
             />
             <Profile
-              type="debtor"
               colour={!entityCtx.entities[3] ? "text-gray-300" : "text-orange-600"}
               entity={entityCtx.entities[3]?.Entity}
               accounts={entityCtx.entities[3]?.Accounts}
@@ -357,9 +353,7 @@ export default function Web() {
       <div className="grid grid-cols-12 gap-5 pt-10">
         {/* CRSP */}
         <div className="col-span-2 rounded-md shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
-          <h2 className="mb-5 rounded-t-lg bg-gradient-to-r from-gray-100 to-gray-200 py-5 text-center uppercase shadow-lg">
-            Crsp
-          </h2>
+          <h2 className="mb-5 py-5 rounded-t-lg uppercase bg-gradient-to-r from-gray-100 to-gray-200 shadow-lg text-center">Event director</h2>
 
           <div className="flex min-h-80 items-center justify-center">
             <StatusIndicator large={true} />
