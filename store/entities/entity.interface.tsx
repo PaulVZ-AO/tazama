@@ -2,7 +2,7 @@ export interface DebtorEntity {
   Dbtr: {
     Nm: string
     Id: {
-      PrvId: {
+      PrvtId: {
         DtAndPlcOfBirth: {
           BirthDt: string
           CityOfBirth: string
@@ -62,7 +62,7 @@ export interface CreditorEntity {
   Cdtr: {
     Nm: string
     Id: {
-      PrvId: {
+      PrvtId: {
         DtAndPlcOfBirth: {
           BirthDt: string
           CityOfBirth: string

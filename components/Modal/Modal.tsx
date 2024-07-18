@@ -114,8 +114,8 @@ export function Modal(props: Props) {
                     type="text"
                     id="modal-BirthDt"
                     className="w-full"
-                    defaultValue={props.entity?.Dbtr.Id.PrvId.DtAndPlcOfBirth.BirthDt}
-                    value={customEntity?.Dbtr.Id.PrvId.DtAndPlcOfBirth.BirthDt}
+                    defaultValue={props.entity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt}
+                    value={customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt}
                     onChange={(e) => {
                       if (customEntity !== undefined) {
                         setCustomEntity({
@@ -124,10 +124,10 @@ export function Modal(props: Props) {
                             ...customEntity?.Dbtr,
                             ...customEntity?.Dbtr.Id,
                             Id: {
-                              PrvId: {
-                                ...customEntity?.Dbtr.Id.PrvId,
+                              PrvtId: {
+                                ...customEntity?.Dbtr.Id.PrvtId,
                                 DtAndPlcOfBirth: {
-                                  ...customEntity?.Dbtr.Id.PrvId.DtAndPlcOfBirth,
+                                  ...customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth,
                                   BirthDt: e.target.value,
                                 },
                               },
@@ -144,8 +144,8 @@ export function Modal(props: Props) {
                     type="text"
                     id="modal-CityOfBirth"
                     className="w-full"
-                    defaultValue={props.entity?.Dbtr.Id.PrvId.DtAndPlcOfBirth.CityOfBirth}
-                    value={customEntity?.Dbtr.Id.PrvId.DtAndPlcOfBirth.CityOfBirth}
+                    defaultValue={props.entity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.CityOfBirth}
+                    value={customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.CityOfBirth}
                     onChange={(e) => {
                       if (customEntity !== undefined) {
                         setCustomEntity({
@@ -154,10 +154,10 @@ export function Modal(props: Props) {
                             ...customEntity.Dbtr,
                             ...customEntity.Dbtr.Id,
                             Id: {
-                              PrvId: {
-                                ...customEntity.Dbtr.Id.PrvId,
+                              PrvtId: {
+                                ...customEntity.Dbtr.Id.PrvtId,
                                 DtAndPlcOfBirth: {
-                                  ...customEntity.Dbtr.Id.PrvId.DtAndPlcOfBirth,
+                                  ...customEntity.Dbtr.Id.PrvtId.DtAndPlcOfBirth,
                                   CityOfBirth: e.target.value,
                                 },
                               },
@@ -174,8 +174,8 @@ export function Modal(props: Props) {
                     type="text"
                     id="modal-CtryOfBirth"
                     className="w-full"
-                    defaultValue={props.entity?.Dbtr.Id.PrvId.DtAndPlcOfBirth.CtryOfBirth}
-                    value={customEntity?.Dbtr.Id.PrvId.DtAndPlcOfBirth.CtryOfBirth}
+                    defaultValue={props.entity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.CtryOfBirth}
+                    value={customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.CtryOfBirth}
                     onChange={(e) => {
                       if (customEntity !== undefined) {
                         setCustomEntity({
@@ -184,10 +184,10 @@ export function Modal(props: Props) {
                             ...customEntity.Dbtr,
                             ...customEntity.Dbtr.Id,
                             Id: {
-                              PrvId: {
-                                ...customEntity.Dbtr.Id.PrvId,
+                              PrvtId: {
+                                ...customEntity.Dbtr.Id.PrvtId,
                                 DtAndPlcOfBirth: {
-                                  ...customEntity.Dbtr.Id.PrvId.DtAndPlcOfBirth,
+                                  ...customEntity.Dbtr.Id.PrvtId.DtAndPlcOfBirth,
                                   CtryOfBirth: e.target.value,
                                 },
                               },
@@ -205,8 +205,8 @@ export function Modal(props: Props) {
                     type="text"
                     id="modal-ID"
                     className="w-full"
-                    defaultValue={props.entity?.Dbtr.Id.PrvId.Othr.Id}
-                    value={customEntity?.Dbtr.Id.PrvId.Othr.Id}
+                    defaultValue={props.entity?.Dbtr.Id.PrvtId.Othr.Id}
+                    value={customEntity?.Dbtr.Id.PrvtId.Othr.Id}
                     onChange={(e) => {
                       if (customEntity !== undefined) {
                         setCustomEntity({
@@ -215,10 +215,10 @@ export function Modal(props: Props) {
                             ...customEntity.Dbtr,
                             ...customEntity.Dbtr.Id,
                             Id: {
-                              PrvId: {
-                                ...customEntity.Dbtr.Id.PrvId,
+                              PrvtId: {
+                                ...customEntity.Dbtr.Id.PrvtId,
                                 Othr: {
-                                  ...customEntity.Dbtr.Id.PrvId.Othr,
+                                  ...customEntity.Dbtr.Id.PrvtId.Othr,
                                   Id: e.target.value,
                                 },
                               },

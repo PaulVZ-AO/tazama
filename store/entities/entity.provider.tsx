@@ -13,7 +13,6 @@ import {
 } from "./entity.interface"
 import EntityReducer from "./entity.reducer"
 import { GenerateBirthDate, RandomCellNumber, RandomName, RandomNumbers, RandomSurname } from "./entity.utils"
-import { randomInt } from "crypto"
 
 interface Props {
   children: ReactNode
@@ -210,7 +209,7 @@ const EntityProvider = ({ children }: Props) => {
         Dbtr: {
           Nm: `${await RandomName()} ${await RandomSurname()}`,
           Id: {
-            PrvId: {
+            PrvtId: {
               DtAndPlcOfBirth: {
                 BirthDt: await GenerateBirthDate(),
                 CityOfBirth: "Unknown",
@@ -336,7 +335,7 @@ const EntityProvider = ({ children }: Props) => {
         Cdtr: {
           Nm: `${await RandomName()} ${await RandomSurname()}`,
           Id: {
-            PrvId: {
+            PrvtId: {
               DtAndPlcOfBirth: {
                 BirthDt: await GenerateBirthDate(),
                 CityOfBirth: "Unknown",
@@ -463,7 +462,7 @@ const EntityProvider = ({ children }: Props) => {
 
       // Set Debtor Details
       setPacs008.FIToFICstmrCdt.CdtTrfTxInf.Dbtr.Nm = debtor.Entity.Dbtr.Nm
-      setPacs008.FIToFICstmrCdt.CdtTrfTxInf.Dbtr.Id.PrvtId = { ...debtor.Entity.Dbtr.Id.PrvId }
+      setPacs008.FIToFICstmrCdt.CdtTrfTxInf.Dbtr.Id.PrvtId = { ...debtor.Entity.Dbtr.Id.PrvtId }
       setPacs008.FIToFICstmrCdt.CdtTrfTxInf.Dbtr.CtctDtls = { ...debtor.Entity.Dbtr.CtctDtls }
       setPacs008.FIToFICstmrCdt.CdtTrfTxInf.PmtId.EndToEndId = crypto.randomUUID().replaceAll("-", "")
 
@@ -516,7 +515,7 @@ const EntityProvider = ({ children }: Props) => {
       const setPacs008: PACS008 = state.pacs008
 
       setPacs008.FIToFICstmrCdt.CdtTrfTxInf.Cdtr.Nm = creditor.CreditorEntity.Cdtr.Nm
-      setPacs008.FIToFICstmrCdt.CdtTrfTxInf.Cdtr.Id.PrvtId = { ...creditor.CreditorEntity.Cdtr.Id.PrvId }
+      setPacs008.FIToFICstmrCdt.CdtTrfTxInf.Cdtr.Id.PrvtId = { ...creditor.CreditorEntity.Cdtr.Id.PrvtId }
       setPacs008.FIToFICstmrCdt.CdtTrfTxInf.Cdtr.CtctDtls = { ...creditor.CreditorEntity.Cdtr.CtctDtls }
 
       // Set Creditor Account Details
