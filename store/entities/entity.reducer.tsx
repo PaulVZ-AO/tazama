@@ -302,6 +302,192 @@ const EntityReducer = (state: any, action: any) => {
           },
         },
       }
+    case ACTIONS.SET_DEBTOR_ACCOUNT_PACS008_LOADING:
+      return {
+        ...state,
+        pacs008Loading: true,
+      }
+    case ACTIONS.SET_DEBTOR_ACCOUNT_PACS008_SUCCESS:
+      return {
+        ...state,
+        pacs008Loading: false,
+        pacs008: action.payload,
+      }
+    case ACTIONS.SET_DEBTOR_ACCOUNT_PACS008_FAIL:
+      return {
+        ...state,
+        pacs008Loading: false,
+        pacs008: {
+          TxTp: "pacs.008.001.10",
+          FIToFICstmrCdt: {
+            GrpHdr: {
+              MsgId: "%",
+              CreDtTm: "%",
+              NbOfTxs: 1,
+              SttlmInf: {
+                SttlmMtd: "CLRG",
+              },
+            },
+            CdtTrfTxInf: {
+              PmtId: {
+                InstrId: "%",
+                EndToEndId: "%",
+              },
+              IntrBkSttlmAmt: {
+                Amt: {
+                  Amt: "%",
+                  Ccy: "USD",
+                },
+              },
+              InstdAmt: {
+                Amt: {
+                  Amt: "%",
+                  Ccy: "USD",
+                },
+              },
+              ChrgBr: "DEBT",
+              ChrgsInf: {
+                Amt: {
+                  Amt: 0.0,
+                  Ccy: "USD",
+                },
+                Agt: {
+                  FinInstnId: {
+                    ClrSysMmbId: {
+                      MmbId: "dfsp001",
+                    },
+                  },
+                },
+              },
+              InitgPty: {
+                Nm: "%",
+                Id: {
+                  PrvtId: {
+                    DtAndPlcOfBirth: {
+                      BirthDt: "%",
+                      CityOfBirth: "Unknown",
+                      CtryOfBirth: "ZZ",
+                    },
+                    Othr: {
+                      Id: "%",
+                      SchmeNm: {
+                        Prtry: "TAZAMA_EID",
+                      },
+                    },
+                  },
+                },
+                CtctDtls: {
+                  MobNb: "%",
+                },
+              },
+              Dbtr: {
+                Nm: "%",
+                Id: {
+                  PrvtId: {
+                    DtAndPlcOfBirth: {
+                      BirthDt: "%",
+                      CityOfBirth: "Unknown",
+                      CtryOfBirth: "ZZ",
+                    },
+                    Othr: {
+                      Id: "%",
+                      SchmeNm: {
+                        Prtry: "TAZAMA_EID",
+                      },
+                    },
+                  },
+                },
+                CtctDtls: {
+                  MobNb: "%",
+                },
+              },
+              DbtrAcct: {
+                Id: {
+                  Othr: {
+                    Id: "%",
+
+                    SchmeNm: {
+                      Prtry: "Tazama_AID",
+                    },
+                  },
+                },
+                Nm: "%",
+              },
+              DbtrAgt: {
+                FinInstnId: {
+                  ClrSysMmbId: {
+                    MmbId: "dfsp001",
+                  },
+                },
+              },
+              CdtrAgt: {
+                FinInstnId: {
+                  ClrSysMmbId: {
+                    MmbId: "dfsp002",
+                  },
+                },
+              },
+              Cdtr: {
+                Nm: "%",
+                Id: {
+                  PrvtId: {
+                    DtAndPlcOfBirth: {
+                      BirthDt: "%",
+                      CityOfBirth: "Unknown",
+                      CtryOfBirth: "ZZ",
+                    },
+                    Othr: {
+                      Id: "%",
+                      SchmeNm: {
+                        Prtry: "TAZAMA_EID",
+                      },
+                    },
+                  },
+                },
+                CtctDtls: {
+                  MobNb: "%",
+                },
+              },
+              CdtrAcct: {
+                Id: {
+                  Othr: {
+                    Id: "%",
+                    SchmeNm: {
+                      Prtry: "Tazama_AID",
+                    },
+                  },
+                },
+                Nm: "%",
+              },
+              Purp: {
+                Cd: "%",
+              },
+            },
+            RgltryRptg: {
+              Dtls: {
+                Tp: "BALANCE OF PAYMENTS",
+                Cd: "100",
+              },
+            },
+            RmtInf: {
+              Ustrd: "%",
+            },
+            SplmtryData: {
+              Envlp: {
+                Doc: {
+                  Xprtn: "2021-11-30T10:38:56.000Z",
+                  InitgPty: {
+                    Glctn: {
+                      Lat: "%",
+                      Long: "%",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      }
 
     case ACTIONS.SET_CREDITOR_PACS008_LOADING:
       return {
@@ -315,6 +501,192 @@ const EntityReducer = (state: any, action: any) => {
         pacs008: action.payload,
       }
     case ACTIONS.SET_CREDITOR_PACS008_FAIL:
+      return {
+        ...state,
+        pacs008Loading: false,
+        pacs008: {
+          TxTp: "pacs.008.001.10",
+          FIToFICstmrCdt: {
+            GrpHdr: {
+              MsgId: "%",
+              CreDtTm: "%",
+              NbOfTxs: 1,
+              SttlmInf: {
+                SttlmMtd: "CLRG",
+              },
+            },
+            CdtTrfTxInf: {
+              PmtId: {
+                InstrId: "%",
+                EndToEndId: "%",
+              },
+              IntrBkSttlmAmt: {
+                Amt: {
+                  Amt: "%",
+                  Ccy: "USD",
+                },
+              },
+              InstdAmt: {
+                Amt: {
+                  Amt: "%",
+                  Ccy: "USD",
+                },
+              },
+              ChrgBr: "DEBT",
+              ChrgsInf: {
+                Amt: {
+                  Amt: 0.0,
+                  Ccy: "USD",
+                },
+                Agt: {
+                  FinInstnId: {
+                    ClrSysMmbId: {
+                      MmbId: "dfsp001",
+                    },
+                  },
+                },
+              },
+              InitgPty: {
+                Nm: "%",
+                Id: {
+                  PrvtId: {
+                    DtAndPlcOfBirth: {
+                      BirthDt: "%",
+                      CityOfBirth: "Unknown",
+                      CtryOfBirth: "ZZ",
+                    },
+                    Othr: {
+                      Id: "%",
+                      SchmeNm: {
+                        Prtry: "TAZAMA_EID",
+                      },
+                    },
+                  },
+                },
+                CtctDtls: {
+                  MobNb: "%",
+                },
+              },
+              Dbtr: {
+                Nm: "%",
+                Id: {
+                  PrvtId: {
+                    DtAndPlcOfBirth: {
+                      BirthDt: "%",
+                      CityOfBirth: "Unknown",
+                      CtryOfBirth: "ZZ",
+                    },
+                    Othr: {
+                      Id: "%",
+                      SchmeNm: {
+                        Prtry: "TAZAMA_EID",
+                      },
+                    },
+                  },
+                },
+                CtctDtls: {
+                  MobNb: "%",
+                },
+              },
+              DbtrAcct: {
+                Id: {
+                  Othr: {
+                    Id: "%",
+
+                    SchmeNm: {
+                      Prtry: "Tazama_AID",
+                    },
+                  },
+                },
+                Nm: "%",
+              },
+              DbtrAgt: {
+                FinInstnId: {
+                  ClrSysMmbId: {
+                    MmbId: "dfsp001",
+                  },
+                },
+              },
+              CdtrAgt: {
+                FinInstnId: {
+                  ClrSysMmbId: {
+                    MmbId: "dfsp002",
+                  },
+                },
+              },
+              Cdtr: {
+                Nm: "%",
+                Id: {
+                  PrvtId: {
+                    DtAndPlcOfBirth: {
+                      BirthDt: "%",
+                      CityOfBirth: "Unknown",
+                      CtryOfBirth: "ZZ",
+                    },
+                    Othr: {
+                      Id: "%",
+                      SchmeNm: {
+                        Prtry: "TAZAMA_EID",
+                      },
+                    },
+                  },
+                },
+                CtctDtls: {
+                  MobNb: "%",
+                },
+              },
+              CdtrAcct: {
+                Id: {
+                  Othr: {
+                    Id: "%",
+                    SchmeNm: {
+                      Prtry: "Tazama_AID",
+                    },
+                  },
+                },
+                Nm: "%",
+              },
+              Purp: {
+                Cd: "%",
+              },
+            },
+            RgltryRptg: {
+              Dtls: {
+                Tp: "BALANCE OF PAYMENTS",
+                Cd: "100",
+              },
+            },
+            RmtInf: {
+              Ustrd: "%",
+            },
+            SplmtryData: {
+              Envlp: {
+                Doc: {
+                  Xprtn: "2021-11-30T10:38:56.000Z",
+                  InitgPty: {
+                    Glctn: {
+                      Lat: "%",
+                      Long: "%",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      }
+    case ACTIONS.SET_CREDITOR_ACCOUNT_PACS008_LOADING:
+      return {
+        ...state,
+        pacs008Loading: true,
+      }
+    case ACTIONS.SET_CREDITOR_ACCOUNT_PACS008_SUCCESS:
+      return {
+        ...state,
+        pacs008Loading: false,
+        pacs008: action.payload,
+      }
+    case ACTIONS.SET_CREDITOR_ACCOUNT_PACS008_FAIL:
       return {
         ...state,
         pacs008Loading: false,

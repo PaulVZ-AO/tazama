@@ -1,23 +1,39 @@
 "use client"
 
-import { useContext, useEffect } from "react"
+import { useContext, useEffect, useState } from "react"
 import EntityContext from "store/entities/entity.context"
-import { DebtorAccount, DebtorEntity } from "store/entities/entity.interface"
+import { DebtorAccount, DebtorEntity, Entity } from "store/entities/entity.interface"
 
 export interface ProfileProps {
   reverse?: boolean
   colour?: string
   entity?: DebtorEntity
-  accounts?: Array<DebtorAccount> | null
+  accounts?: Array<DebtorAccount>
   selectedEntity: number
   setModalVisible: (value: boolean) => void
   setSelectedEntity: () => void
   addAccount: () => void
 }
 
-const AccountsComponent = () => {
+interface AccountProps {
+  index: number
+  selected: number
+  setSelected: (value: number) => void
+}
+
+const AccountsComponent = ({ index, selected, setSelected }: AccountProps) => {
+  const handleClick = () => {
+    if (selected !== index) {
+      console.log("handleClick: ", index)
+      setSelected(index)
+    }
+  }
   return (
-    <button>
+    <button
+      onClick={() => {
+        handleClick()
+      }}
+    >
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
         <path d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625Z" />
         <path d="M12.971 1.816A5.23 5.23 0 0 1 14.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 0 1 3.434 1.279 9.768 9.768 0 0 0-6.963-6.963Z" />
@@ -28,16 +44,11 @@ const AccountsComponent = () => {
 
 export const Profile = ({ ...props }: ProfileProps) => {
   const entityCtx = useContext(EntityContext)
-  const handleClick = async () => {
-    if (!props.entity && entityCtx.entities.length < 4) {
-      props.setSelectedEntity()
-      await entityCtx.createEntity()
-    }
-    if (props.entity !== undefined) {
-      props.setSelectedEntity()
-      props.setModalVisible(true)
-    }
-  }
+  const [selectedAccountIndex, setSelectedAccountIndex] = useState(0)
+
+  useEffect(() => {
+    entityCtx.setDebtorAccountPacs008(props.selectedEntity, selectedAccountIndex)
+  }, [selectedAccountIndex])
 
   useEffect(() => {}, [entityCtx.entities])
   let reverse = ""
@@ -45,9 +56,18 @@ export const Profile = ({ ...props }: ProfileProps) => {
     reverse = "flex-row-reverse text-right"
   }
 
-  const DebtorAccounts = props?.accounts?.map((account) => {
+  const DebtorAccounts = props?.accounts?.map((account, index) => {
     if (account !== null && account !== undefined) {
-      return <AccountsComponent key={crypto.randomUUID().replaceAll("-", "")} />
+      return (
+        <AccountsComponent
+          key={crypto.randomUUID().replaceAll("-", "")}
+          index={index}
+          selected={selectedAccountIndex}
+          setSelected={setSelectedAccountIndex}
+        />
+      )
+    } else {
+      return null
     }
   })
 

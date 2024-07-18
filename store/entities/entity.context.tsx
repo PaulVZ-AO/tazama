@@ -17,7 +17,9 @@ interface Context {
   updateCreditorEntity: (entity: CreditorEntity, entityIndex: number) => void
   createCreditorEntityAccount: (entityIndex: number) => void
   setDebtorPacs008: (entityIndex: number) => void
+  setDebtorAccountPacs008: (entityIndex: number, accountIndex: number) => void
   setCreditorPacs008: (entityIndex: number) => void
+  setCreditorAccountPacs008: (entityIndex: number, accountIndex: number) => void
 }
 
 const EntityContext = createContext<Context>({
@@ -204,7 +206,9 @@ const EntityContext = createContext<Context>({
   updateCreditorEntity: () => {},
   createCreditorEntityAccount: () => {},
   setDebtorPacs008: () => {},
+  setDebtorAccountPacs008: () => {},
   setCreditorPacs008: () => {},
+  setCreditorAccountPacs008: () => {},
 })
 
 export default EntityContext

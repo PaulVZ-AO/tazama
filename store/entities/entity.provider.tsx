@@ -455,7 +455,7 @@ const EntityProvider = ({ children }: Props) => {
     }
   }
 
-  const setDebtorPacs008 = (entityIndex: number) => {
+  const setDebtorPacs008 = async (entityIndex: number) => {
     try {
       dispatch({ type: ACTIONS.SET_DEBTOR_PACS008_LOADING })
       const debtor: Entity = state.entities[entityIndex]
@@ -492,7 +492,23 @@ const EntityProvider = ({ children }: Props) => {
     }
   }
 
-  const setCreditorPacs008 = (entityIndex: number) => {
+  const setDebtorAccountPacs008 = (entityIndex: number, accountIndex: number) => {
+    try {
+      dispatch({ type: ACTIONS.SET_DEBTOR_ACCOUNT_PACS008_LOADING })
+      const debtor: Entity = state.entities[entityIndex]
+      console.log("DEBTOR: ", debtor)
+      const setPacs008: PACS008 = state.pacs008
+
+      setPacs008.FIToFICstmrCdt.CdtTrfTxInf.DbtrAcct = { ...debtor.Accounts[accountIndex].DbtrAcct }
+
+      dispatch({ type: ACTIONS.SET_DEBTOR_ACCOUNT_PACS008_SUCCESS, payload: setPacs008 })
+      console.log("PACS008: ", setPacs008)
+    } catch (error) {
+      dispatch({ type: ACTIONS.SET_DEBTOR_ACCOUNT_PACS008_FAIL })
+    }
+  }
+
+  const setCreditorPacs008 = async (entityIndex: number) => {
     try {
       dispatch({ type: ACTIONS.SET_CREDITOR_PACS008_LOADING })
       const creditor: CdtrEntity = state.creditorEntities[entityIndex]
@@ -515,6 +531,22 @@ const EntityProvider = ({ children }: Props) => {
     }
   }
 
+  const setCreditorAccountPacs008 = (entityIndex: number, accountIndex: number) => {
+    try {
+      dispatch({ type: ACTIONS.SET_CREDITOR_ACCOUNT_PACS008_LOADING })
+      const creditor: CdtrEntity = state.creditorEntities[entityIndex]
+      console.log("CREDITOR: ", creditor)
+      const setPacs008: PACS008 = state.pacs008
+
+      setPacs008.FIToFICstmrCdt.CdtTrfTxInf.CdtrAcct = { ...creditor.CreditorAccounts[accountIndex].CdtrAcct }
+
+      dispatch({ type: ACTIONS.SET_CREDITOR_ACCOUNT_PACS008_SUCCESS, payload: setPacs008 })
+      console.log("PACS008: ", setPacs008)
+    } catch (error) {
+      dispatch({ type: ACTIONS.SET_CREDITOR_ACCOUNT_PACS008_FAIL })
+    }
+  }
+
   return (
     <EntityContext.Provider
       value={{
@@ -533,7 +565,9 @@ const EntityProvider = ({ children }: Props) => {
         updateCreditorEntity,
         createCreditorEntityAccount,
         setDebtorPacs008,
+        setDebtorAccountPacs008,
         setCreditorPacs008,
+        setCreditorAccountPacs008,
       }}
     >
       {children}
