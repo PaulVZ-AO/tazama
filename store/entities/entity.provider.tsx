@@ -43,6 +43,7 @@ const EntityProvider = ({ children }: Props) => {
       state.selectedDebtorEntity.debtorSelectedIndex,
       state.selectedDebtorEntity.debtorAccountSelectedIndex
     )
+    // await generateTransaction()
     console.log("handleDebtorEntityChange Done")
     console.log("PACS008: ", state.pacs008)
   }
@@ -54,6 +55,7 @@ const EntityProvider = ({ children }: Props) => {
       state.selectedCreditorEntity.creditorSelectedIndex,
       state.selectedCreditorEntity.creditorAccountSelectedIndex
     )
+    // await generateTransaction()
     console.log("handleCreditorEntityChange Done")
     console.log("PACS008: ", state.pacs008)
   }
