@@ -1,5 +1,13 @@
 import { createContext } from "react"
-import { CdtrEntity, CreditorEntity, DebtorEntity, Entity, PACS008 } from "./entity.interface"
+import {
+  CdtrEntity,
+  CreditorEntity,
+  DebtorEntity,
+  Entity,
+  PACS008,
+  SelectedCreditor,
+  SelectedDebtor,
+} from "./entity.interface"
 
 interface Context {
   createEntityLoading: boolean
@@ -10,6 +18,10 @@ interface Context {
   entities: Array<Entity>
   pacs008Loading: boolean
   pacs008: PACS008
+  selectedDebtorEntity: SelectedDebtor
+  selectedCreditorEntity: SelectedCreditor
+  selectDebtorEntity: (index: number, accountIndex: number) => void
+  selectCreditorEntity: (index: number, accountIndex: number) => void
   createEntity: () => void
   updateEntity: (entity: DebtorEntity, entityIndex: number) => void
   createEntityAccount: (entityIndex: number) => void
@@ -20,6 +32,7 @@ interface Context {
   setDebtorAccountPacs008: (entityIndex: number, accountIndex: number) => void
   setCreditorPacs008: (entityIndex: number) => void
   setCreditorAccountPacs008: (entityIndex: number, accountIndex: number) => void
+  generateTransaction: () => void
 }
 
 const EntityContext = createContext<Context>({
@@ -209,6 +222,7 @@ const EntityContext = createContext<Context>({
   setDebtorAccountPacs008: () => {},
   setCreditorPacs008: () => {},
   setCreditorAccountPacs008: () => {},
+  generateTransaction: () => {},
 })
 
 export default EntityContext

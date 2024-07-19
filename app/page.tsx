@@ -172,8 +172,8 @@ export default function Web() {
   const [types, setTypes] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [selectedEntity, setSelectedEntity] = useState<number | any>(0)
-  const [selectedCreditorEntity, setSelectedCreditorEntity] = useState<number | any>(0)
+  const [selectedEntity, setSelectedEntity] = useState<number>(0)
+  const [selectedCreditorEntity, setSelectedCreditorEntity] = useState<number>(0)
 
   useEffect(() => {
     axios
@@ -202,8 +202,11 @@ export default function Web() {
   }, [])
   useEffect(() => {
     console.log("SELECTED ENTITY: ", selectedEntity)
+  }, [selectedEntity])
+
+  useEffect(() => {
     console.log("SELECTED CREDITOR ENTITY: ", selectedCreditorEntity)
-  }, [selectedEntity, selectedCreditorEntity])
+  }, [selectedCreditorEntity])
 
   useEffect(() => {
     console.log("DEBTORS: ", entityCtx.entities)
@@ -228,44 +231,52 @@ export default function Web() {
               colour={!entityCtx.entities[0] ? "text-gray-300" : "text-blue-300"}
               entity={entityCtx.entities[0]?.Entity}
               accounts={entityCtx.entities[0]?.Accounts}
+              index={0}
               setModalVisible={setModal}
               setSelectedEntity={() => setSelectedEntity(0)}
               selectedEntity={selectedEntity}
               addAccount={async () => {
                 await entityCtx.createEntityAccount(0)
+                setSelectedEntity(0)
               }}
             />
             <Profile
               colour={!entityCtx.entities[1] ? "text-gray-300" : "text-green-600"}
               entity={entityCtx.entities[1]?.Entity}
               accounts={entityCtx.entities[1]?.Accounts}
+              index={1}
               setModalVisible={setModal}
               setSelectedEntity={() => setSelectedEntity(1)}
               selectedEntity={selectedEntity}
               addAccount={async () => {
                 await entityCtx.createEntityAccount(1)
+                setSelectedEntity(1)
               }}
             />
             <Profile
               colour={!entityCtx.entities[2] ? "text-gray-300" : "text-yellow-400"}
               entity={entityCtx.entities[2]?.Entity}
               accounts={entityCtx.entities[2]?.Accounts}
+              index={2}
               setModalVisible={setModal}
               setSelectedEntity={() => setSelectedEntity(2)}
               selectedEntity={selectedEntity}
               addAccount={async () => {
                 await entityCtx.createEntityAccount(2)
+                setSelectedEntity(2)
               }}
             />
             <Profile
               colour={!entityCtx.entities[3] ? "text-gray-300" : "text-orange-600"}
               entity={entityCtx.entities[3]?.Entity}
               accounts={entityCtx.entities[3]?.Accounts}
+              index={3}
               setModalVisible={setModal}
               setSelectedEntity={() => setSelectedEntity(3)}
               selectedEntity={selectedEntity}
               addAccount={async () => {
                 await entityCtx.createEntityAccount(3)
+                setSelectedEntity(3)
               }}
             />
           </div>
@@ -313,9 +324,17 @@ export default function Web() {
               creditorAccounts={entityCtx.creditorEntities[0]?.CreditorAccounts}
               setModalVisible={setModal}
               setSelectedEntity={() => setSelectedCreditorEntity(0)}
+              index={0}
               selectedEntity={selectedCreditorEntity}
               addAccount={async () => {
                 await entityCtx.createCreditorEntityAccount(0)
+                if (entityCtx.entities[0]?.Accounts.length !== -1 && entityCtx.entities[0]?.Accounts !== undefined) {
+                  let idx = 0
+                  if (entityCtx.entities[0]?.Accounts.length !== -1) {
+                    idx = entityCtx.entities[0]?.Accounts.length - 1
+                  }
+                  await entityCtx.setCreditorAccountPacs008(0, idx)
+                }
               }}
             />
             <CreditorProfile
@@ -325,9 +344,17 @@ export default function Web() {
               creditorAccounts={entityCtx.creditorEntities[1]?.CreditorAccounts}
               setModalVisible={setModal}
               setSelectedEntity={() => setSelectedCreditorEntity(1)}
+              index={1}
               selectedEntity={selectedCreditorEntity}
               addAccount={async () => {
                 await entityCtx.createCreditorEntityAccount(1)
+                if (entityCtx.entities[1]?.Accounts.length !== -1 && entityCtx.entities[1]?.Accounts !== undefined) {
+                  let idx = 0
+                  if (entityCtx.entities[1]?.Accounts.length !== -1) {
+                    idx = entityCtx.entities[1]?.Accounts.length - 1
+                  }
+                  await entityCtx.setCreditorAccountPacs008(1, idx)
+                }
               }}
             />
             <CreditorProfile
@@ -337,9 +364,17 @@ export default function Web() {
               creditorAccounts={entityCtx.creditorEntities[2]?.CreditorAccounts}
               setModalVisible={setModal}
               setSelectedEntity={() => setSelectedCreditorEntity(2)}
+              index={2}
               selectedEntity={selectedCreditorEntity}
               addAccount={async () => {
                 await entityCtx.createCreditorEntityAccount(2)
+                if (entityCtx.entities[2]?.Accounts.length !== -1 && entityCtx.entities[2]?.Accounts !== undefined) {
+                  let idx = 0
+                  if (entityCtx.entities[2]?.Accounts.length !== -1) {
+                    idx = entityCtx.entities[2]?.Accounts.length - 1
+                  }
+                  await entityCtx.setCreditorAccountPacs008(2, idx)
+                }
               }}
             />
             <CreditorProfile
@@ -349,9 +384,17 @@ export default function Web() {
               creditorAccounts={entityCtx.creditorEntities[3]?.CreditorAccounts}
               setModalVisible={setModal}
               setSelectedEntity={() => setSelectedCreditorEntity(3)}
+              index={3}
               selectedEntity={selectedCreditorEntity}
               addAccount={async () => {
                 await entityCtx.createCreditorEntityAccount(3)
+                if (entityCtx.entities[3]?.Accounts.length !== -1 && entityCtx.entities[3]?.Accounts !== undefined) {
+                  let idx = 0
+                  if (entityCtx.entities[3]?.Accounts.length !== -1) {
+                    idx = entityCtx.entities[3]?.Accounts.length - 1
+                  }
+                  await entityCtx.setCreditorAccountPacs008(3, idx)
+                }
               }}
             />
           </div>

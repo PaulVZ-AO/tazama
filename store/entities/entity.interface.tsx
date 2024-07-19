@@ -256,3 +256,15 @@ export interface PACS008 {
     }
   }
 }
+
+export interface SelectedDebtor {
+  debtorSelectedIndex: number | undefined
+  debtorAccountsLength: number | undefined
+  debtorAccountSelectedIndex: number | undefined
+}
+
+export interface SelectedCreditor {
+  creditorSelectedIndex: number | undefined
+  creditorAccountsLength: number | undefined
+  creditorAccountSelectedIndex: number | undefined
+}

@@ -47,8 +47,16 @@ export const CreditorProfile = ({ ...props }: ProfileProps) => {
   const [selectedAccountIndex, setSelectedAccountIndex] = useState(0)
 
   useEffect(() => {
-    entityCtx.setCreditorAccountPacs008(props.selectedEntity, selectedAccountIndex)
+    if (entityCtx.creditorEntities.length > 0) {
+      entityCtx.setCreditorAccountPacs008(props.selectedEntity, selectedAccountIndex)
+    }
   }, [selectedAccountIndex])
+
+  useEffect(() => {
+    if (entityCtx.creditorEntities.length > 0) {
+      entityCtx.setCreditorPacs008(props.selectedEntity)
+    }
+  }, [props.selectedEntity])
 
   useEffect(() => {}, [entityCtx.entities])
   let reverse = ""
@@ -74,7 +82,7 @@ export const CreditorProfile = ({ ...props }: ProfileProps) => {
       <button
         className="text-black"
         onClick={async () => {
-          if (!props.entity && entityCtx.creditorEntities.length < 4) {
+          if (!props.entity && entityCtx.creditorEntities?.length < 4) {
             props.setSelectedEntity()
             await entityCtx.createCreditorEntity()
             await entityCtx.setCreditorPacs008(props.selectedEntity)
