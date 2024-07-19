@@ -1,5 +1,5 @@
 "use client"
-import React, { ReactNode, useReducer } from "react"
+import React, { ReactNode, useReducer, useEffect } from "react"
 import { ACTIONS } from "./entity.actions"
 import EntityContext from "./entity.context"
 import { creditorInitialState, debtorInitialState, pacs008InitialState } from "./entity.initialState"
@@ -34,8 +34,48 @@ const EntityProvider = ({ children }: Props) => {
     selectedCreditorEntity: creditorInitialState,
     pacs008: pacs008InitialState,
   }
-
   const [state, dispatch] = useReducer(EntityReducer, initialEntityState)
+
+  const handleDebtorEntityChange = async () => {
+    console.log("handleDebtorEntityChange Active")
+    await setDebtorPacs008(state.selectedDebtorEntity.debtorSelectedIndex)
+    await setDebtorAccountPacs008(
+      state.selectedDebtorEntity.debtorSelectedIndex,
+      state.selectedDebtorEntity.debtorAccountSelectedIndex
+    )
+    console.log("handleDebtorEntityChange Done")
+    console.log("PACS008: ", state.pacs008)
+  }
+
+  const handleCreditorEntityChange = async () => {
+    console.log("handleCreditorEntityChange Active")
+    await setCreditorPacs008(state.selectedCreditorEntity.creditorSelectedIndex)
+    await setCreditorAccountPacs008(
+      state.selectedCreditorEntity.creditorSelectedIndex,
+      state.selectedCreditorEntity.creditorAccountSelectedIndex
+    )
+    console.log("handleCreditorEntityChange Done")
+    console.log("PACS008: ", state.pacs008)
+  }
+
+  useEffect(() => {
+    if (state.selectedDebtorEntity.debtorSelectedIndex !== undefined) {
+      console.log("Selected Debtor Changed: ", state.selectedDebtorEntity)
+      if (state.entities.length > 0) {
+        handleDebtorEntityChange()
+      }
+    }
+  }, [state.selectedDebtorEntity.debtorSelectedIndex, state.selectedDebtorEntity.debtorAccountSelectedIndex])
+
+  useEffect(() => {
+    if (state.selectedCreditorEntity.creditorSelectedIndex !== undefined) {
+      console.log("Selected Creditor Changed: ", state.selectedCreditorEntity)
+
+      if (state.creditorEntities.length > 0) {
+        handleCreditorEntityChange()
+      }
+    }
+  }, [state.selectedCreditorEntity.creditorSelectedIndex, state.selectedCreditorEntity.creditorAccountSelectedIndex])
 
   const selectDebtorEntity = async (index: number = 0, accountIndex: number = 0) => {
     try {
@@ -46,6 +86,9 @@ const EntityProvider = ({ children }: Props) => {
         selectedDebtor.debtorAccountSelectedIndex = accountIndex
         selectedDebtor.debtorAccountsLength = accountsLength
         dispatch({ type: ACTIONS.SELECT_DEBTOR_ENTITY, payload: selectedDebtor })
+        console.log("############# DEBTOR RESULT #############")
+        console.log("SELECTED DEBTOR: ", selectedDebtor)
+        console.log("############## END RESULT ##############")
       }
     } catch (error) {
       console.log(error)
@@ -447,6 +490,8 @@ const EntityProvider = ({ children }: Props) => {
         creditorEntities: state.creditorEntities,
         entities: state.entities,
         pacs008: state.pacs008,
+        selectedDebtorEntity: state.selectedDebtorEntity,
+        selectedCreditorEntity: state.selectedCreditorEntity,
         selectDebtorEntity,
         selectCreditorEntity,
         createEntity,

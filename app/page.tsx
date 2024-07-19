@@ -237,7 +237,7 @@ export default function Web() {
               selectedEntity={selectedEntity}
               addAccount={async () => {
                 await entityCtx.createEntityAccount(0)
-                setSelectedEntity(0)
+                await entityCtx.selectDebtorEntity(0, 0)
               }}
             />
             <Profile
@@ -250,7 +250,7 @@ export default function Web() {
               selectedEntity={selectedEntity}
               addAccount={async () => {
                 await entityCtx.createEntityAccount(1)
-                setSelectedEntity(1)
+                await entityCtx.selectDebtorEntity(1, 0)
               }}
             />
             <Profile
@@ -263,7 +263,7 @@ export default function Web() {
               selectedEntity={selectedEntity}
               addAccount={async () => {
                 await entityCtx.createEntityAccount(2)
-                setSelectedEntity(2)
+                await entityCtx.selectDebtorEntity(2, 0)
               }}
             />
             <Profile
@@ -276,7 +276,7 @@ export default function Web() {
               selectedEntity={selectedEntity}
               addAccount={async () => {
                 await entityCtx.createEntityAccount(3)
-                setSelectedEntity(3)
+                await entityCtx.selectDebtorEntity(3, 0)
               }}
             />
           </div>

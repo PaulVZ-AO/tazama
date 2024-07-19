@@ -24,8 +24,12 @@ interface AccountProps {
   setSelectedEntity: (value: number) => void
 }
 
-const AccountsComponent = ({ index, selected, setSelected, selectedEntityIndex, setSelectedEntity }: AccountProps) => {
-  const handleClick = () => {
+const AccountsComponent = ({ index, setSelected, selectedEntityIndex, setSelectedEntity }: AccountProps) => {
+  const entCtx = useContext(EntityContext)
+  const handleClick = async () => {
+    console.log("############## DEBTOR SELECTION TEST START #############")
+    await entCtx.selectDebtorEntity(selectedEntityIndex, index)
+    console.log("############### DEBTOR SELECTION TEST END ##############")
     setSelectedEntity(selectedEntityIndex)
     console.log("ACCOUNT INDEX CLICKED: ", index)
     setSelected(index)
@@ -54,14 +58,14 @@ export const Profile = ({ ...props }: ProfileProps) => {
   //   }
   // }, [selectedAccountIndex])
 
-  useEffect(() => {
-    if (entityCtx.entities.length > 0) {
-      entityCtx.setDebtorPacs008(props.selectedEntity)
-      entityCtx.setDebtorAccountPacs008(props.selectedEntity, selectedAccountIndex)
-    }
-  }, [props.selectedEntity, selectedAccountIndex])
+  // useEffect(() => {
+  //   if (entityCtx.entities.length > 0) {
+  //     entityCtx.setDebtorPacs008(props.selectedEntity)
+  //     entityCtx.setDebtorAccountPacs008(props.selectedEntity, selectedAccountIndex)
+  //   }
+  // }, [props.selectedEntity, selectedAccountIndex])
 
-  useEffect(() => {}, [entityCtx.entities])
+  // useEffect(() => {}, [entityCtx.entities])
   let reverse = ""
   if (props.reverse) {
     reverse = "flex-row-reverse text-right"
@@ -126,7 +130,8 @@ export const Profile = ({ ...props }: ProfileProps) => {
           console.log("ABOUT TO CALL THE setDebtorPacs008")
           setSelectedAccountIndex(0)
           if (entityCtx.entities[props.selectedEntity]) {
-            await entityCtx.setDebtorPacs008(props.selectedEntity)
+            await entityCtx.selectDebtorEntity(props.index, 0)
+            //   await entityCtx.setDebtorPacs008(props.selectedEntity)
           }
         }}
       >

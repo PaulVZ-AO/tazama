@@ -10,6 +10,7 @@ export interface ProfileProps {
   entity?: CreditorEntity | null
   creditorAccounts?: Array<CreditorAccount> | null
   selectedEntity: number
+  index: number
   setModalVisible: (value: boolean) => void
   setSelectedEntity: () => void
   addAccount: () => void
@@ -19,14 +20,19 @@ interface AccountProps {
   index: number
   selected: number
   setSelected: (value: number) => void
+  selectedEntityIndex: number
+  setSelectedEntity: (value: number) => void
 }
 
-const CreditorAccountsComponent = ({ index, selected, setSelected }: AccountProps) => {
-  const handleClick = () => {
-    if (selected !== index) {
-      console.log("handleClick: ", index)
-      setSelected(index)
-    }
+const CreditorAccountsComponent = ({ index, setSelected, selectedEntityIndex, setSelectedEntity }: AccountProps) => {
+  const entCtx = useContext(EntityContext)
+  const handleClick = async () => {
+    console.log("############## CREDITOR SELECTION TEST START #############")
+    await entCtx.selectCreditorEntity(selectedEntityIndex, index)
+    console.log("############### CREDITOR SELECTION TEST END ##############")
+    setSelectedEntity(selectedEntityIndex)
+    console.log("ACCOUNT INDEX CLICKED: ", index)
+    setSelected(index)
   }
   return (
     <button
@@ -46,19 +52,19 @@ export const CreditorProfile = ({ ...props }: ProfileProps) => {
   const entityCtx = useContext(EntityContext)
   const [selectedAccountIndex, setSelectedAccountIndex] = useState(0)
 
-  useEffect(() => {
-    if (entityCtx.creditorEntities.length > 0) {
-      entityCtx.setCreditorAccountPacs008(props.selectedEntity, selectedAccountIndex)
-    }
-  }, [selectedAccountIndex])
+  // useEffect(() => {
+  //   if (entityCtx.creditorEntities.length > 0) {
+  //     entityCtx.setCreditorAccountPacs008(props.selectedEntity, selectedAccountIndex)
+  //   }
+  // }, [selectedAccountIndex])
 
-  useEffect(() => {
-    if (entityCtx.creditorEntities.length > 0) {
-      entityCtx.setCreditorPacs008(props.selectedEntity)
-    }
-  }, [props.selectedEntity])
+  // useEffect(() => {
+  //   if (entityCtx.creditorEntities.length > 0) {
+  //     entityCtx.setCreditorPacs008(props.selectedEntity)
+  //   }
+  // }, [props.selectedEntity])
 
-  useEffect(() => {}, [entityCtx.entities])
+  // useEffect(() => {}, [entityCtx.entities])
   let reverse = ""
   if (props.reverse) {
     reverse = "flex-row-reverse text-right"
@@ -71,6 +77,8 @@ export const CreditorProfile = ({ ...props }: ProfileProps) => {
         index={index}
         selected={selectedAccountIndex}
         setSelected={setSelectedAccountIndex}
+        selectedEntityIndex={props.index}
+        setSelectedEntity={props.setSelectedEntity}
       />
     )
   })
@@ -115,7 +123,10 @@ export const CreditorProfile = ({ ...props }: ProfileProps) => {
           props.setSelectedEntity()
           console.log("SELECTED INDEX: " + props.selectedEntity)
           console.log("ABOUT TO CALL THE setCreditorPacs008")
-          await entityCtx.setCreditorPacs008(props.selectedEntity)
+          if (entityCtx.entities[props.selectedEntity]) {
+            await entityCtx.selectCreditorEntity(props.index, 0)
+            // await entityCtx.setCreditorPacs008(props.selectedEntity)
+          }
         }}
       >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
