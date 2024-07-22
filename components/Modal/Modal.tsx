@@ -259,6 +259,18 @@ export function Modal(props: Props) {
               {/* box-shadow: inset 20px 20px 60px #bebebe,
             inset -20px -20px 60px #ffffff; */}
 
+<div className="col-span-12 m-5">
+  <h5>Accounts</h5>
+
+  Loop through the account details.
+  <div>
+    <label htmlFor="modal-ID">name</label>
+  </div>
+  {/* read only */}
+  Id
+  Prtry
+</div>
+
               <div className="col-span-6 m-5">
                 <button
                   type="button"
