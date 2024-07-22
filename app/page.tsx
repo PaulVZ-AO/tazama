@@ -11,8 +11,8 @@ import { StatusIndicator } from "components/StatusIndicator/StatusIndicator"
 import EntityContext from "store/entities/entity.context"
 
 export default function Web() {
-  const [hoveredRule, setHoveredRule] = useState(null)
-  const [hoveredType, setHoveredType] = useState(null)
+  const [hoveredRule, setHoveredRule] = useState<any>(null)
+  const [hoveredType, setHoveredType] = useState<any>(null)
   const [showModal, setModal] = useState(false)
   const entityCtx = useContext(EntityContext)
 
@@ -168,9 +168,9 @@ export default function Web() {
     )
   }
 
-  const [rules, setRules] = useState(null)
-  const [types, setTypes] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [rules, setRules] = useState<any[] | null>(null)
+  const [types, setTypes] = useState<any[] | null>(null)
+  const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState(null)
   const [selectedEntity, setSelectedEntity] = useState<number>(0)
   const [selectedCreditorEntity, setSelectedCreditorEntity] = useState<number>(0)
@@ -422,7 +422,7 @@ export default function Web() {
             <div className="col-span-6">
               <div className="grid grid-cols-3 px-5">
                 {rules &&
-                  rules.map((rule: any) => (
+                  rules?.map((rule: any) => (
                     <div className={`mb-1 flex rounded-md px-2 hover:bg-gray-200 hover:shadow`} key={`r-${rule.id}`}>
                       <StatusIndicator /> &nbsp;
                       {rule.title}
