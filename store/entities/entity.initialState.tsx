@@ -13,7 +13,7 @@ export const debtorInitialState: SelectedDebtor = {
 
 export const pacs008InitialState: PACS008 = {
   TxTp: "pacs.008.001.10",
-  FIToFICstmrCdt: {
+  FIToFICstmrCdtTrf: {
     GrpHdr: {
       MsgId: "%",
       CreDtTm: "%",
@@ -29,13 +29,13 @@ export const pacs008InitialState: PACS008 = {
       },
       IntrBkSttlmAmt: {
         Amt: {
-          Amt: "%",
+          Amt: 0,
           Ccy: "USD",
         },
       },
       InstdAmt: {
         Amt: {
-          Amt: "%",
+          Amt: 0,
           Ccy: "USD",
         },
       },
@@ -62,12 +62,14 @@ export const pacs008InitialState: PACS008 = {
               CityOfBirth: "Unknown",
               CtryOfBirth: "ZZ",
             },
-            Othr: {
-              Id: "%",
-              SchmeNm: {
-                Prtry: "TAZAMA_EID",
+            Othr: [
+              {
+                Id: "%",
+                SchmeNm: {
+                  Prtry: "TAZAMA_EID",
+                },
               },
-            },
+            ],
           },
         },
         CtctDtls: {
@@ -83,12 +85,14 @@ export const pacs008InitialState: PACS008 = {
               CityOfBirth: "Unknown",
               CtryOfBirth: "ZZ",
             },
-            Othr: {
-              Id: "%",
-              SchmeNm: {
-                Prtry: "TAZAMA_EID",
+            Othr: [
+              {
+                Id: "%",
+                SchmeNm: {
+                  Prtry: "TAZAMA_EID",
+                },
               },
-            },
+            ],
           },
         },
         CtctDtls: {
@@ -97,13 +101,15 @@ export const pacs008InitialState: PACS008 = {
       },
       DbtrAcct: {
         Id: {
-          Othr: {
-            Id: "%",
+          Othr: [
+            {
+              Id: "%",
 
-            SchmeNm: {
-              Prtry: "Tazama_AID",
+              SchmeNm: {
+                Prtry: "Tazama_AID",
+              },
             },
-          },
+          ],
         },
         Nm: "%",
       },
@@ -130,12 +136,14 @@ export const pacs008InitialState: PACS008 = {
               CityOfBirth: "Unknown",
               CtryOfBirth: "ZZ",
             },
-            Othr: {
-              Id: "%",
-              SchmeNm: {
-                Prtry: "TAZAMA_EID",
+            Othr: [
+              {
+                Id: "%",
+                SchmeNm: {
+                  Prtry: "TAZAMA_EID",
+                },
               },
-            },
+            ],
           },
         },
         CtctDtls: {
@@ -144,12 +152,14 @@ export const pacs008InitialState: PACS008 = {
       },
       CdtrAcct: {
         Id: {
-          Othr: {
-            Id: "%",
-            SchmeNm: {
-              Prtry: "Tazama_AID",
+          Othr: [
+            {
+              Id: "%",
+              SchmeNm: {
+                Prtry: "Tazama_AID",
+              },
             },
-          },
+          ],
         },
         Nm: "%",
       },

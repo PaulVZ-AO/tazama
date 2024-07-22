@@ -127,12 +127,14 @@ const EntityProvider = ({ children }: Props) => {
                 CityOfBirth: "Unknown",
                 CtryOfBirth: "ZZ",
               },
-              Othr: {
-                Id: crypto.randomUUID().replaceAll("-", ""),
-                SchmeNm: {
-                  Prtry: "TAZAMA_EID",
+              Othr: [
+                {
+                  Id: crypto.randomUUID().replaceAll("-", ""),
+                  SchmeNm: {
+                    Prtry: "TAZAMA_EID",
+                  },
                 },
-              },
+              ],
             },
           },
           CtctDtls: { MobNb: await RandomCellNumber() },
@@ -142,13 +144,15 @@ const EntityProvider = ({ children }: Props) => {
       const newAccount: DebtorAccount = {
         DbtrAcct: {
           Id: {
-            Othr: {
-              Id: crypto.randomUUID().replaceAll("-", ""),
+            Othr: [
+              {
+                Id: crypto.randomUUID().replaceAll("-", ""),
 
-              SchmeNm: {
-                Prtry: "TAZAMA_EID",
+                SchmeNm: {
+                  Prtry: "TAZAMA_EID",
+                },
               },
-            },
+            ],
           },
           Nm: newEntity.Dbtr.Nm.split(" ")[0] + "'s first account",
         },
@@ -210,13 +214,15 @@ const EntityProvider = ({ children }: Props) => {
       const newAccount: DebtorAccount = {
         DbtrAcct: {
           Id: {
-            Othr: {
-              Id: crypto.randomUUID().replaceAll("-", ""),
+            Othr: [
+              {
+                Id: crypto.randomUUID().replaceAll("-", ""),
 
-              SchmeNm: {
-                Prtry: "TAZAMA_EID",
+                SchmeNm: {
+                  Prtry: "TAZAMA_EID",
+                },
               },
-            },
+            ],
           },
           Nm: AccountName(),
         },
@@ -253,12 +259,14 @@ const EntityProvider = ({ children }: Props) => {
                 CityOfBirth: "Unknown",
                 CtryOfBirth: "ZZ",
               },
-              Othr: {
-                Id: crypto.randomUUID().replaceAll("-", ""),
-                SchmeNm: {
-                  Prtry: "TAZAMA_EID",
+              Othr: [
+                {
+                  Id: crypto.randomUUID().replaceAll("-", ""),
+                  SchmeNm: {
+                    Prtry: "TAZAMA_EID",
+                  },
                 },
-              },
+              ],
             },
           },
           CtctDtls: { MobNb: await RandomCellNumber() },
@@ -268,13 +276,15 @@ const EntityProvider = ({ children }: Props) => {
       const newAccount: CreditorAccount = {
         CdtrAcct: {
           Id: {
-            Othr: {
-              Id: crypto.randomUUID().replaceAll("-", ""),
+            Othr: [
+              {
+                Id: crypto.randomUUID().replaceAll("-", ""),
 
-              SchmeNm: {
-                Prtry: "TAZAMA_EID",
+                SchmeNm: {
+                  Prtry: "TAZAMA_EID",
+                },
               },
-            },
+            ],
           },
           Nm: newEntity.Cdtr.Nm.split(" ")[0] + "'s first account",
         },
@@ -336,13 +346,15 @@ const EntityProvider = ({ children }: Props) => {
       const newAccount: CreditorAccount = {
         CdtrAcct: {
           Id: {
-            Othr: {
-              Id: crypto.randomUUID().replaceAll("-", ""),
+            Othr: [
+              {
+                Id: crypto.randomUUID().replaceAll("-", ""),
 
-              SchmeNm: {
-                Prtry: "TAZAMA_EID",
+                SchmeNm: {
+                  Prtry: "TAZAMA_EID",
+                },
               },
-            },
+            ],
           },
           Nm: AccountName(),
         },
@@ -372,28 +384,39 @@ const EntityProvider = ({ children }: Props) => {
       const debtor: Entity = state.entities[entityIndex]
       const setPacs008: PACS008 = state.pacs008
 
+      // TO BE SET WHEN THE BUTTON SEND IS CLICKED!!!
+      // Move to a send function TODO!!!
+      setPacs008.FIToFICstmrCdtTrf.GrpHdr.MsgId = crypto.randomUUID().replaceAll("-", "")
+      setPacs008.FIToFICstmrCdtTrf.GrpHdr.CreDtTm = new Date().toISOString()
+
       // Set Debtor Details
-      setPacs008.FIToFICstmrCdt.CdtTrfTxInf.Dbtr.Nm = debtor.Entity.Dbtr.Nm
-      setPacs008.FIToFICstmrCdt.CdtTrfTxInf.Dbtr.Id.PrvtId = { ...debtor.Entity.Dbtr.Id.PrvtId }
-      setPacs008.FIToFICstmrCdt.CdtTrfTxInf.Dbtr.CtctDtls = { ...debtor.Entity.Dbtr.CtctDtls }
-      setPacs008.FIToFICstmrCdt.CdtTrfTxInf.PmtId.EndToEndId = crypto.randomUUID().replaceAll("-", "")
+      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.InitgPty.Nm = debtor.Entity.Dbtr.Nm
+      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.InitgPty.Id.PrvtId = { ...debtor.Entity.Dbtr.Id.PrvtId }
+      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.InitgPty.CtctDtls = { ...debtor.Entity.Dbtr.CtctDtls }
+
+      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.Dbtr.Nm = debtor.Entity.Dbtr.Nm
+      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.Dbtr.Id.PrvtId = { ...debtor.Entity.Dbtr.Id.PrvtId }
+      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.Dbtr.CtctDtls = { ...debtor.Entity.Dbtr.CtctDtls }
+      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.InstrId = crypto.randomUUID().replaceAll("-", "")
+      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.EndToEndId = crypto.randomUUID().replaceAll("-", "")
 
       // Set Debtor Account Details
 
       if (debtor.Accounts[0] !== undefined) {
-        setPacs008.FIToFICstmrCdt.CdtTrfTxInf.DbtrAcct = { ...debtor.Accounts[0].DbtrAcct }
+        setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.DbtrAcct = { ...debtor.Accounts[0].DbtrAcct }
       }
 
       // Set Random Details
-      setPacs008.FIToFICstmrCdt.RmtInf.Ustrd = crypto.randomUUID().replaceAll("-", "")
-      setPacs008.FIToFICstmrCdt.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt = RandomNumbers()
-      setPacs008.FIToFICstmrCdt.CdtTrfTxInf.InstdAmt.Amt.Amt =
-        setPacs008.FIToFICstmrCdt.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt
+      setPacs008.FIToFICstmrCdtTrf.RmtInf.Ustrd = crypto.randomUUID().replaceAll("-", "")
+      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt = RandomNumbers()
+      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.InstdAmt.Amt.Amt =
+        setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt
 
       // Set Defaults
-      setPacs008.FIToFICstmrCdt.CdtTrfTxInf.Purp.Cd = "MP2P"
-      setPacs008.FIToFICstmrCdt.SplmtryData.Envlp.Doc.InitgPty.Glctn.Lat = "-3.0677"
-      setPacs008.FIToFICstmrCdt.SplmtryData.Envlp.Doc.InitgPty.Glctn.Long = "37.3552"
+      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.Purp.Cd = "MP2P"
+      setPacs008.FIToFICstmrCdtTrf.SplmtryData.Envlp.Doc.Xprtn = new Date().toISOString()
+      setPacs008.FIToFICstmrCdtTrf.SplmtryData.Envlp.Doc.InitgPty.Glctn.Lat = "-3.0677"
+      setPacs008.FIToFICstmrCdtTrf.SplmtryData.Envlp.Doc.InitgPty.Glctn.Long = "37.3552"
 
       dispatch({ type: ACTIONS.SET_DEBTOR_PACS008_SUCCESS, payload: setPacs008 })
       console.log("PACS008: ", setPacs008)
@@ -410,7 +433,7 @@ const EntityProvider = ({ children }: Props) => {
       console.log("DEBTOR: ", debtor)
       const setPacs008: PACS008 = state.pacs008
 
-      setPacs008.FIToFICstmrCdt.CdtTrfTxInf.DbtrAcct = { ...debtor.Accounts[accountIndex].DbtrAcct }
+      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.DbtrAcct = { ...debtor.Accounts[accountIndex].DbtrAcct }
 
       dispatch({ type: ACTIONS.SET_DEBTOR_ACCOUNT_PACS008_SUCCESS, payload: setPacs008 })
       console.log("PACS008: ", setPacs008)
@@ -429,14 +452,14 @@ const EntityProvider = ({ children }: Props) => {
 
       console.log("PACS008 BEFORE: ", setPacs008)
 
-      setPacs008.FIToFICstmrCdt.CdtTrfTxInf.Cdtr.Nm = creditor.CreditorEntity.Cdtr.Nm
-      setPacs008.FIToFICstmrCdt.CdtTrfTxInf.Cdtr.Id.PrvtId = { ...creditor.CreditorEntity.Cdtr.Id.PrvtId }
-      setPacs008.FIToFICstmrCdt.CdtTrfTxInf.Cdtr.CtctDtls = { ...creditor.CreditorEntity.Cdtr.CtctDtls }
+      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.Cdtr.Nm = creditor.CreditorEntity.Cdtr.Nm
+      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.Cdtr.Id.PrvtId = { ...creditor.CreditorEntity.Cdtr.Id.PrvtId }
+      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.Cdtr.CtctDtls = { ...creditor.CreditorEntity.Cdtr.CtctDtls }
 
       // Set Creditor Account Details
 
       if (creditor.CreditorAccounts[0] !== undefined) {
-        setPacs008.FIToFICstmrCdt.CdtTrfTxInf.CdtrAcct = { ...creditor.CreditorAccounts[0].CdtrAcct }
+        setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.CdtrAcct = { ...creditor.CreditorAccounts[0].CdtrAcct }
       }
       dispatch({ type: ACTIONS.SET_CREDITOR_PACS008_SUCCESS, payload: setPacs008 })
       console.log("PACS008: ", setPacs008)
@@ -453,7 +476,7 @@ const EntityProvider = ({ children }: Props) => {
       console.log("CREDITOR: ", creditor, entityIndex, accountIndex)
       const setPacs008: PACS008 = state.pacs008
 
-      setPacs008.FIToFICstmrCdt.CdtTrfTxInf.CdtrAcct = { ...creditor.CreditorAccounts[accountIndex].CdtrAcct }
+      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.CdtrAcct = { ...creditor.CreditorAccounts[accountIndex].CdtrAcct }
 
       dispatch({ type: ACTIONS.SET_CREDITOR_ACCOUNT_PACS008_SUCCESS, payload: setPacs008 })
       console.log("PACS008: ", setPacs008)
@@ -469,10 +492,10 @@ const EntityProvider = ({ children }: Props) => {
       const setPacs008: PACS008 = state.pacs008
 
       // Set Random Details
-      setPacs008.FIToFICstmrCdt.RmtInf.Ustrd = crypto.randomUUID().replaceAll("-", "")
-      setPacs008.FIToFICstmrCdt.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt = RandomNumbers()
-      setPacs008.FIToFICstmrCdt.CdtTrfTxInf.InstdAmt.Amt.Amt =
-        setPacs008.FIToFICstmrCdt.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt
+      setPacs008.FIToFICstmrCdtTrf.RmtInf.Ustrd = crypto.randomUUID().replaceAll("-", "")
+      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt = RandomNumbers()
+      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.InstdAmt.Amt.Amt =
+        setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt
       dispatch({ type: ACTIONS.GENERATE_TRANSACTION_PACS008_SUCCESS })
       console.log("PACS008: ", setPacs008)
     } catch (error) {
