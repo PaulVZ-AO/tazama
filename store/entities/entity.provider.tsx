@@ -1,7 +1,8 @@
 "use client"
-import React, { ReactNode, useReducer } from "react"
+import React, { ReactNode, useReducer, useEffect } from "react"
 import { ACTIONS } from "./entity.actions"
 import EntityContext from "./entity.context"
+import { creditorInitialState, debtorInitialState, pacs008InitialState } from "./entity.initialState"
 import {
   CdtrEntity,
   CreditorAccount,
@@ -10,10 +11,11 @@ import {
   DebtorEntity,
   Entity,
   PACS008,
+  SelectedCreditor,
+  SelectedDebtor,
 } from "./entity.interface"
 import EntityReducer from "./entity.reducer"
 import { GenerateBirthDate, RandomCellNumber, RandomName, RandomNumbers, RandomSurname } from "./entity.utils"
-import { randomInt } from "crypto"
 
 interface Props {
   children: ReactNode
@@ -28,179 +30,88 @@ const EntityProvider = ({ children }: Props) => {
     creditorEntities: [],
     entities: [],
     pacs008Loading: false,
-    pacs008: {
-      TxTp: "pacs.008.001.10",
-      FIToFICstmrCdt: {
-        GrpHdr: {
-          MsgId: "%",
-          CreDtTm: "%",
-          NbOfTxs: 1,
-          SttlmInf: {
-            SttlmMtd: "CLRG",
-          },
-        },
-        CdtTrfTxInf: {
-          PmtId: {
-            InstrId: "%",
-            EndToEndId: "%",
-          },
-          IntrBkSttlmAmt: {
-            Amt: {
-              Amt: "%",
-              Ccy: "USD",
-            },
-          },
-          InstdAmt: {
-            Amt: {
-              Amt: "%",
-              Ccy: "USD",
-            },
-          },
-          ChrgBr: "DEBT",
-          ChrgsInf: {
-            Amt: {
-              Amt: 0.0,
-              Ccy: "USD",
-            },
-            Agt: {
-              FinInstnId: {
-                ClrSysMmbId: {
-                  MmbId: "dfsp001",
-                },
-              },
-            },
-          },
-          InitgPty: {
-            Nm: "%",
-            Id: {
-              PrvtId: {
-                DtAndPlcOfBirth: {
-                  BirthDt: "%",
-                  CityOfBirth: "Unknown",
-                  CtryOfBirth: "ZZ",
-                },
-                Othr: {
-                  Id: "%",
-                  SchmeNm: {
-                    Prtry: "TAZAMA_EID",
-                  },
-                },
-              },
-            },
-            CtctDtls: {
-              MobNb: "%",
-            },
-          },
-          Dbtr: {
-            Nm: "%",
-            Id: {
-              PrvtId: {
-                DtAndPlcOfBirth: {
-                  BirthDt: "%",
-                  CityOfBirth: "Unknown",
-                  CtryOfBirth: "ZZ",
-                },
-                Othr: {
-                  Id: "%",
-                  SchmeNm: {
-                    Prtry: "TAZAMA_EID",
-                  },
-                },
-              },
-            },
-            CtctDtls: {
-              MobNb: "%",
-            },
-          },
-          DbtrAcct: {
-            Id: {
-              Othr: {
-                Id: "%",
+    selectedDebtorEntity: debtorInitialState,
+    selectedCreditorEntity: creditorInitialState,
+    pacs008: pacs008InitialState,
+  }
+  const [state, dispatch] = useReducer(EntityReducer, initialEntityState)
 
-                SchmeNm: {
-                  Prtry: "Tazama_AID",
-                },
-              },
-            },
-            Nm: "%",
-          },
-          DbtrAgt: {
-            FinInstnId: {
-              ClrSysMmbId: {
-                MmbId: "dfsp001",
-              },
-            },
-          },
-          CdtrAgt: {
-            FinInstnId: {
-              ClrSysMmbId: {
-                MmbId: "dfsp002",
-              },
-            },
-          },
-          Cdtr: {
-            Nm: "%",
-            Id: {
-              PrvtId: {
-                DtAndPlcOfBirth: {
-                  BirthDt: "%",
-                  CityOfBirth: "Unknown",
-                  CtryOfBirth: "ZZ",
-                },
-                Othr: {
-                  Id: "%",
-                  SchmeNm: {
-                    Prtry: "TAZAMA_EID",
-                  },
-                },
-              },
-            },
-            CtctDtls: {
-              MobNb: "%",
-            },
-          },
-          CdtrAcct: {
-            Id: {
-              Othr: {
-                Id: "%",
-                SchmeNm: {
-                  Prtry: "Tazama_AID",
-                },
-              },
-            },
-            Nm: "%",
-          },
-          Purp: {
-            Cd: "%",
-          },
-        },
-        RgltryRptg: {
-          Dtls: {
-            Tp: "BALANCE OF PAYMENTS",
-            Cd: "100",
-          },
-        },
-        RmtInf: {
-          Ustrd: "%",
-        },
-        SplmtryData: {
-          Envlp: {
-            Doc: {
-              Xprtn: "2021-11-30T10:38:56.000Z",
-              InitgPty: {
-                Glctn: {
-                  Lat: "%",
-                  Long: "%",
-                },
-              },
-            },
-          },
-        },
-      },
-    },
+  const handleDebtorEntityChange = async () => {
+    console.log("handleDebtorEntityChange Active")
+    await setDebtorPacs008(state.selectedDebtorEntity.debtorSelectedIndex)
+    await setDebtorAccountPacs008(
+      state.selectedDebtorEntity.debtorSelectedIndex,
+      state.selectedDebtorEntity.debtorAccountSelectedIndex
+    )
+    // await generateTransaction()
+    console.log("handleDebtorEntityChange Done")
+    console.log("PACS008: ", state.pacs008)
   }
 
-  const [state, dispatch] = useReducer(EntityReducer, initialEntityState)
+  const handleCreditorEntityChange = async () => {
+    console.log("handleCreditorEntityChange Active")
+    await setCreditorPacs008(state.selectedCreditorEntity.creditorSelectedIndex)
+    await setCreditorAccountPacs008(
+      state.selectedCreditorEntity.creditorSelectedIndex,
+      state.selectedCreditorEntity.creditorAccountSelectedIndex
+    )
+    // await generateTransaction()
+    console.log("handleCreditorEntityChange Done")
+    console.log("PACS008: ", state.pacs008)
+  }
+
+  useEffect(() => {
+    if (state.selectedDebtorEntity.debtorSelectedIndex !== undefined) {
+      console.log("Selected Debtor Changed: ", state.selectedDebtorEntity)
+      if (state.entities.length > 0) {
+        handleDebtorEntityChange()
+      }
+    }
+  }, [state.selectedDebtorEntity.debtorSelectedIndex, state.selectedDebtorEntity.debtorAccountSelectedIndex])
+
+  useEffect(() => {
+    if (state.selectedCreditorEntity.creditorSelectedIndex !== undefined) {
+      console.log("Selected Creditor Changed: ", state.selectedCreditorEntity)
+
+      if (state.creditorEntities.length > 0) {
+        handleCreditorEntityChange()
+      }
+    }
+  }, [state.selectedCreditorEntity.creditorSelectedIndex, state.selectedCreditorEntity.creditorAccountSelectedIndex])
+
+  const selectDebtorEntity = async (index: number = 0, accountIndex: number = 0) => {
+    try {
+      if (state.entities[index]) {
+        const selectedDebtor: SelectedDebtor = state.selectedDebtorEntity
+        const accountsLength: number = state.entities[index].Accounts.length
+        selectedDebtor.debtorSelectedIndex = index
+        selectedDebtor.debtorAccountSelectedIndex = accountIndex
+        selectedDebtor.debtorAccountsLength = accountsLength
+        dispatch({ type: ACTIONS.SELECT_DEBTOR_ENTITY, payload: selectedDebtor })
+        console.log("############# DEBTOR RESULT #############")
+        console.log("SELECTED DEBTOR: ", selectedDebtor)
+        console.log("############## END RESULT ##############")
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const selectCreditorEntity = async (index: number = 0, accountIndex: number = 0) => {
+    try {
+      if (state.entities[index]) {
+        const selectedCreditor: SelectedCreditor = state.selectedCreditorEntity
+
+        const accountsLength: number = state.creditorEntities[index].CreditorAccounts.length
+        selectedCreditor.creditorSelectedIndex = index
+        selectedCreditor.creditorAccountSelectedIndex = accountIndex
+        selectedCreditor.creditorAccountsLength = accountsLength
+        dispatch({ type: ACTIONS.SELECT_CREDITOR_ENTITY, payload: selectedCreditor })
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const createEntity = async () => {
     try {
@@ -210,7 +121,7 @@ const EntityProvider = ({ children }: Props) => {
         Dbtr: {
           Nm: `${await RandomName()} ${await RandomSurname()}`,
           Id: {
-            PrvId: {
+            PrvtId: {
               DtAndPlcOfBirth: {
                 BirthDt: await GenerateBirthDate(),
                 CityOfBirth: "Unknown",
@@ -336,7 +247,7 @@ const EntityProvider = ({ children }: Props) => {
         Cdtr: {
           Nm: `${await RandomName()} ${await RandomSurname()}`,
           Id: {
-            PrvId: {
+            PrvtId: {
               DtAndPlcOfBirth: {
                 BirthDt: await GenerateBirthDate(),
                 CityOfBirth: "Unknown",
@@ -463,7 +374,7 @@ const EntityProvider = ({ children }: Props) => {
 
       // Set Debtor Details
       setPacs008.FIToFICstmrCdt.CdtTrfTxInf.Dbtr.Nm = debtor.Entity.Dbtr.Nm
-      setPacs008.FIToFICstmrCdt.CdtTrfTxInf.Dbtr.Id.PrvtId = { ...debtor.Entity.Dbtr.Id.PrvId }
+      setPacs008.FIToFICstmrCdt.CdtTrfTxInf.Dbtr.Id.PrvtId = { ...debtor.Entity.Dbtr.Id.PrvtId }
       setPacs008.FIToFICstmrCdt.CdtTrfTxInf.Dbtr.CtctDtls = { ...debtor.Entity.Dbtr.CtctDtls }
       setPacs008.FIToFICstmrCdt.CdtTrfTxInf.PmtId.EndToEndId = crypto.randomUUID().replaceAll("-", "")
 
@@ -488,7 +399,7 @@ const EntityProvider = ({ children }: Props) => {
       console.log("PACS008: ", setPacs008)
     } catch (error) {
       dispatch({ type: ACTIONS.SET_DEBTOR_PACS008_FAIL })
-      console.log("ERROR: ", error)
+      console.log("ERROR DEBTOR PACS008: ", error)
     }
   }
 
@@ -505,6 +416,7 @@ const EntityProvider = ({ children }: Props) => {
       console.log("PACS008: ", setPacs008)
     } catch (error) {
       dispatch({ type: ACTIONS.SET_DEBTOR_ACCOUNT_PACS008_FAIL })
+      console.log("ERROR DEBTOR ACCOUNT PACS008: ", error)
     }
   }
 
@@ -515,8 +427,10 @@ const EntityProvider = ({ children }: Props) => {
       console.log("CREDITOR: ", creditor)
       const setPacs008: PACS008 = state.pacs008
 
+      console.log("PACS008 BEFORE: ", setPacs008)
+
       setPacs008.FIToFICstmrCdt.CdtTrfTxInf.Cdtr.Nm = creditor.CreditorEntity.Cdtr.Nm
-      setPacs008.FIToFICstmrCdt.CdtTrfTxInf.Cdtr.Id.PrvtId = { ...creditor.CreditorEntity.Cdtr.Id.PrvId }
+      setPacs008.FIToFICstmrCdt.CdtTrfTxInf.Cdtr.Id.PrvtId = { ...creditor.CreditorEntity.Cdtr.Id.PrvtId }
       setPacs008.FIToFICstmrCdt.CdtTrfTxInf.Cdtr.CtctDtls = { ...creditor.CreditorEntity.Cdtr.CtctDtls }
 
       // Set Creditor Account Details
@@ -528,6 +442,7 @@ const EntityProvider = ({ children }: Props) => {
       console.log("PACS008: ", setPacs008)
     } catch (error) {
       dispatch({ type: ACTIONS.SET_CREDITOR_PACS008_FAIL })
+      console.log("ERROR CREDITOR PACS008: ", error)
     }
   }
 
@@ -535,7 +450,7 @@ const EntityProvider = ({ children }: Props) => {
     try {
       dispatch({ type: ACTIONS.SET_CREDITOR_ACCOUNT_PACS008_LOADING })
       const creditor: CdtrEntity = state.creditorEntities[entityIndex]
-      console.log("CREDITOR: ", creditor)
+      console.log("CREDITOR: ", creditor, entityIndex, accountIndex)
       const setPacs008: PACS008 = state.pacs008
 
       setPacs008.FIToFICstmrCdt.CdtTrfTxInf.CdtrAcct = { ...creditor.CreditorAccounts[accountIndex].CdtrAcct }
@@ -544,6 +459,25 @@ const EntityProvider = ({ children }: Props) => {
       console.log("PACS008: ", setPacs008)
     } catch (error) {
       dispatch({ type: ACTIONS.SET_CREDITOR_ACCOUNT_PACS008_FAIL })
+      console.log("ERROR SET CREDITOR ACCOUNT PACS008: ", error)
+    }
+  }
+
+  const generateTransaction = async () => {
+    try {
+      dispatch({ type: ACTIONS.GENERATE_TRANSACTION_PACS008_LOADING })
+      const setPacs008: PACS008 = state.pacs008
+
+      // Set Random Details
+      setPacs008.FIToFICstmrCdt.RmtInf.Ustrd = crypto.randomUUID().replaceAll("-", "")
+      setPacs008.FIToFICstmrCdt.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt = RandomNumbers()
+      setPacs008.FIToFICstmrCdt.CdtTrfTxInf.InstdAmt.Amt.Amt =
+        setPacs008.FIToFICstmrCdt.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt
+      dispatch({ type: ACTIONS.GENERATE_TRANSACTION_PACS008_SUCCESS })
+      console.log("PACS008: ", setPacs008)
+    } catch (error) {
+      dispatch({ type: ACTIONS.GENERATE_TRANSACTION_PACS008_FAIL })
+      console.log("ERROR TRANSACTION PACS008: ", error)
     }
   }
 
@@ -558,6 +492,10 @@ const EntityProvider = ({ children }: Props) => {
         creditorEntities: state.creditorEntities,
         entities: state.entities,
         pacs008: state.pacs008,
+        selectedDebtorEntity: state.selectedDebtorEntity,
+        selectedCreditorEntity: state.selectedCreditorEntity,
+        selectDebtorEntity,
+        selectCreditorEntity,
         createEntity,
         updateEntity,
         createEntityAccount,
@@ -568,6 +506,7 @@ const EntityProvider = ({ children }: Props) => {
         setDebtorAccountPacs008,
         setCreditorPacs008,
         setCreditorAccountPacs008,
+        generateTransaction,
       }}
     >
       {children}

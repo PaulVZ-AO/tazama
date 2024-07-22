@@ -10,6 +10,7 @@ export interface ProfileProps {
   entity?: DebtorEntity
   accounts?: Array<DebtorAccount>
   selectedEntity: number
+  index: number
   setModalVisible: (value: boolean) => void
   setSelectedEntity: () => void
   addAccount: () => void
@@ -19,14 +20,19 @@ interface AccountProps {
   index: number
   selected: number
   setSelected: (value: number) => void
+  selectedEntityIndex: number
+  setSelectedEntity: (value: number) => void
 }
 
-const AccountsComponent = ({ index, selected, setSelected }: AccountProps) => {
-  const handleClick = () => {
-    if (selected !== index) {
-      console.log("handleClick: ", index)
-      setSelected(index)
-    }
+const AccountsComponent = ({ index, setSelected, selectedEntityIndex, setSelectedEntity }: AccountProps) => {
+  const entCtx = useContext(EntityContext)
+  const handleClick = async () => {
+    console.log("############## DEBTOR SELECTION TEST START #############")
+    await entCtx.selectDebtorEntity(selectedEntityIndex, index)
+    console.log("############### DEBTOR SELECTION TEST END ##############")
+    setSelectedEntity(selectedEntityIndex)
+    console.log("ACCOUNT INDEX CLICKED: ", index)
+    setSelected(index)
   }
   return (
     <button
@@ -46,11 +52,20 @@ export const Profile = ({ ...props }: ProfileProps) => {
   const entityCtx = useContext(EntityContext)
   const [selectedAccountIndex, setSelectedAccountIndex] = useState(0)
 
-  useEffect(() => {
-    entityCtx.setDebtorAccountPacs008(props.selectedEntity, selectedAccountIndex)
-  }, [selectedAccountIndex])
+  // useEffect(() => {
+  //   if (entityCtx.entities.length > 0) {
+  //     entityCtx.setDebtorAccountPacs008(props.selectedEntity, selectedAccountIndex)
+  //   }
+  // }, [selectedAccountIndex])
 
-  useEffect(() => {}, [entityCtx.entities])
+  // useEffect(() => {
+  //   if (entityCtx.entities.length > 0) {
+  //     entityCtx.setDebtorPacs008(props.selectedEntity)
+  //     entityCtx.setDebtorAccountPacs008(props.selectedEntity, selectedAccountIndex)
+  //   }
+  // }, [props.selectedEntity, selectedAccountIndex])
+
+  // useEffect(() => {}, [entityCtx.entities])
   let reverse = ""
   if (props.reverse) {
     reverse = "flex-row-reverse text-right"
@@ -64,6 +79,8 @@ export const Profile = ({ ...props }: ProfileProps) => {
           index={index}
           selected={selectedAccountIndex}
           setSelected={setSelectedAccountIndex}
+          selectedEntityIndex={props.index}
+          setSelectedEntity={props.setSelectedEntity}
         />
       )
     } else {
@@ -111,7 +128,11 @@ export const Profile = ({ ...props }: ProfileProps) => {
           props.setSelectedEntity()
           console.log("SELECTED INDEX: " + props.selectedEntity)
           console.log("ABOUT TO CALL THE setDebtorPacs008")
-          await entityCtx.setDebtorPacs008(props.selectedEntity)
+          setSelectedAccountIndex(0)
+          if (entityCtx.entities[props.selectedEntity]) {
+            await entityCtx.selectDebtorEntity(props.index, 0)
+            //   await entityCtx.setDebtorPacs008(props.selectedEntity)
+          }
         }}
       >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
@@ -142,7 +163,7 @@ export const Profile = ({ ...props }: ProfileProps) => {
           data-modal-target="default-modal"
           data-modal-toggle="default-modal"
           onClick={async () => {
-            props.addAccount()
+            await props.addAccount()
           }}
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="size-5">
