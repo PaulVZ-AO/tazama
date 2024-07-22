@@ -3,6 +3,7 @@
 import axios from "axios"
 import Image from "next/image"
 import { useContext, useEffect, useState } from "react"
+import { DebtorDevice } from "components/Device/Debtor"
 import { Modal } from "components/Modal/Modal"
 import { ProcessIndicator } from "components/ProcessIndicator/ProcessIndicator"
 import { Profile } from "components/Profile/Profile"
@@ -228,7 +229,7 @@ export default function Web() {
             <div className="mb-5 text-center text-xl">Debtors</div>
 
             <Profile
-              colour={!entityCtx.entities[0] ? "text-gray-300" : "text-blue-300"}
+              colour={!entityCtx.entities[0] ? "text-gray-300" : "text-blue-500"}
               entity={entityCtx.entities[0]?.Entity}
               accounts={entityCtx.entities[0]?.Accounts}
               index={0}
@@ -241,7 +242,7 @@ export default function Web() {
               }}
             />
             <Profile
-              colour={!entityCtx.entities[1] ? "text-gray-300" : "text-green-600"}
+              colour={!entityCtx.entities[1] ? "text-gray-300" : "text-green-500"}
               entity={entityCtx.entities[1]?.Entity}
               accounts={entityCtx.entities[1]?.Accounts}
               index={1}
@@ -267,7 +268,7 @@ export default function Web() {
               }}
             />
             <Profile
-              colour={!entityCtx.entities[3] ? "text-gray-300" : "text-orange-600"}
+              colour={!entityCtx.entities[3] ? "text-gray-300" : "text-orange-500"}
               entity={entityCtx.entities[3]?.Entity}
               accounts={entityCtx.entities[3]?.Accounts}
               index={3}
@@ -285,17 +286,7 @@ export default function Web() {
         {/* Device transactions */}
         <div className="col-span-8">
           <div className="grid grid-cols-12 gap-1">
-            <div className="col-span-4">
-              <Image
-                src="/device.svg"
-                height="200"
-                width="200"
-                className="ml-auto text-center"
-                alt=""
-                style={{ width: "auto", height: "auto" }}
-                priority={true}
-              />
-            </div>
+            <DebtorDevice />
             <div className="col-span-4 flex items-center justify-between px-5">
               <ProcessIndicator />
             </div>
@@ -306,7 +297,6 @@ export default function Web() {
                 width="200"
                 className="text-center"
                 alt=""
-                style={{ width: "auto", height: "auto" }}
                 priority={true}
               />
             </div>
@@ -318,7 +308,7 @@ export default function Web() {
           <div className="flex flex-wrap justify-center rounded-lg p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
             <div className="mb-5 text-center text-xl">Creditors</div>
             <CreditorProfile
-              colour={!entityCtx.creditorEntities[0] ? "text-gray-300" : "text-blue-300"}
+              colour={!entityCtx.creditorEntities[0] ? "text-gray-300" : "text-blue-500"}
               reverse={true}
               entity={entityCtx.creditorEntities[0]?.CreditorEntity}
               creditorAccounts={entityCtx.creditorEntities[0]?.CreditorAccounts}
@@ -338,7 +328,7 @@ export default function Web() {
               }}
             />
             <CreditorProfile
-              colour={!entityCtx.creditorEntities[1] ? "text-gray-300" : "text-green-600"}
+              colour={!entityCtx.creditorEntities[1] ? "text-gray-300" : "text-green-500"}
               reverse={true}
               entity={entityCtx.creditorEntities[1]?.CreditorEntity}
               creditorAccounts={entityCtx.creditorEntities[1]?.CreditorAccounts}
@@ -378,7 +368,7 @@ export default function Web() {
               }}
             />
             <CreditorProfile
-              colour={!entityCtx.creditorEntities[3] ? "text-gray-300" : "text-orange-600"}
+              colour={!entityCtx.creditorEntities[3] ? "text-gray-300" : "text-orange-500"}
               reverse={true}
               entity={entityCtx.creditorEntities[3]?.CreditorEntity}
               creditorAccounts={entityCtx.creditorEntities[3]?.CreditorAccounts}
