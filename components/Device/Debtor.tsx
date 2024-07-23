@@ -23,9 +23,9 @@ export function DebtorDevice() {
         </div>
 
         <div className="m-2 rounded-md border p-2 text-sm">
-          <p>Account: &quot;Sarine&lsquo;s first account&quot;</p>
-          <p>Balance: $156</p>
-          <p>Purpose: Transfer</p>
+          <p>ID: &quot;Sarine&lsquo;s first account&quot;</p>
+          <p>Account: $156</p>
+          <p>Description: </p>
           <p>Lat & Lng: -33.918352,18.401656</p>
           <hr className="mt-2" />
           <button className="m-auto mt-2 flex items-center text-blue-500">
