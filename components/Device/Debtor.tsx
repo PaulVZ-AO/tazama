@@ -72,9 +72,9 @@ export function DebtorDevice(props: DebtorProps) {
         </div>
 
         <div className="m-2 rounded-md border p-2 text-sm">
-          <p>Account: {entity?.Accounts[0]?.DbtrAcct.Nm || " Account Name"} </p>
-          <p>Balance: $156</p>
-          <p>Purpose: Transfer</p>
+          <p>ID: {entity?.Accounts[0]?.DbtrAcct.Nm || " Account Name"} </p>
+          <p>Account: $156</p>
+          <p>Description: text </p>
           <p>Lat & Lng: -33.918352,18.401656</p>
           <hr className="mt-2" />
           <button className="m-auto mt-2 flex items-center text-blue-500">
