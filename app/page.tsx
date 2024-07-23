@@ -109,12 +109,14 @@ const Web = () => {
     ;(async () => {
       const nc = await connect({
         // servers: ["wss://demo.nats.io:8443"],
-        servers: ["wss://localhost:4222"],
+        servers: ["wss://nats:4222"],
       })
       setNats(nc)
       console.log("connected to NATS")
       // const sub = nc.subscribe("echo")
       const pacs008Sub = nc.subscribe("sub-rule-901@1.0.0")
+
+      const connected = nc.subscribe("connection")
 
       const handle = (msg: any) => {
         console.log(`Received a request: ${sc.decode(msg.data)}`)
@@ -123,9 +125,9 @@ const Web = () => {
 
       // Wait to receive messages from the subscription and handle them
       // asynchronously..
-      // ;(async () => {
-      //   for await (const msg of sub) handle(msg)
-      // })()
+      ;(async () => {
+        for await (const msg of connected) handle(msg)
+      })()
       ;(async () => {
         for await (const msg of pacs008Sub) handle(msg)
       })()
@@ -133,14 +135,8 @@ const Web = () => {
       // are encoding the string data on request and decoding the reply
       // message data.
 
-      // let test = await nc.request("sub-rule-901@1.0.0", sc.encode("TESTING"))
-      // console.log(`Received a reply: ${sc.decode(test.data)}`)
-
-      // let rep = await nc.request("echo", sc.encode("Hello!"))
-      // console.log(`Received a reply: ${sc.decode(rep.data)}`)
-
-      // rep = await nc.request("echo", sc.encode("World!"))
-      // console.log(`Received a reply: ${sc.decode(rep.data)}`)
+      let connection = await nc.request("connection", sc.encode("Demo App Connected"))
+      console.log(`Received a reply: ${sc.decode(connection.data)}`)
     })()
 
     return () => {
