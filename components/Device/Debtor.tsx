@@ -11,7 +11,10 @@ export function DebtorDevice(props: DebtorProps) {
   const entityCtx = useContext(EntityContext)
 
   const entity = entityCtx.entities[props.selectedEntity]
-  console.log(entityCtx, "??")
+  const data = entityCtx.selectedDebtorEntity
+  const accountIndex = data.debtorAccountSelectedIndex;
+  console.log(data.debtorAccountSelectedIndex, "??")
+  console.log(entity?.Accounts)
 
   let fillColour
 
@@ -71,30 +74,32 @@ export function DebtorDevice(props: DebtorProps) {
           <span className="ml-2 text-white">{entity?.Entity.Dbtr.Nm || "Name"}</span>
         </div>
 
-        <div className="m-2 rounded-md border p-2 text-sm">
-          <p>ID: {entity?.Accounts[0]?.DbtrAcct.Nm || " Account Name"} </p>
-          <p>Account: $156</p>
-          <p>Description: text </p>
-          <p>Lat & Lng: -33.918352,18.401656</p>
-          <hr className="mt-2" />
-          <button className="m-auto mt-2 flex items-center text-blue-500">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-              className="size-4"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
-              />
-            </svg>
-            edit
-          </button>
-        </div>
+        {/* {entity?.Accounts.map((value) => ( */}
+          <div className="m-2 rounded-md border p-2 text-sm">
+            <p>ID:{entity?.Accounts[accountIndex || 0]?.DbtrAcct.Nm || " Account Name"} </p>
+            <p>Account: $156</p>
+            <p>Description: text </p>
+            <p>Lat & Lng: -33.918352,18.401656</p>
+            <hr className="mt-2" />
+            <button className="m-auto mt-2 flex items-center text-blue-500">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="size-4"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                />
+              </svg>
+              edit
+            </button>
+          </div>
+        {/* ))} */}
       </div>
     </div>
   )
