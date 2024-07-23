@@ -73,21 +73,204 @@ export function Modal(props: Props) {
                   </svg>
                 </button>
               </div>
-              {accountDetails.map((accountDetail) => (
-                <>
-                  <div className="col-span-3 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={props.colour} className="size-20">
-                      <path
-                        fillRule="evenodd"
-                        d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </div>
 
-                  <div className="col-span-9 text-left [&>div>input]:rounded-lg [&>div>input]:bg-gray-200 [&>div>input]:p-2 [&>div>input]:shadow-inner [&>div]:mb-2 [&>div]:pr-5">
+              <div className="col-span-3 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={props.colour} className="size-20">
+                  <path
+                    fillRule="evenodd"
+                    d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+
+              <div className="col-span-9 text-left [&>div>input]:rounded-lg [&>div>input]:bg-gray-200 [&>div>input]:p-2 [&>div>input]:shadow-inner [&>div]:mb-2 [&>div]:pr-5">
+                <div className="mt-5">
+                  <label htmlFor="modal-Nm">Full Name</label>
+                  <input
+                    type="text"
+                    id="modal-Nm"
+                    className="w-full"
+                    defaultValue={props.entity?.Dbtr.Nm}
+                    value={customEntity?.Dbtr.Nm}
+                    onChange={(e) => {
+                      if (customEntity !== undefined) {
+                        setCustomEntity({
+                          ...customEntity,
+                          Dbtr: {
+                            ...customEntity.Dbtr,
+                            Nm: e.target.value,
+                          },
+                        })
+                      }
+                    }}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="modal-BirthDt">Birth Date</label>
+                  <input
+                    type="text"
+                    id="modal-BirthDt"
+                    className="w-full"
+                    defaultValue={props.entity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt}
+                    value={customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt}
+                    onChange={(e) => {
+                      if (customEntity !== undefined) {
+                        setCustomEntity({
+                          ...customEntity,
+                          Dbtr: {
+                            ...customEntity?.Dbtr,
+                            ...customEntity?.Dbtr.Id,
+                            Id: {
+                              PrvtId: {
+                                ...customEntity?.Dbtr.Id.PrvtId,
+                                DtAndPlcOfBirth: {
+                                  ...customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth,
+                                  BirthDt: e.target.value,
+                                },
+                              },
+                            },
+                          },
+                        })
+                      }
+                    }}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="modal-CityOfBirth">City of Birth</label>
+                  <input
+                    type="text"
+                    id="modal-CityOfBirth"
+                    className="w-full"
+                    defaultValue={props.entity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.CityOfBirth}
+                    value={customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.CityOfBirth}
+                    onChange={(e) => {
+                      if (customEntity !== undefined) {
+                        setCustomEntity({
+                          ...customEntity,
+                          Dbtr: {
+                            ...customEntity.Dbtr,
+                            ...customEntity.Dbtr.Id,
+                            Id: {
+                              PrvtId: {
+                                ...customEntity.Dbtr.Id.PrvtId,
+                                DtAndPlcOfBirth: {
+                                  ...customEntity.Dbtr.Id.PrvtId.DtAndPlcOfBirth,
+                                  CityOfBirth: e.target.value,
+                                },
+                              },
+                            },
+                          },
+                        })
+                      }
+                    }}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="modal-CtryOfBirth">Country of Birth</label>
+                  <input
+                    type="text"
+                    id="modal-CtryOfBirth"
+                    className="w-full"
+                    defaultValue={props.entity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.CtryOfBirth}
+                    value={customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.CtryOfBirth}
+                    onChange={(e) => {
+                      if (customEntity !== undefined) {
+                        setCustomEntity({
+                          ...customEntity,
+                          Dbtr: {
+                            ...customEntity.Dbtr,
+                            ...customEntity.Dbtr.Id,
+                            Id: {
+                              PrvtId: {
+                                ...customEntity.Dbtr.Id.PrvtId,
+                                DtAndPlcOfBirth: {
+                                  ...customEntity.Dbtr.Id.PrvtId.DtAndPlcOfBirth,
+                                  CtryOfBirth: e.target.value,
+                                },
+                              },
+                            },
+                          },
+                        })
+                      }
+                    }}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="modal-ID">ID number</label>
+                  <input
+                    type="text"
+                    id="modal-ID"
+                    className="w-full"
+                    defaultValue={props.entity?.Dbtr.Id.PrvtId.Othr[0].Id}
+                    value={customEntity?.Dbtr.Id.PrvtId.Othr[0].Id}
+                    onChange={(e) => {
+                      if (customEntity !== undefined) {
+                        setCustomEntity({
+                          ...customEntity,
+                          Dbtr: {
+                            ...customEntity.Dbtr,
+                            ...customEntity.Dbtr.Id,
+                            Id: {
+                              PrvtId: {
+                                ...customEntity.Dbtr.Id.PrvtId,
+                                Othr: {
+                                  ...customEntity.Dbtr.Id.PrvtId.Othr[0],
+                                  Id: e.target.value,
+                                },
+                              },
+                            },
+                          },
+                        })
+                      }
+                    }}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="modal-MobNb">Mobile number</label>
+                  <input
+                    type="text"
+                    id="modal-MobNb"
+                    className="w-full"
+                    defaultValue={props.entity?.Dbtr.CtctDtls.MobNb}
+                    value={customEntity?.Dbtr.CtctDtls.MobNb}
+                    onChange={(e) => {
+                      if (customEntity !== undefined) {
+                        setCustomEntity({
+                          ...customEntity,
+                          Dbtr: {
+                            ...customEntity.Dbtr,
+                            ...customEntity.Dbtr.CtctDtls,
+                            CtctDtls: {
+                              MobNb: e.target.value,
+                            },
+                          },
+                        })
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* <div className="col-span-12 m-5">
+                <h5>Accounts</h5>
+                Loop through the account details.
+                <div>
+                  <label htmlFor="modal-ID">name</label>
+                </div>
+                read only
+                Id Prtry
+              </div> */}
+
+              {/* box-shadow: inset 20px 20px 60px #bebebe,
+            inset -20px -20px 60px #ffffff; */}
+
+             
+                <h5 className="text-center w-[100%]">Accounts</h5>
+                {accountDetails.map((accountDetail, index) => (
+                  <div className="col-span-12 text-left [&>div>input]:rounded-lg [&>div>input]:bg-gray-200 [&>div>input]:p-2 [&>div>input]:shadow-inner [&>div]:mb-2 [&>div]:pr-5">
                     <div className="mt-5">
-                      <label htmlFor="modal-Nm">Full Name</label>
+                      <label htmlFor={`modal-Account-Number-${index}`}>Full Name</label>
                       <input
                         type="text"
                         id="modal-Nm"
@@ -107,168 +290,31 @@ export function Modal(props: Props) {
                         }}
                       />
                     </div>
-
                     <div>
-                      <label htmlFor="modal-BirthDt">Birth Date</label>
+                      <label htmlFor={`modal-Account-ID-${index}`}>ID number</label>
                       <input
                         type="text"
-                        id="modal-BirthDt"
+                        id={`modal-Account-ID-${index}`}
                         className="w-full"
-                        defaultValue={props.entity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt}
-                        value={customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt}
-                        onChange={(e) => {
-                          if (customEntity !== undefined) {
-                            setCustomEntity({
-                              ...customEntity,
-                              Dbtr: {
-                                ...customEntity?.Dbtr,
-                                ...customEntity?.Dbtr.Id,
-                                Id: {
-                                  PrvtId: {
-                                    ...customEntity?.Dbtr.Id.PrvtId,
-                                    DtAndPlcOfBirth: {
-                                      ...customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth,
-                                      BirthDt: e.target.value,
-                                    },
-                                  },
-                                },
-                              },
-                            })
-                          }
-                        }}
+                        defaultValue={props.entity?.Dbtr.Id.PrvtId.Othr[0]?.Id}
+                        value={accountDetail.DbtrAcct.Id.Othr[0]?.Id}
+                        readOnly
                       />
                     </div>
                     <div>
-                      <label htmlFor="modal-CityOfBirth">City of Birth</label>
+                      <label htmlFor={`modal-Account-Prtry-${index}`}>Prtry</label>
                       <input
                         type="text"
-                        id="modal-CityOfBirth"
+                        id={`modal-Account-Prtry-${index}`}
                         className="w-full"
-                        defaultValue={props.entity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.CityOfBirth}
-                        value={customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.CityOfBirth}
-                        onChange={(e) => {
-                          if (customEntity !== undefined) {
-                            setCustomEntity({
-                              ...customEntity,
-                              Dbtr: {
-                                ...customEntity.Dbtr,
-                                ...customEntity.Dbtr.Id,
-                                Id: {
-                                  PrvtId: {
-                                    ...customEntity.Dbtr.Id.PrvtId,
-                                    DtAndPlcOfBirth: {
-                                      ...customEntity.Dbtr.Id.PrvtId.DtAndPlcOfBirth,
-                                      CityOfBirth: e.target.value,
-                                    },
-                                  },
-                                },
-                              },
-                            })
-                          }
-                        }}
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="modal-CtryOfBirth">Country of Birth</label>
-                      <input
-                        type="text"
-                        id="modal-CtryOfBirth"
-                        className="w-full"
-                        defaultValue={props.entity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.CtryOfBirth}
-                        value={customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.CtryOfBirth}
-                        onChange={(e) => {
-                          if (customEntity !== undefined) {
-                            setCustomEntity({
-                              ...customEntity,
-                              Dbtr: {
-                                ...customEntity.Dbtr,
-                                ...customEntity.Dbtr.Id,
-                                Id: {
-                                  PrvtId: {
-                                    ...customEntity.Dbtr.Id.PrvtId,
-                                    DtAndPlcOfBirth: {
-                                      ...customEntity.Dbtr.Id.PrvtId.DtAndPlcOfBirth,
-                                      CtryOfBirth: e.target.value,
-                                    },
-                                  },
-                                },
-                              },
-                            })
-                          }
-                        }}
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="modal-ID">ID number</label>
-                      <input
-                        type="text"
-                        id="modal-ID"
-                        className="w-full"
-                        defaultValue={props.entity?.Dbtr.Id.PrvtId.Othr.Id}
-                        value={accountDetail.DbtrAcct.Id.Othr.Id}
-                        onChange={(e) => {
-                          if (customEntity !== undefined) {
-                            setCustomEntity({
-                              ...customEntity,
-                              Dbtr: {
-                                ...customEntity.Dbtr,
-                                ...customEntity.Dbtr.Id,
-                                Id: {
-                                  PrvtId: {
-                                    ...customEntity.Dbtr.Id.PrvtId,
-                                    Othr: {
-                                      ...customEntity.Dbtr.Id.PrvtId.Othr,
-                                      Id: e.target.value,
-                                    },
-                                  },
-                                },
-                              },
-                            })
-                          }
-                        }}
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="modal-MobNb">Mobile number</label>
-                      <input
-                        type="text"
-                        id="modal-MobNb"
-                        className="w-full"
-                        defaultValue={props.entity?.Dbtr.CtctDtls.MobNb}
-                        value={customEntity?.Dbtr.CtctDtls.MobNb}
-                        onChange={(e) => {
-                          if (customEntity !== undefined) {
-                            setCustomEntity({
-                              ...customEntity,
-                              Dbtr: {
-                                ...customEntity.Dbtr,
-                                ...customEntity.Dbtr.CtctDtls,
-                                CtctDtls: {
-                                  MobNb: e.target.value,
-                                },
-                              },
-                            })
-                          }
-                        }}
+                        defaultValue={props.entity?.Dbtr.Id.PrvtId.Othr[0]?.Id}
+                        value={accountDetail.DbtrAcct.Id.Othr[0]?.SchmeNm.Prtry}
+                        readOnly
                       />
                     </div>
                   </div>
-                </>
-              ))}
-
-              {/* box-shadow: inset 20px 20px 60px #bebebe,
-            inset -20px -20px 60px #ffffff; */}
-
-              {/* <div className="col-span-12 m-5">
-                <h5>Accounts</h5>
-                Loop through the account details.
-                <div>
-                  <label htmlFor="modal-ID">name</label>
-                </div>
-                read only
-                Id Prtry
-              </div> */}
-
+                ))}
+            
               <div className="col-span-6 m-5">
                 <button
                   type="button"
