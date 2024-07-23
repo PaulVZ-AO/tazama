@@ -286,7 +286,7 @@ export default function Web() {
         {/* Device transactions */}
         <div className="col-span-8">
           <div className="grid grid-cols-12 gap-1">
-            <DebtorDevice />
+            <DebtorDevice selectedEntity={selectedEntity}  />
             <div className="col-span-4 flex items-center justify-between px-5">
               <ProcessIndicator />
             </div>
