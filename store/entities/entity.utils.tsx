@@ -5,8 +5,8 @@ const randomDate = (start: Date, end: Date) => {
 }
 
 export const RandomNumbers = () => {
-  let randomNumber: number = Math.floor(Math.random() * 1000) + 100
-  let result: string = `${randomNumber}.00`
+  let randomNumber: number = Math.floor(Math.random() * 100000) + 10000
+  let result: number = randomNumber / 100
   console.log("GENERATED NUMBER: ", result)
   return result
 }

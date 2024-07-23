@@ -49,6 +49,7 @@
     "@vercel/otel": "^1.8.3",
     "class-variance-authority": "^0.7.0",
     "lodash": "^4.17.21",
+    "nats.ws": "^1.29.0",
     "next": "^14.2.3",
     "next-compose-plugins": "^2.2.1",
     "react": "^18.3.1",
