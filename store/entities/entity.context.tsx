@@ -1,14 +1,20 @@
 import { createContext } from "react"
 import {
+  creditorInitialState,
+  debtorInitialState,
+  pacs002InitialState,
+  pacs008InitialState,
+} from "./entity.initialState"
+import {
   CdtrEntity,
   CreditorEntity,
   DebtorEntity,
   Entity,
+  PACS002,
   PACS008,
   SelectedCreditor,
   SelectedDebtor,
 } from "./entity.interface"
-import { creditorInitialState, debtorInitialState, pacs008InitialState } from "./entity.initialState"
 
 interface Context {
   createEntityLoading: boolean
@@ -19,6 +25,7 @@ interface Context {
   entities: Array<Entity>
   pacs008Loading: boolean
   pacs008: PACS008
+  pacs002: PACS002
   selectedDebtorEntity: SelectedDebtor
   selectedCreditorEntity: SelectedCreditor
   selectDebtorEntity: (index: number, accountIndex: number) => void
@@ -45,6 +52,7 @@ const EntityContext = createContext<Context>({
   entities: [],
   pacs008Loading: false,
   pacs008: pacs008InitialState,
+  pacs002: pacs002InitialState,
   selectedDebtorEntity: debtorInitialState,
   selectedCreditorEntity: creditorInitialState,
   selectDebtorEntity: () => {},

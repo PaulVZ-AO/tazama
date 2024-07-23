@@ -1,7 +1,7 @@
 "use client"
 
 import axios from "axios"
-import { connect, headers, NatsConnection, StringCodec } from "nats.ws"
+import { Codec, connect, NatsConnection, StringCodec } from "nats.ws"
 import Image from "next/image"
 import { useContext, useEffect, useState } from "react"
 import { DebtorDevice } from "components/Device/Debtor"
@@ -100,54 +100,54 @@ let pacs008DataPayload: PACS008 = {
 const Web = () => {
   const [hoveredRule, setHoveredRule] = useState<any>(null)
   const [hoveredType, setHoveredType] = useState<any>(null)
-  // const [nats, setNats] = useState<NatsConnection>()
+  const [nats, setNats] = useState<NatsConnection>()
   const [showModal, setModal] = useState(false)
   const entityCtx = useContext(EntityContext)
 
-  // useEffect(() => {
-  //   const sc = new StringCodec()
-  //   ;(async () => {
-  //     const nc = await connect({
-  //       servers: ["wss://demo.nats.io:8443"],
-  //       // servers: ["172.28.0.5:8222"],
-  //     })
-  //     setNats(nc)
-  //     console.log("connected to NATS")
-  //     const sub = nc.subscribe("echo")
-  //     const pacs008Sub = nc.subscribe("sub-rule-901@1.0.0")
+  useEffect(() => {
+    const sc: Codec<string> = StringCodec()
+    ;(async () => {
+      const nc = await connect({
+        // servers: ["wss://demo.nats.io:8443"],
+        servers: ["wss://localhost:4222"],
+      })
+      setNats(nc)
+      console.log("connected to NATS")
+      // const sub = nc.subscribe("echo")
+      const pacs008Sub = nc.subscribe("sub-rule-901@1.0.0")
 
-  //     const handle = (msg: any) => {
-  //       console.log(`Received a request: ${sc.decode(msg.data)}`)
-  //       msg.respond(msg.data)
-  //     }
+      const handle = (msg: any) => {
+        console.log(`Received a request: ${sc.decode(msg.data)}`)
+        msg.respond(msg.data)
+      }
 
-  //     // Wait to receive messages from the subscription and handle them
-  //     // asynchronously..
-  //     ;(async () => {
-  //       for await (const msg of sub) handle(msg)
-  //     })()
-  //     ;(async () => {
-  //       for await (const msg of pacs008Sub) handle(msg)
-  //     })()
-  //     // Now we can send a couple of requests to that subject. Note how we
-  //     // are encoding the string data on request and decoding the reply
-  //     // message data.
+      // Wait to receive messages from the subscription and handle them
+      // asynchronously..
+      // ;(async () => {
+      //   for await (const msg of sub) handle(msg)
+      // })()
+      ;(async () => {
+        for await (const msg of pacs008Sub) handle(msg)
+      })()
+      // Now we can send a couple of requests to that subject. Note how we
+      // are encoding the string data on request and decoding the reply
+      // message data.
 
-  //     let test = await nc.request("sub-rule-901@1.0.0", sc.encode("TESTING"))
-  //     console.log(`Received a reply: ${sc.decode(test.data)}`)
+      // let test = await nc.request("sub-rule-901@1.0.0", sc.encode("TESTING"))
+      // console.log(`Received a reply: ${sc.decode(test.data)}`)
 
-  //     let rep = await nc.request("echo", sc.encode("Hello!"))
-  //     console.log(`Received a reply: ${sc.decode(rep.data)}`)
+      // let rep = await nc.request("echo", sc.encode("Hello!"))
+      // console.log(`Received a reply: ${sc.decode(rep.data)}`)
 
-  //     rep = await nc.request("echo", sc.encode("World!"))
-  //     console.log(`Received a reply: ${sc.decode(rep.data)}`)
-  //   })()
+      // rep = await nc.request("echo", sc.encode("World!"))
+      // console.log(`Received a reply: ${sc.decode(rep.data)}`)
+    })()
 
-  //   return () => {
-  //     nats?.drain()
-  //     console.log("closed NATS connection")
-  //   }
-  // }, [])
+    return () => {
+      nats?.drain()
+      console.log("closed NATS connection")
+    }
+  }, [])
 
   const postPacs002Test = async () => {
     try {
@@ -614,7 +614,7 @@ const Web = () => {
           <div className="flex min-h-80 items-center justify-center">
             <StatusIndicator large={true} />
           </div>
-          {/* <button onClick={() => postPacs008Test()}>Test Post</button> */}
+          <button onClick={() => postPacs008Test()}>Test Post</button>
         </div>
       </div>
 

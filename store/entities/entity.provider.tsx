@@ -2,7 +2,12 @@
 import React, { ReactNode, useEffect, useReducer } from "react"
 import { ACTIONS } from "./entity.actions"
 import EntityContext from "./entity.context"
-import { creditorInitialState, debtorInitialState, pacs008InitialState } from "./entity.initialState"
+import {
+  creditorInitialState,
+  debtorInitialState,
+  pacs002InitialState,
+  pacs008InitialState,
+} from "./entity.initialState"
 import {
   CdtrEntity,
   CreditorAccount,
@@ -33,6 +38,7 @@ const EntityProvider = ({ children }: Props) => {
     selectedDebtorEntity: debtorInitialState,
     selectedCreditorEntity: creditorInitialState,
     pacs008: pacs008InitialState,
+    pacs002: pacs002InitialState,
   }
   const [state, dispatch] = useReducer(EntityReducer, initialEntityState)
 
@@ -432,8 +438,11 @@ const EntityProvider = ({ children }: Props) => {
       const debtor: Entity = state.entities[entityIndex]
       console.log("DEBTOR: ", debtor)
       const setPacs008: PACS008 = state.pacs008
-
-      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.DbtrAcct = { ...debtor.Accounts[accountIndex].DbtrAcct }
+      if (accountIndex !== undefined) {
+        let idx = accountIndex
+        let debtorAccount: any = { ...debtor.Accounts[idx]?.DbtrAcct }
+        setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.DbtrAcct = { ...debtorAccount }
+      }
 
       dispatch({ type: ACTIONS.SET_DEBTOR_ACCOUNT_PACS008_SUCCESS, payload: setPacs008 })
       console.log("PACS008: ", setPacs008)
@@ -475,8 +484,11 @@ const EntityProvider = ({ children }: Props) => {
       const creditor: CdtrEntity = state.creditorEntities[entityIndex]
       console.log("CREDITOR: ", creditor, entityIndex, accountIndex)
       const setPacs008: PACS008 = state.pacs008
-
-      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.CdtrAcct = { ...creditor.CreditorAccounts[accountIndex].CdtrAcct }
+      if (accountIndex !== undefined) {
+        let creditorAccount: any = { ...creditor.CreditorAccounts[accountIndex]?.CdtrAcct }
+        setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.CdtrAcct = { ...creditorAccount }
+      }
+      //   setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.CdtrAcct = { ...creditor.CreditorAccounts[accountIndex].CdtrAcct }
 
       dispatch({ type: ACTIONS.SET_CREDITOR_ACCOUNT_PACS008_SUCCESS, payload: setPacs008 })
       console.log("PACS008: ", setPacs008)
@@ -515,6 +527,7 @@ const EntityProvider = ({ children }: Props) => {
         creditorEntities: state.creditorEntities,
         entities: state.entities,
         pacs008: state.pacs008,
+        pacs002: state.pacs002,
         selectedDebtorEntity: state.selectedDebtorEntity,
         selectedCreditorEntity: state.selectedCreditorEntity,
         selectDebtorEntity,

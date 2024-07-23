@@ -1,4 +1,4 @@
-import { PACS008, SelectedCreditor, SelectedDebtor } from "./entity.interface"
+import { PACS002, PACS008, SelectedCreditor, SelectedDebtor } from "./entity.interface"
 
 export const creditorInitialState: SelectedCreditor = {
   creditorSelectedIndex: undefined,
@@ -188,6 +188,25 @@ export const pacs008InitialState: PACS008 = {
           },
         },
       },
+    },
+  },
+}
+
+export const pacs002InitialState: PACS002 = {
+  FIToFIPmtSts: {
+    GrpHdr: { MsgId: "", CreDtTm: "" },
+    TxInfAndSts: {
+      OrgnlInstrId: "",
+      OrgnlEndToEndId: "",
+      TxSts: "ACCC",
+      ChrgsInf: [
+        { Amt: { Amt: 0, Ccy: "USD" }, Agt: { FinInstnId: { ClrSysMmbId: { MmbId: "fsp001" } } } },
+        { Amt: { Amt: 0, Ccy: "USD" }, Agt: { FinInstnId: { ClrSysMmbId: { MmbId: "fsp001" } } } },
+        { Amt: { Amt: 0, Ccy: "USD" }, Agt: { FinInstnId: { ClrSysMmbId: { MmbId: "fsp002" } } } },
+      ],
+      AccptncDtTm: "",
+      InstgAgt: { FinInstnId: { ClrSysMmbId: { MmbId: "fsp001" } } },
+      InstdAgt: { FinInstnId: { ClrSysMmbId: { MmbId: "fsp002" } } },
     },
   },
 }
