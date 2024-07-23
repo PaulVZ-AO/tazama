@@ -37,8 +37,7 @@ export function Modal(props: Props) {
   }, [props.entity])
 
   const accounts = typeof props.selectedEntity === "number" ? entityCtx.entities[props.selectedEntity]?.Accounts : []
-  const accountNames = accounts ? accounts.map((account: any) => account.DbtrAcct.Nm) : []
-  console.log(accountNames)
+  const accountDetails = accounts ? accounts.map((account: any) => account) : []
 
   return (
     <div
@@ -74,7 +73,7 @@ export function Modal(props: Props) {
                   </svg>
                 </button>
               </div>
-              {accountNames.map((accountName, index) => (
+              {accountDetails.map((accountDetail) => (
                 <>
                   <div className="col-span-3 flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={props.colour} className="size-20">
@@ -86,12 +85,7 @@ export function Modal(props: Props) {
                     </svg>
                   </div>
 
-                  <div
-                    className="col-span-9 text-left
-                [&>div>input]:rounded-lg [&>div>input]:bg-gray-200
-                [&>div>input]:p-2 [&>div>input]:shadow-inner [&>div]:mb-2 [&>div]:pr-5
-              "
-                  >
+                  <div className="col-span-9 text-left [&>div>input]:rounded-lg [&>div>input]:bg-gray-200 [&>div>input]:p-2 [&>div>input]:shadow-inner [&>div]:mb-2 [&>div]:pr-5">
                     <div className="mt-5">
                       <label htmlFor="modal-Nm">Full Name</label>
                       <input
@@ -99,7 +93,7 @@ export function Modal(props: Props) {
                         id="modal-Nm"
                         className="w-full"
                         defaultValue={props.entity?.Dbtr.Nm}
-                        value={accountName}
+                        value={accountDetail.DbtrAcct.Nm}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
                             setCustomEntity({
@@ -204,7 +198,6 @@ export function Modal(props: Props) {
                         }}
                       />
                     </div>
-
                     <div>
                       <label htmlFor="modal-ID">ID number</label>
                       <input
@@ -212,7 +205,7 @@ export function Modal(props: Props) {
                         id="modal-ID"
                         className="w-full"
                         defaultValue={props.entity?.Dbtr.Id.PrvtId.Othr.Id}
-                        value={customEntity?.Dbtr.Id.PrvtId.Othr.Id}
+                        value={accountDetail.DbtrAcct.Id.Othr.Id}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
                             setCustomEntity({
@@ -235,7 +228,6 @@ export function Modal(props: Props) {
                         }}
                       />
                     </div>
-
                     <div>
                       <label htmlFor="modal-MobNb">Mobile number</label>
                       <input
@@ -267,15 +259,15 @@ export function Modal(props: Props) {
               {/* box-shadow: inset 20px 20px 60px #bebebe,
             inset -20px -20px 60px #ffffff; */}
 
-              <div className="col-span-12 m-5">
+              {/* <div className="col-span-12 m-5">
                 <h5>Accounts</h5>
                 Loop through the account details.
                 <div>
                   <label htmlFor="modal-ID">name</label>
                 </div>
-                {/* read only */}
+                read only
                 Id Prtry
-              </div>
+              </div> */}
 
               <div className="col-span-6 m-5">
                 <button
