@@ -2,28 +2,16 @@ import Image from "next/image"
 
 export function DebtorDevice() {
   return (
-    <div className="col-span-4 relative" style={{ height: "505px" }}>
-      <Image
-        src="/device.svg"
-        width="250"
-        height="505"
-        className="absolute top-0 left-20 "
-        alt=""
-        priority={true}
-      />
-      <div className="absolute" style={{ marginLeft:"94px", width: "222px", top: "15px"}}>
-
+    <div className="relative col-span-4" style={{ height: "505px" }}>
+      <Image src="/device.svg" width="250" height="505" className="absolute left-20 top-0 " alt="" priority={true} />
+      <div className="absolute" style={{ marginLeft: "94px", width: "222px", top: "15px" }}>
         <div className="flex">
-          <div className="font-bold py-1 pl-7 text-xs">
-            11:32
-          </div>
-          <div className="font-bold py-1 pl-7 text-xs">
-
-          </div>
+          <div className="py-1 pl-7 text-xs font-bold">11:32</div>
+          <div className="py-1 pl-7 text-xs font-bold"></div>
         </div>
 
         {/* device profile */}
-        <div className="bg-gray-400 text-blue-500 py-2 pl-2 flex">
+        <div className="flex bg-gray-400 py-2 pl-2 text-blue-500">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
             <path
               fillRule="evenodd"
@@ -31,16 +19,16 @@ export function DebtorDevice() {
               clipRule="evenodd"
             />
           </svg>
-          <span className="text-white ml-2">Sarine Gaelan</span>
+          <span className="ml-2 text-white">Sarine Gaelan</span>
         </div>
 
-        <div className="border m-2 p-2 rounded-md text-sm">
-          <p>Account: &quot;Sarine&lsquo;s first account&quot;</p>
-          <p>Balance: $156</p>
-          <p>Purpose: Transfer</p>
+        <div className="m-2 rounded-md border p-2 text-sm">
+          <p>ID: &quot;Sarine&lsquo;s first account&quot;</p>
+          <p>Account: $156</p>
+          <p>Description: </p>
           <p>Lat & Lng: -33.918352,18.401656</p>
-          <hr className="mt-2"/>
-          <button className="text-blue-500 flex items-center m-auto mt-2">
+          <hr className="mt-2" />
+          <button className="m-auto mt-2 flex items-center text-blue-500">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -58,7 +46,6 @@ export function DebtorDevice() {
             edit
           </button>
         </div>
-
       </div>
     </div>
   )

@@ -8,12 +8,14 @@ export interface DebtorEntity {
           CityOfBirth: string
           CtryOfBirth: string
         }
-        Othr: {
-          Id: string
-          SchmeNm: {
-            Prtry: string
-          }
-        }
+        Othr: [
+          {
+            Id: string
+            SchmeNm: {
+              Prtry: string
+            }
+          },
+        ]
       }
     }
     CtctDtls: { MobNb: string }
@@ -23,12 +25,14 @@ export interface DebtorEntity {
 export interface DebtorAccount {
   DbtrAcct: {
     Id: {
-      Othr: {
-        Id: string
-        SchmeNm: {
-          Prtry: string
-        }
-      }
+      Othr: [
+        {
+          Id: string
+          SchmeNm: {
+            Prtry: string
+          }
+        },
+      ]
     }
     Nm: string
   }
@@ -37,12 +41,14 @@ export interface DebtorAccount {
 export interface CreditorAccount {
   CdtrAcct: {
     Id: {
-      Othr: {
-        Id: string
-        SchmeNm: {
-          Prtry: string
-        }
-      }
+      Othr: [
+        {
+          Id: string
+          SchmeNm: {
+            Prtry: string
+          }
+        },
+      ]
     }
     Nm: string
   }
@@ -68,12 +74,14 @@ export interface CreditorEntity {
           CityOfBirth: string
           CtryOfBirth: string
         }
-        Othr: {
-          Id: string
-          SchmeNm: {
-            Prtry: string
-          }
-        }
+        Othr: [
+          {
+            Id: string
+            SchmeNm: {
+              Prtry: string
+            }
+          },
+        ]
       }
     }
     CtctDtls: { MobNb: string }
@@ -89,7 +97,7 @@ export interface Country {
 
 export interface PACS008 {
   TxTp: string
-  FIToFICstmrCdt: {
+  FIToFICstmrCdtTrf: {
     GrpHdr: {
       MsgId: string
       CreDtTm: string
@@ -105,13 +113,13 @@ export interface PACS008 {
       }
       IntrBkSttlmAmt: {
         Amt: {
-          Amt: string
+          Amt: number
           Ccy: string
         }
       }
       InstdAmt: {
         Amt: {
-          Amt: string
+          Amt: number
           Ccy: string
         }
       }
@@ -138,12 +146,14 @@ export interface PACS008 {
               CityOfBirth: string
               CtryOfBirth: string
             }
-            Othr: {
-              Id: string
-              SchmeNm: {
-                Prtry: string
-              }
-            }
+            Othr: [
+              {
+                Id: string
+                SchmeNm: {
+                  Prtry: string
+                }
+              },
+            ]
           }
         }
         CtctDtls: {
@@ -159,12 +169,14 @@ export interface PACS008 {
               CityOfBirth: string
               CtryOfBirth: string
             }
-            Othr: {
-              Id: string
-              SchmeNm: {
-                Prtry: string
-              }
-            }
+            Othr: [
+              {
+                Id: string
+                SchmeNm: {
+                  Prtry: string
+                }
+              },
+            ]
           }
         }
         CtctDtls: {
@@ -173,12 +185,14 @@ export interface PACS008 {
       }
       DbtrAcct: {
         Id: {
-          Othr: {
-            Id: string
-            SchmeNm: {
-              Prtry: string
-            }
-          }
+          Othr: [
+            {
+              Id: string
+              SchmeNm: {
+                Prtry: string
+              }
+            },
+          ]
         }
         Nm: string
       }
@@ -205,12 +219,14 @@ export interface PACS008 {
               CityOfBirth: string
               CtryOfBirth: string
             }
-            Othr: {
-              Id: string
-              SchmeNm: {
-                Prtry: string
-              }
-            }
+            Othr: [
+              {
+                Id: string
+                SchmeNm: {
+                  Prtry: string
+                }
+              },
+            ]
           }
         }
         CtctDtls: {
@@ -219,12 +235,14 @@ export interface PACS008 {
       }
       CdtrAcct: {
         Id: {
-          Othr: {
-            Id: string
-            SchmeNm: {
-              Prtry: string
-            }
-          }
+          Othr: [
+            {
+              Id: string
+              SchmeNm: {
+                Prtry: string
+              }
+            },
+          ]
         }
         Nm: string
       }
@@ -250,6 +268,76 @@ export interface PACS008 {
               Lat: string
               Long: string
             }
+          }
+        }
+      }
+    }
+  }
+}
+
+export interface PACS002 {
+  FIToFIPmtSts: {
+    GrpHdr: {
+      MsgId: string
+      CreDtTm: string
+    }
+    TxInfAndSts: {
+      OrgnlInstrId: string
+      OrgnlEndToEndId: string
+      TxSts: string
+      ChrgsInf: [
+        {
+          Amt: {
+            Amt: number
+            Ccy: string
+          }
+          Agt: {
+            FinInstnId: {
+              ClrSysMmbId: {
+                MmbId: string
+              }
+            }
+          }
+        },
+        {
+          Amt: {
+            Amt: number
+            Ccy: string
+          }
+          Agt: {
+            FinInstnId: {
+              ClrSysMmbId: {
+                MmbId: string
+              }
+            }
+          }
+        },
+        {
+          Amt: {
+            Amt: number
+            Ccy: string
+          }
+          Agt: {
+            FinInstnId: {
+              ClrSysMmbId: {
+                MmbId: string
+              }
+            }
+          }
+        },
+      ]
+      AccptncDtTm: string
+      InstgAgt: {
+        FinInstnId: {
+          ClrSysMmbId: {
+            MmbId: string
+          }
+        }
+      }
+      InstdAgt: {
+        FinInstnId: {
+          ClrSysMmbId: {
+            MmbId: string
           }
         }
       }
