@@ -15,8 +15,8 @@ export const pacs008InitialState: PACS008 = {
   TxTp: "pacs.008.001.10",
   FIToFICstmrCdtTrf: {
     GrpHdr: {
-      MsgId: "%",
-      CreDtTm: "%",
+      MsgId: "",
+      CreDtTm: "",
       NbOfTxs: 1,
       SttlmInf: {
         SttlmMtd: "CLRG",
@@ -24,8 +24,8 @@ export const pacs008InitialState: PACS008 = {
     },
     CdtTrfTxInf: {
       PmtId: {
-        InstrId: "%",
-        EndToEndId: "%",
+        InstrId: "",
+        EndToEndId: "",
       },
       IntrBkSttlmAmt: {
         Amt: {
@@ -48,46 +48,46 @@ export const pacs008InitialState: PACS008 = {
         Agt: {
           FinInstnId: {
             ClrSysMmbId: {
-              MmbId: "dfsp001",
+              MmbId: "fsp001",
             },
           },
         },
       },
       InitgPty: {
-        Nm: "%",
+        Nm: "",
         Id: {
           PrvtId: {
             DtAndPlcOfBirth: {
-              BirthDt: "%",
+              BirthDt: "",
               CityOfBirth: "Unknown",
               CtryOfBirth: "ZZ",
             },
             Othr: [
               {
-                Id: "%",
+                Id: "",
                 SchmeNm: {
-                  Prtry: "TAZAMA_EID",
+                  Prtry: "MSISDN",
                 },
               },
             ],
           },
         },
         CtctDtls: {
-          MobNb: "%",
+          MobNb: "",
         },
       },
       Dbtr: {
-        Nm: "%",
+        Nm: "",
         Id: {
           PrvtId: {
             DtAndPlcOfBirth: {
-              BirthDt: "%",
+              BirthDt: "",
               CityOfBirth: "Unknown",
               CtryOfBirth: "ZZ",
             },
             Othr: [
               {
-                Id: "%",
+                Id: "",
                 SchmeNm: {
                   Prtry: "TAZAMA_EID",
                 },
@@ -96,49 +96,49 @@ export const pacs008InitialState: PACS008 = {
           },
         },
         CtctDtls: {
-          MobNb: "%",
+          MobNb: "",
         },
       },
       DbtrAcct: {
         Id: {
           Othr: [
             {
-              Id: "%",
+              Id: "",
 
               SchmeNm: {
-                Prtry: "Tazama_AID",
+                Prtry: "MSISDN",
               },
             },
           ],
         },
-        Nm: "%",
+        Nm: "",
       },
       DbtrAgt: {
         FinInstnId: {
           ClrSysMmbId: {
-            MmbId: "dfsp001",
+            MmbId: "fsp001",
           },
         },
       },
       CdtrAgt: {
         FinInstnId: {
           ClrSysMmbId: {
-            MmbId: "dfsp002",
+            MmbId: "fsp002",
           },
         },
       },
       Cdtr: {
-        Nm: "%",
+        Nm: "",
         Id: {
           PrvtId: {
             DtAndPlcOfBirth: {
-              BirthDt: "%",
+              BirthDt: "",
               CityOfBirth: "Unknown",
               CtryOfBirth: "ZZ",
             },
             Othr: [
               {
-                Id: "%",
+                Id: "",
                 SchmeNm: {
                   Prtry: "TAZAMA_EID",
                 },
@@ -147,24 +147,24 @@ export const pacs008InitialState: PACS008 = {
           },
         },
         CtctDtls: {
-          MobNb: "%",
+          MobNb: "",
         },
       },
       CdtrAcct: {
         Id: {
           Othr: [
             {
-              Id: "%",
+              Id: "",
               SchmeNm: {
-                Prtry: "Tazama_AID",
+                Prtry: "MSISDN",
               },
             },
           ],
         },
-        Nm: "%",
+        Nm: "",
       },
       Purp: {
-        Cd: "%",
+        Cd: "",
       },
     },
     RgltryRptg: {
@@ -174,7 +174,7 @@ export const pacs008InitialState: PACS008 = {
       },
     },
     RmtInf: {
-      Ustrd: "%",
+      Ustrd: "",
     },
     SplmtryData: {
       Envlp: {
@@ -182,8 +182,8 @@ export const pacs008InitialState: PACS008 = {
           Xprtn: "2021-11-30T10:38:56.000Z",
           InitgPty: {
             Glctn: {
-              Lat: "%",
-              Long: "%",
+              Lat: "",
+              Long: "",
             },
           },
         },
@@ -207,6 +207,71 @@ export const pacs002InitialState: PACS002 = {
       AccptncDtTm: "",
       InstgAgt: { FinInstnId: { ClrSysMmbId: { MmbId: "fsp001" } } },
       InstdAgt: { FinInstnId: { ClrSysMmbId: { MmbId: "fsp002" } } },
+    },
+  },
+}
+
+let test = {
+  TxTp: "pacs.008.001.10",
+  FIToFICstmrCdtTrf: {
+    GrpHdr: {
+      MsgId: "3b042ed1e5b745989d7da3e3e0131380",
+      CreDtTm: "2024-07-22T13:02:26.820Z",
+      NbOfTxs: 1,
+      SttlmInf: { SttlmMtd: "CLRG" },
+    },
+    CdtTrfTxInf: {
+      PmtId: { InstrId: "5ab4fc7355de4ef8a75b78b00a681ed2", EndToEndId: "d11d18c60784485dbd9d8c8b1d9dd0f8" },
+      IntrBkSttlmAmt: { Amt: { Amt: 280.54, Ccy: "XTS" } },
+      InstdAmt: { Amt: { Amt: 280.54, Ccy: "XTS" } },
+      ChrgBr: "DEBT",
+      ChrgsInf: { Amt: { Amt: 0, Ccy: "XTS" }, Agt: { FinInstnId: { ClrSysMmbId: { MmbId: "fsp001" } } } },
+      InitgPty: {
+        Nm: "April Blake Grant",
+        Id: {
+          PrvtId: {
+            DtAndPlcOfBirth: { BirthDt: "1968-02-01", CityOfBirth: "Unknown", CtryOfBirth: "ZZ" },
+            Othr: [{ Id: "+27730975224", SchmeNm: { Prtry: "MSISDN" } }],
+          },
+        },
+        CtctDtls: { MobNb: "+27-730975224" },
+      },
+      Dbtr: {
+        Nm: "April Blake Grant",
+        Id: {
+          PrvtId: {
+            DtAndPlcOfBirth: { BirthDt: "1999-07-04", CityOfBirth: "Unknown", CtryOfBirth: "ZZ" },
+            Othr: [{ Id: "aac94c61dfa44d19beb9cc4ccf01b133", SchmeNm: { Prtry: "TAZAMA_EID" } }],
+          },
+        },
+        CtctDtls: { MobNb: "+27-730975224" },
+      },
+      DbtrAcct: {
+        Id: { Othr: [{ Id: "c13420d61bff4ef5a85f576f3386dbf3", SchmeNm: { Prtry: "MSISDN" } }] },
+        Nm: "April Grant",
+      },
+      DbtrAgt: { FinInstnId: { ClrSysMmbId: { MmbId: "fsp001" } } },
+      CdtrAgt: { FinInstnId: { ClrSysMmbId: { MmbId: "fsp002" } } },
+      Cdtr: {
+        Nm: "Felicia Easton Quill",
+        Id: {
+          PrvtId: {
+            DtAndPlcOfBirth: { BirthDt: "1935-05-08", CityOfBirth: "Unknown", CtryOfBirth: "ZZ" },
+            Othr: [{ Id: "a9f383858e2941d0bdd37a70343ecf86", SchmeNm: { Prtry: "TAZAMA_EID" } }],
+          },
+        },
+        CtctDtls: { MobNb: "+27-707650428" },
+      },
+      CdtrAcct: {
+        Id: { Othr: [{ Id: "e0910b9ee7a64591bdca6a4f365600f0", SchmeNm: { Prtry: "MSISDN" } }] },
+        Nm: "Felicia Quill",
+      },
+      Purp: { Cd: "MP2P" },
+    },
+    RgltryRptg: { Dtls: { Tp: "BALANCE OF PAYMENTS", Cd: "100" } },
+    RmtInf: { Ustrd: "Generic payment description" },
+    SplmtryData: {
+      Envlp: { Doc: { Xprtn: "2021-11-30T10:38:56.000Z", InitgPty: { Glctn: { Lat: "-3.1609", Long: "38.3588" } } } },
     },
   },
 }

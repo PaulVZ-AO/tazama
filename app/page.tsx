@@ -1,7 +1,7 @@
 "use client"
 
 import axios from "axios"
-import { Codec, connect, NatsConnection, StringCodec } from "nats.ws"
+// import { Codec, connect, NatsConnection, StringCodec } from "nats.ws"
 import Image from "next/image"
 import { useContext, useEffect, useState } from "react"
 import { DebtorDevice } from "components/Device/Debtor"
@@ -11,145 +11,60 @@ import { Profile } from "components/Profile/Profile"
 import { CreditorProfile } from "components/ProfileCreditor/ProfileCreditor"
 import { StatusIndicator } from "components/StatusIndicator/StatusIndicator"
 import EntityContext from "store/entities/entity.context"
-import { PACS002, PACS008 } from "store/entities/entity.interface"
-
-let pacs002DataPayload: PACS002 = {
-  FIToFIPmtSts: {
-    GrpHdr: { MsgId: "1f7d664742a44f8784dffe0b4693752f", CreDtTm: "2024-07-22T13:07:26.820Z" },
-    TxInfAndSts: {
-      OrgnlInstrId: "5ab4fc7355de4ef8a75b78b00a681ed2",
-      OrgnlEndToEndId: "d11d18c60784485dbd9d8c8b1d9dd0f8",
-      TxSts: "ACCC",
-      ChrgsInf: [
-        { Amt: { Amt: 0, Ccy: "USD" }, Agt: { FinInstnId: { ClrSysMmbId: { MmbId: "fsp001" } } } },
-        { Amt: { Amt: 0, Ccy: "USD" }, Agt: { FinInstnId: { ClrSysMmbId: { MmbId: "fsp001" } } } },
-        { Amt: { Amt: 0, Ccy: "USD" }, Agt: { FinInstnId: { ClrSysMmbId: { MmbId: "fsp002" } } } },
-      ],
-      AccptncDtTm: "2023-06-02T07:52:31.000Z",
-      InstgAgt: { FinInstnId: { ClrSysMmbId: { MmbId: "fsp001" } } },
-      InstdAgt: { FinInstnId: { ClrSysMmbId: { MmbId: "fsp002" } } },
-    },
-  },
-}
-
-let pacs008DataPayload: PACS008 = {
-  TxTp: "pacs.008.001.10",
-  FIToFICstmrCdtTrf: {
-    GrpHdr: {
-      MsgId: "3b042ed1e5b745989d7da3e3e0131380",
-      CreDtTm: "2024-07-22T13:02:26.820Z",
-      NbOfTxs: 1,
-      SttlmInf: { SttlmMtd: "CLRG" },
-    },
-    CdtTrfTxInf: {
-      PmtId: { InstrId: "5ab4fc7355de4ef8a75b78b00a681ed2", EndToEndId: "d11d18c60784485dbd9d8c8b1d9dd0f8" },
-      IntrBkSttlmAmt: { Amt: { Amt: 280.54, Ccy: "XTS" } },
-      InstdAmt: { Amt: { Amt: 280.54, Ccy: "XTS" } },
-      ChrgBr: "DEBT",
-      ChrgsInf: { Amt: { Amt: 0, Ccy: "XTS" }, Agt: { FinInstnId: { ClrSysMmbId: { MmbId: "fsp001" } } } },
-      InitgPty: {
-        Nm: "April Blake Grant",
-        Id: {
-          PrvtId: {
-            DtAndPlcOfBirth: { BirthDt: "1968-02-01", CityOfBirth: "Unknown", CtryOfBirth: "ZZ" },
-            Othr: [{ Id: "+27730975224", SchmeNm: { Prtry: "MSISDN" } }],
-          },
-        },
-        CtctDtls: { MobNb: "+27-730975224" },
-      },
-      Dbtr: {
-        Nm: "April Blake Grant",
-        Id: {
-          PrvtId: {
-            DtAndPlcOfBirth: { BirthDt: "1999-07-04", CityOfBirth: "Unknown", CtryOfBirth: "ZZ" },
-            Othr: [{ Id: "aac94c61dfa44d19beb9cc4ccf01b133", SchmeNm: { Prtry: "TAZAMA_EID" } }],
-          },
-        },
-        CtctDtls: { MobNb: "+27-730975224" },
-      },
-      DbtrAcct: {
-        Id: { Othr: [{ Id: "c13420d61bff4ef5a85f576f3386dbf3", SchmeNm: { Prtry: "MSISDN" } }] },
-        Nm: "April Grant",
-      },
-      DbtrAgt: { FinInstnId: { ClrSysMmbId: { MmbId: "fsp001" } } },
-      CdtrAgt: { FinInstnId: { ClrSysMmbId: { MmbId: "fsp002" } } },
-      Cdtr: {
-        Nm: "Felicia Easton Quill",
-        Id: {
-          PrvtId: {
-            DtAndPlcOfBirth: { BirthDt: "1935-05-08", CityOfBirth: "Unknown", CtryOfBirth: "ZZ" },
-            Othr: [{ Id: "a9f383858e2941d0bdd37a70343ecf86", SchmeNm: { Prtry: "TAZAMA_EID" } }],
-          },
-        },
-        CtctDtls: { MobNb: "+27-707650428" },
-      },
-      CdtrAcct: {
-        Id: { Othr: [{ Id: "e0910b9ee7a64591bdca6a4f365600f0", SchmeNm: { Prtry: "MSISDN" } }] },
-        Nm: "Felicia Quill",
-      },
-      Purp: { Cd: "MP2P" },
-    },
-    RgltryRptg: { Dtls: { Tp: "BALANCE OF PAYMENTS", Cd: "100" } },
-    RmtInf: { Ustrd: "Generic payment description" },
-    SplmtryData: {
-      Envlp: { Doc: { Xprtn: "2021-11-30T10:38:56.000Z", InitgPty: { Glctn: { Lat: "-3.1609", Long: "38.3588" } } } },
-    },
-  },
-}
 
 const Web = () => {
   const [hoveredRule, setHoveredRule] = useState<any>(null)
   const [hoveredType, setHoveredType] = useState<any>(null)
-  const [nats, setNats] = useState<NatsConnection>()
+  // const [nats, setNats] = useState<NatsConnection>()
   const [showModal, setModal] = useState(false)
   const entityCtx = useContext(EntityContext)
 
-  useEffect(() => {
-    const sc: Codec<string> = StringCodec()
-    ;(async () => {
-      const nc = await connect({
-        // servers: ["wss://demo.nats.io:8443"],
-        servers: ["wss://nats:4222"],
-      })
-      setNats(nc)
-      console.log("connected to NATS")
-      // const sub = nc.subscribe("echo")
-      const pacs008Sub = nc.subscribe("sub-rule-901@1.0.0")
+  // useEffect(() => {
+  //   const sc: Codec<string> = StringCodec()
+  //   ;(async () => {
+  //     const nc = await connect({
+  //       // servers: ["wss://demo.nats.io:8443"],
+  //       servers: ["wss://nats:4222"],
+  //     })
+  //     setNats(nc)
+  //     console.log("connected to NATS")
+  //     // const sub = nc.subscribe("echo")
+  //     const pacs008Sub = nc.subscribe("sub-rule-901@1.0.0")
 
-      const connected = nc.subscribe("connection")
+  //     const connected = nc.subscribe("connection")
 
-      const handle = (msg: any) => {
-        console.log(`Received a request: ${sc.decode(msg.data)}`)
-        msg.respond(msg.data)
-      }
+  //     const handle = (msg: any) => {
+  //       console.log(`Received a request: ${sc.decode(msg.data)}`)
+  //       msg.respond(msg.data)
+  //     }
 
-      // Wait to receive messages from the subscription and handle them
-      // asynchronously..
-      ;(async () => {
-        for await (const msg of connected) handle(msg)
-      })()
-      ;(async () => {
-        for await (const msg of pacs008Sub) handle(msg)
-      })()
-      // Now we can send a couple of requests to that subject. Note how we
-      // are encoding the string data on request and decoding the reply
-      // message data.
+  //     // Wait to receive messages from the subscription and handle them
+  //     // asynchronously..
+  //     ;(async () => {
+  //       for await (const msg of connected) handle(msg)
+  //     })()
+  //     ;(async () => {
+  //       for await (const msg of pacs008Sub) handle(msg)
+  //     })()
+  //     // Now we can send a couple of requests to that subject. Note how we
+  //     // are encoding the string data on request and decoding the reply
+  //     // message data.
 
-      let connection = await nc.request("connection", sc.encode("Demo App Connected"))
-      console.log(`Received a reply: ${sc.decode(connection.data)}`)
-    })()
+  //     let connection = await nc.request("connection", sc.encode("Demo App Connected"))
+  //     console.log(`Received a reply: ${sc.decode(connection.data)}`)
+  //   })()
 
-    return () => {
-      nats?.drain()
-      console.log("closed NATS connection")
-    }
-  }, [])
+  //   return () => {
+  //     nats?.drain()
+  //     console.log("closed NATS connection")
+  //   }
+  // }, [])
 
   const postPacs002Test = async () => {
     try {
       const response = await axios.post(
         "http://localhost:5001/v1/evaluate/iso20022/pacs.002.001.12",
-        pacs002DataPayload,
+        entityCtx.pacs002,
         { headers: { "Content-Type": "application/json" } }
       )
       console.log("Test POST PACS002 response: ", response.data)

@@ -24,6 +24,7 @@ interface Context {
   creditorEntities: Array<CdtrEntity>
   entities: Array<Entity>
   pacs008Loading: boolean
+  pacs002Loading: boolean
   pacs008: PACS008
   pacs002: PACS002
   selectedDebtorEntity: SelectedDebtor
@@ -41,6 +42,7 @@ interface Context {
   setCreditorPacs008: (entityIndex: number) => void
   setCreditorAccountPacs008: (entityIndex: number, accountIndex: number) => void
   generateTransaction: () => void
+  buildPacs002: () => void
 }
 
 const EntityContext = createContext<Context>({
@@ -51,6 +53,7 @@ const EntityContext = createContext<Context>({
   creditorEntities: [],
   entities: [],
   pacs008Loading: false,
+  pacs002Loading: false,
   pacs008: pacs008InitialState,
   pacs002: pacs002InitialState,
   selectedDebtorEntity: debtorInitialState,
@@ -68,6 +71,7 @@ const EntityContext = createContext<Context>({
   setCreditorPacs008: () => {},
   setCreditorAccountPacs008: () => {},
   generateTransaction: () => {},
+  buildPacs002: () => {},
 })
 
 export default EntityContext
