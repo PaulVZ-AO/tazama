@@ -1,8 +1,7 @@
 "use client"
 import React, { useContext, useEffect, useState } from "react"
 import EntityContext from "store/entities/entity.context"
-import { DebtorEntity, Entity } from "store/entities/entity.interface"
-import { custom, number } from "zod"
+import { DebtorEntity } from "store/entities/entity.interface"
 
 interface Props {
   colour?: string
@@ -205,8 +204,8 @@ export function Modal(props: Props) {
                     type="text"
                     id="modal-ID"
                     className="w-full"
-                    defaultValue={props.entity?.Dbtr.Id.PrvtId.Othr.Id}
-                    value={customEntity?.Dbtr.Id.PrvtId.Othr.Id}
+                    defaultValue={props.entity?.Dbtr.Id.PrvtId.Othr[0].Id}
+                    value={customEntity?.Dbtr.Id.PrvtId.Othr[0].Id}
                     onChange={(e) => {
                       if (customEntity !== undefined) {
                         setCustomEntity({
@@ -217,10 +216,12 @@ export function Modal(props: Props) {
                             Id: {
                               PrvtId: {
                                 ...customEntity.Dbtr.Id.PrvtId,
-                                Othr: {
-                                  ...customEntity.Dbtr.Id.PrvtId.Othr,
-                                  Id: e.target.value,
-                                },
+                                Othr: [
+                                  {
+                                    ...customEntity.Dbtr.Id.PrvtId.Othr[0],
+                                    Id: e.target.value,
+                                  },
+                                ],
                               },
                             },
                           },
@@ -259,17 +260,15 @@ export function Modal(props: Props) {
               {/* box-shadow: inset 20px 20px 60px #bebebe,
             inset -20px -20px 60px #ffffff; */}
 
-<div className="col-span-12 m-5">
-  <h5>Accounts</h5>
-
-  Loop through the account details.
-  <div>
-    <label htmlFor="modal-ID">name</label>
-  </div>
-  {/* read only */}
-  Id
-  Prtry
-</div>
+              <div className="col-span-12 m-5">
+                <h5>Accounts</h5>
+                Loop through the account details.
+                <div>
+                  <label htmlFor="modal-ID">name</label>
+                </div>
+                {/* read only */}
+                Id Prtry
+              </div>
 
               <div className="col-span-6 m-5">
                 <button
