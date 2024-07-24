@@ -47,6 +47,14 @@ export function DebtorDevice() {
           </button>
         </div>
       </div>
+
+      <div className="absolute" style={{ marginLeft: "94px", width: "222px", bottom: "25px" }}>
+        <div className="bg-black ml-5 rounded-lg text-white w-4/5" style={{ padding: ".1em" }}>
+          <button className="border border-white p-1 rounded-lg w-full">
+            Send
+          </button>
+        </div>
+      </div>
     </div>
   )
 }
