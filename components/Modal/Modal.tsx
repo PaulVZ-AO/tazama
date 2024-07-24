@@ -1,43 +1,43 @@
-import React, { useContext, useEffect, useState } from "react";
-import EntityContext from "store/entities/entity.context";
-import { DebtorEntity, Entity } from "store/entities/entity.interface";
+import React, { useContext, useEffect, useState } from "react"
+import EntityContext from "store/entities/entity.context"
+import { DebtorEntity, Entity } from "store/entities/entity.interface"
 
 interface Props {
-  colour?: string;
-  entity?: DebtorEntity | undefined;
-  selectedEntity: number | undefined;
-  showModal: boolean;
-  setModal: (value: boolean) => void;
+  colour?: string
+  entity?: DebtorEntity | undefined
+  selectedEntity: number | undefined
+  showModal: boolean
+  setModal: (value: boolean) => void
 }
 
 export function Modal(props: Props) {
-  const entityCtx = useContext(EntityContext);
-  const [customEntity, setCustomEntity] = useState<DebtorEntity | undefined>(undefined);
-  const [activeSection, setActiveSection] = useState<'User' | 'Accounts'>('User');
+  const entityCtx = useContext(EntityContext)
+  const [customEntity, setCustomEntity] = useState<DebtorEntity | undefined>(undefined)
+  const [activeSection, setActiveSection] = useState<"User" | "Accounts">("User")
 
   let modalProp = {
     modalTitle: "Modal Title",
-  };
+  }
 
   function handleClick() {
-    setCustomEntity(undefined);
-    props.setModal(!props.showModal);
+    setCustomEntity(undefined)
+    props.setModal(!props.showModal)
   }
 
   useEffect(() => {
-    console.log(customEntity);
-  }, [customEntity]);
+    console.log(customEntity)
+  }, [customEntity])
 
   useEffect(() => {
     if (props.entity !== undefined) {
       if (entityCtx.entities.length > 0 && typeof props.selectedEntity === "number") {
-        setCustomEntity(entityCtx.entities[props.selectedEntity]?.Entity);
+        setCustomEntity(entityCtx.entities[props.selectedEntity]?.Entity)
       }
     }
-  }, [props.entity]);
+  }, [props.entity])
 
-  const accounts = typeof props.selectedEntity === "number" ? entityCtx.entities[props.selectedEntity]?.Accounts : [];
-  const accountDetails = accounts ? accounts.map((account: any) => account) : [];
+  const accounts = typeof props.selectedEntity === "number" ? entityCtx.entities[props.selectedEntity]?.Accounts : []
+  const accountDetails = accounts ? accounts.map((account: any) => account) : []
 
   return (
     <div
@@ -52,14 +52,12 @@ export function Modal(props: Props) {
       ></div>
 
       <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-        <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-          <div className="relative overflow-hidden rounded-lg bg-gray-200 p-5 w-[470px]">
-            <div className="grid grid-cols-12">
-              <div className="col-span-10">
-                <h2 className="text-left">{modalProp.modalTitle}</h2>
-              </div>
+        <div className="flex min-h-full items-end justify-center p-4 sm:items-center sm:p-0">
+          <div className="relative w-[470px] overflow-hidden rounded-lg bg-gray-200 p-5">
+            <div className="">
+              <div className="flex flex-col justify-between ">
+                <h2>{modalProp.modalTitle}</h2>
 
-              <div className="col-span-2">
                 <button
                   className="absolute right-5 rounded-full bg-gradient-to-r from-gray-200 to-gray-100 p-1 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"
                   onClick={handleClick}
@@ -75,25 +73,25 @@ export function Modal(props: Props) {
               </div>
 
               {/* Toggle Buttons */}
-              <div className="col-span-12 flex justify-around my-4">
+              <div className="my-4 flex justify-around">
                 <button
-                  className={`py-2 px-4 rounded-lg ${activeSection === 'User' ? 'bg-gray-400' : 'bg-gray-200'}`}
-                  onClick={() => setActiveSection('User')}
+                  className={`rounded-lg px-4 py-2 ${activeSection === "User" ? "bg-gray-400" : "bg-gray-200"}`}
+                  onClick={() => setActiveSection("User")}
                 >
                   User
                 </button>
                 <button
-                  className={`py-2 px-4 rounded-lg ${activeSection === 'Accounts' ? 'bg-gray-400' : 'bg-gray-200'}`}
-                  onClick={() => setActiveSection('Accounts')}
+                  className={`rounded-lg px-4 py-2 ${activeSection === "Accounts" ? "bg-gray-400" : "bg-gray-200"}`}
+                  onClick={() => setActiveSection("Accounts")}
                 >
                   Accounts
                 </button>
               </div>
 
               {/* User Section */}
-              {activeSection === 'User' && (
-                <>
-                  <div className="col-span-3 flex items-center justify-center">
+              {activeSection === "User" && (
+                <div className="flex">
+                  <div className="mx-[20px] flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={props.colour} className="size-20">
                       <path
                         fillRule="evenodd"
@@ -103,7 +101,7 @@ export function Modal(props: Props) {
                     </svg>
                   </div>
 
-                  <div className="col-span-9 text-left [&>div>input]:rounded-lg [&>div>input]:bg-gray-200 [&>div>input]:p-2 [&>div>input]:shadow-inner [&>div]:mb-2 [&>div]:pr-5">
+                  <div className="text-left [&>div>input]:rounded-lg [&>div>input]:bg-gray-200 [&>div>input]:p-2 [&>div>input]:shadow-inner [&>div]:mb-2 [&>div]:pr-5">
                     <div className="mt-5">
                       <label htmlFor="modal-Nm">Full Name</label>
                       <input
@@ -120,7 +118,7 @@ export function Modal(props: Props) {
                                 ...customEntity.Dbtr,
                                 Nm: e.target.value,
                               },
-                            });
+                            })
                           }
                         }}
                       />
@@ -150,7 +148,7 @@ export function Modal(props: Props) {
                                   },
                                 },
                               },
-                            });
+                            })
                           }
                         }}
                       />
@@ -180,7 +178,7 @@ export function Modal(props: Props) {
                                   },
                                 },
                               },
-                            });
+                            })
                           }
                         }}
                       />
@@ -210,7 +208,7 @@ export function Modal(props: Props) {
                                   },
                                 },
                               },
-                            });
+                            })
                           }
                         }}
                       />
@@ -240,7 +238,7 @@ export function Modal(props: Props) {
                                   },
                                 },
                               },
-                            });
+                            })
                           }
                         }}
                       />
@@ -264,87 +262,110 @@ export function Modal(props: Props) {
                                   MobNb: e.target.value,
                                 },
                               },
-                            });
+                            })
                           }
                         }}
                       />
                     </div>
                   </div>
-                </>
+                </div>
               )}
 
               {/* Accounts Section */}
-              {activeSection === 'Accounts' && (
-                <>
-                  {accountDetails.map((accountDetail, index) => (
-                    <div className="col-span-12 text-left [&>div>input]:rounded-lg [&>div>input]:bg-gray-200 [&>div>input]:p-2 [&>div>input]:shadow-inner [&>div]:mb-2 [&>div]:pr-5" key={index}>
-                      <div className="mt-5">
-                        <label htmlFor={`modal-Account-Number-${index}`}>Account Name</label>
-                        <input
-                          type="text"
-                          id={`modal-Account-Number-${index}`}
-                          className="w-full"
-                          defaultValue={props.entity?.Dbtr.Nm}
-                          value={accountDetail.DbtrAcct.Nm}
-                          onChange={(e) => {
-                            if (customEntity !== undefined) {
-                              setCustomEntity({
-                                ...customEntity,
-                                Dbtr: {
-                                  ...customEntity.Dbtr,
-                                  Nm: e.target.value,
-                                },
-                              });
-                            }
-                          }}
-                        />
+              {activeSection === "Accounts" && (
+                <div className="flex flex-between">
+                  {/* SVG */}
+                  <div className="flex items-center justify-center mx-[20px]">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="size-20"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"
+                      />
+                    </svg>
+                  </div>
+
+                  {/* Details */}
+                  <div className="flex flex-col ">
+                    {accountDetails.map((accountDetail, index) => (
+                      <div
+                        className="text-left [&>div>input]:rounded-lg [&>div>input]:bg-gray-200 [&>div>input]:p-2 [&>div>input]:shadow-inner [&>div]:mb-2 [&>div]:pr-5"
+                        key={index}
+                      >
+                        <div className="mt-5">
+                          <label htmlFor={`modal-Account-Number-${index}`}>Account Name</label>
+                          <input
+                            type="text"
+                            id={`modal-Account-Number-${index}`}
+                            className="w-full"
+                            defaultValue={props.entity?.Dbtr.Nm}
+                            value={accountDetail.DbtrAcct.Nm}
+                            onChange={(e) => {
+                              if (customEntity !== undefined) {
+                                setCustomEntity({
+                                  ...customEntity,
+                                  Dbtr: {
+                                    ...customEntity.Dbtr,
+                                    Nm: e.target.value,
+                                  },
+                                })
+                              }
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor={`modal-Account-ID-${index}`}>ID number</label>
+                          <input
+                            type="text"
+                            id={`modal-Account-ID-${index}`}
+                            className="w-full"
+                            defaultValue={props.entity?.Dbtr.Id.PrvtId.Othr[0]?.Id}
+                            value={accountDetail.DbtrAcct.Id.Othr[0]?.Id}
+                            readOnly
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor={`modal-Account-Prtry-${index}`}>Prtry</label>
+                          <input
+                            type="text"
+                            id={`modal-Account-Prtry-${index}`}
+                            className="w-full"
+                            defaultValue={props.entity?.Dbtr.Id.PrvtId.Othr[0]?.Id}
+                            value={accountDetail.DbtrAcct.Id.Othr[0]?.SchmeNm.Prtry}
+                            readOnly
+                          />
+                        </div>
                       </div>
-                      <div>
-                        <label htmlFor={`modal-Account-ID-${index}`}>ID number</label>
-                        <input
-                          type="text"
-                          id={`modal-Account-ID-${index}`}
-                          className="w-full"
-                          defaultValue={props.entity?.Dbtr.Id.PrvtId.Othr[0]?.Id}
-                          value={accountDetail.DbtrAcct.Id.Othr[0]?.Id}
-                          readOnly
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor={`modal-Account-Prtry-${index}`}>Prtry</label>
-                        <input
-                          type="text"
-                          id={`modal-Account-Prtry-${index}`}
-                          className="w-full"
-                          defaultValue={props.entity?.Dbtr.Id.PrvtId.Othr[0]?.Id}
-                          value={accountDetail.DbtrAcct.Id.Othr[0]?.SchmeNm.Prtry}
-                          readOnly
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </>
+                    ))}
+                  </div>
+                </div>
               )}
 
-              <div className="col-span-6 m-5">
+              <div className="flex ">
                 <button
                   type="button"
-                  className="w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)] hover:shadow-inner"
+                  className="m-5 w-[100%] w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)] hover:shadow-inner"
                   onClick={async () => {
                     if (customEntity !== undefined && typeof props.selectedEntity === "number") {
-                      console.log("HIT");
-                      await entityCtx.updateEntity(customEntity, props.selectedEntity);
-                      handleClick();
+                      console.log("HIT")
+                      await entityCtx.updateEntity(customEntity, props.selectedEntity)
+                      handleClick()
                     }
                   }}
                 >
                   Save
                 </button>
-              </div>
-              <div className="col-span-6 m-5">
+
                 <button
                   type="button"
-                  className="w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-inner"
+                  className="m-5 w-[100%] w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-inner"
                   onClick={handleClick}
                 >
                   Cancel
@@ -355,5 +376,5 @@ export function Modal(props: Props) {
         </div>
       </div>
     </div>
-  );
+  )
 }
