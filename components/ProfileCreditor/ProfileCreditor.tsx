@@ -1,6 +1,6 @@
 "use client"
 
-import { useContext, useEffect, useState } from "react"
+import { useContext, useState } from "react"
 import EntityContext from "store/entities/entity.context"
 import { CreditorAccount, CreditorEntity } from "store/entities/entity.interface"
 

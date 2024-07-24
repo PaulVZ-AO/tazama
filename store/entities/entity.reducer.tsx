@@ -209,6 +209,23 @@ const EntityReducer = (state: any, action: any) => {
         ...state,
         pacs008Loading: false,
       }
+
+    case ACTIONS.GENERATE_PACS002_LOADING:
+      return {
+        ...state,
+        pacs002Loading: true,
+      }
+    case ACTIONS.GENERATE_PACS002_SUCCESS:
+      return {
+        ...state,
+        pacs002Loading: false,
+        pacs002: action.payload,
+      }
+    case ACTIONS.GENERATE_PACS002_FAIL:
+      return {
+        ...state,
+        pacs002Loading: false,
+      }
   }
 }
 
