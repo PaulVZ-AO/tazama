@@ -9,9 +9,13 @@ interface DebtorProps {
 function DeviceInfo(props: any) {
   const entityCtx = useContext(EntityContext)
 
-  const data = entityCtx.selectedDebtorEntity
-  const accountIndex = data.debtorAccountSelectedIndex;
+  const selectedDebtor = entityCtx.selectedDebtorEntity
+  const accountIndex = selectedDebtor.debtorAccountSelectedIndex
   const entity = entityCtx.entities[props.selectedEntity]
+
+  const data = entityCtx.pacs008.FIToFICstmrCdtTrf
+  const location = data.SplmtryData.Envlp.Doc.InitgPty.Glctn
+  console.log(data, "------")
 
   let fillColour
 
@@ -54,9 +58,11 @@ function DeviceInfo(props: any) {
 
         <div className="m-2 rounded-md border p-2 text-sm">
           <p>ID:{entity?.Accounts[accountIndex || 0]?.DbtrAcct.Nm || " Account Name"} </p>
-          <p>Account: $156</p>
+          <p>Account:${data.CdtTrfTxInf.InstdAmt.Amt.Amt}</p>
           <p>Description: text </p>
-          <p>Lat & Lng: -33.918352,18.401656</p>
+          <p>
+            Lat & Lng: {location.Lat} {location.Long}
+          </p>
           <hr className="mt-2" />
           <button className="m-auto mt-2 flex items-center text-blue-500">
             <svg
@@ -80,7 +86,7 @@ function DeviceInfo(props: any) {
     )
   } else {
     return <></>
-  } 
+  }
 }
 
 export function DebtorDevice(props: DebtorProps) {
@@ -109,7 +115,6 @@ export function DebtorDevice(props: DebtorProps) {
         </div>
 
         <DeviceInfo selectedEntity={props.selectedEntity} />
-
       </div>
     </div>
   )
