@@ -61,6 +61,7 @@ export function Modal(props: Props) {
 
               {/* Entities */}
               {activeSection === "Entity" && (
+                <>
                 <div className="flex">
                   <div className="mx-[20px] flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={props.colour} className="size-20">
@@ -168,10 +169,24 @@ export function Modal(props: Props) {
                     </div>
                   </div>
                 </div>
+
+                <div className="flex">
+                <button type="button" className="m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)] hover:shadow-inner"
+                  onClick={async () => {
+                    if (customEntity !== undefined && typeof props.selectedEntity === "number") {
+                      console.log("HIT")
+                      await entityCtx.updateEntity(customEntity, props.selectedEntity)
+                      handleClick()
+                    }}}>Save</button>
+
+                <button type="button" className="m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-inner" onClick={handleClick}>Cancel</button>
+                </div>
+                </>
               )}
 
               {/* Accounts */}
               {activeSection === "Accounts" && (
+                <>
                 <div className="flex flex-col">
                   {accountDetails.map((accountDetail, index) => (
                     <div className="flex">
@@ -184,14 +199,6 @@ export function Modal(props: Props) {
                         <div className="mt-5">
                           <label htmlFor={`modal-Account-Number-${index}`}>Account Name</label>
                           <input type="text" id={`modal-Account-Number-${index}`} className="w-full" defaultValue={accountDetail.DbtrAcct.Nm} 
-                            // onChange={(e) => {
-                            //   if (customEntity !== undefined) {
-                            //     setCustomEntity({
-                            //       ...customEntity,
-                            //       Dbtr: {
-                            //         ...customEntity.Dbtr,
-                            //         Nm: e.target.value,
-                            //       },})}}}
                           />
                         </div>
                         <div>
@@ -207,19 +214,14 @@ export function Modal(props: Props) {
                     </div>
                   ))}
                 </div>
-              )}
 
-              <div className="flex ">
-                <button type="button" className="m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)] hover:shadow-inner"
-                  onClick={async () => {
-                    if (customEntity !== undefined && typeof props.selectedEntity === "number") {
-                      console.log("HIT")
-                      await entityCtx.updateEntity(customEntity, props.selectedEntity)
-                      handleClick()
-                    }}}>Save</button>
+                <div className="flex">
+                <button type="button" className="m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)] hover:shadow-inner">Save</button>
 
                 <button type="button" className="m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-inner" onClick={handleClick}>Cancel</button>
-              </div>
+                </div>
+                </>
+              )}
             </div>
           </div>
         </div>
