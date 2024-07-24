@@ -1,3 +1,4 @@
+import { TimeComponent } from "components/timeComponent/TimeComponent"
 import Image from "next/image"
 
 export function DebtorDevice() {
@@ -5,10 +6,7 @@ export function DebtorDevice() {
     <div className="relative col-span-4" style={{ height: "505px" }}>
       <Image src="/device.svg" width="250" height="505" className="absolute left-20 top-0 " alt="" priority={true} />
       <div className="absolute" style={{ marginLeft: "94px", width: "222px", top: "15px" }}>
-        <div className="flex">
-          <div className="py-1 pl-7 text-xs font-bold">11:32</div>
-          <div className="py-1 pl-7 text-xs font-bold"></div>
-        </div>
+        <TimeComponent />
 
         {/* device profile */}
         <div className="flex bg-gray-400 py-2 pl-2 text-blue-500">
@@ -44,6 +42,14 @@ export function DebtorDevice() {
               />
             </svg>
             edit
+          </button>
+        </div>
+      </div>
+
+      <div className="absolute" style={{ marginLeft: "94px", width: "222px", bottom: "25px" }}>
+        <div className="bg-black ml-5 rounded-lg text-white w-4/5" style={{ padding: ".1em" }}>
+          <button className="border border-white p-1 rounded-lg w-full">
+            Send
           </button>
         </div>
       </div>
