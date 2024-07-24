@@ -2,7 +2,12 @@
 import React, { ReactNode, useEffect, useReducer } from "react"
 import { ACTIONS } from "./entity.actions"
 import EntityContext from "./entity.context"
-import { creditorInitialState, debtorInitialState, pacs008InitialState } from "./entity.initialState"
+import {
+  creditorInitialState,
+  debtorInitialState,
+  pacs002InitialState,
+  pacs008InitialState,
+} from "./entity.initialState"
 import {
   CdtrEntity,
   CreditorAccount,
@@ -10,6 +15,7 @@ import {
   DebtorAccount,
   DebtorEntity,
   Entity,
+  PACS002,
   PACS008,
   SelectedCreditor,
   SelectedDebtor,
@@ -30,22 +36,28 @@ const EntityProvider = ({ children }: Props) => {
     creditorEntities: [],
     entities: [],
     pacs008Loading: false,
+    pacs002Loading: false,
     selectedDebtorEntity: debtorInitialState,
     selectedCreditorEntity: creditorInitialState,
     pacs008: pacs008InitialState,
+    pacs002: pacs002InitialState,
   }
   const [state, dispatch] = useReducer(EntityReducer, initialEntityState)
 
   const handleDebtorEntityChange = async () => {
-    console.log("handleDebtorEntityChange Active")
-    await setDebtorPacs008(state.selectedDebtorEntity.debtorSelectedIndex)
-    await setDebtorAccountPacs008(
-      state.selectedDebtorEntity.debtorSelectedIndex,
-      state.selectedDebtorEntity.debtorAccountSelectedIndex
-    )
-    // await generateTransaction()
-    console.log("handleDebtorEntityChange Done")
-    console.log("PACS008: ", state.pacs008)
+    try {
+      console.log("handleDebtorEntityChange Active")
+      await setDebtorPacs008(state.selectedDebtorEntity.debtorSelectedIndex)
+      await setDebtorAccountPacs008(
+        state.selectedDebtorEntity.debtorSelectedIndex,
+        state.selectedDebtorEntity.debtorAccountSelectedIndex
+      )
+      // await generateTransaction()
+      console.log("handleDebtorEntityChange Done")
+      console.log("PACS008: ", state.pacs008)
+    } catch (error) {
+      console.log("ERROR happened on Debtor Change")
+    }
   }
 
   const handleCreditorEntityChange = async () => {
@@ -65,6 +77,7 @@ const EntityProvider = ({ children }: Props) => {
       console.log("Selected Debtor Changed: ", state.selectedDebtorEntity)
       if (state.entities.length > 0) {
         handleDebtorEntityChange()
+        buildPacs002()
       }
     }
   }, [state.selectedDebtorEntity.debtorSelectedIndex, state.selectedDebtorEntity.debtorAccountSelectedIndex])
@@ -75,9 +88,33 @@ const EntityProvider = ({ children }: Props) => {
 
       if (state.creditorEntities.length > 0) {
         handleCreditorEntityChange()
+        buildPacs002()
       }
     }
   }, [state.selectedCreditorEntity.creditorSelectedIndex, state.selectedCreditorEntity.creditorAccountSelectedIndex])
+
+  const buildPacs002 = async () => {
+    try {
+      dispatch({ type: ACTIONS.GENERATE_PACS002_LOADING })
+      let pacs002Payload: PACS002 = state.pacs002
+      let pacs008Data: PACS008 = state.pacs008
+
+      // GrpHdr
+      pacs002Payload.FIToFIPmtSts.GrpHdr.MsgId = crypto.randomUUID().replaceAll("-", "")
+      pacs002Payload.FIToFIPmtSts.GrpHdr.CreDtTm = new Date().toISOString()
+
+      // TxInfAndSts
+      pacs002Payload.FIToFIPmtSts.TxInfAndSts.OrgnlInstrId = pacs008Data.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.InstrId
+      pacs002Payload.FIToFIPmtSts.TxInfAndSts.OrgnlEndToEndId =
+        pacs008Data.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.EndToEndId
+      pacs002Payload.FIToFIPmtSts.TxInfAndSts.TxSts = "ACCC"
+      dispatch({ type: ACTIONS.GENERATE_PACS002_SUCCESS, payload: pacs002Payload })
+      console.log("PACS002: ", state.pacs002)
+    } catch (error) {
+      dispatch({ type: ACTIONS.GENERATE_PACS002_FAIL })
+      console.log("PACS002 ERROR: ", error)
+    }
+  }
 
   const selectDebtorEntity = async (index: number = 0, accountIndex: number = 0) => {
     try {
@@ -93,6 +130,7 @@ const EntityProvider = ({ children }: Props) => {
         console.log("############## END RESULT ##############")
       }
     } catch (error) {
+      console.log("ERROR happened on Debtor")
       console.log(error)
     }
   }
@@ -109,6 +147,7 @@ const EntityProvider = ({ children }: Props) => {
         dispatch({ type: ACTIONS.SELECT_CREDITOR_ENTITY, payload: selectedCreditor })
       }
     } catch (error) {
+      console.log("ERROR happened on Creditors")
       console.log(error)
     }
   }
@@ -149,7 +188,7 @@ const EntityProvider = ({ children }: Props) => {
                 Id: crypto.randomUUID().replaceAll("-", ""),
 
                 SchmeNm: {
-                  Prtry: "TAZAMA_EID",
+                  Prtry: "MSISDN",
                 },
               },
             ],
@@ -219,7 +258,7 @@ const EntityProvider = ({ children }: Props) => {
                 Id: crypto.randomUUID().replaceAll("-", ""),
 
                 SchmeNm: {
-                  Prtry: "TAZAMA_EID",
+                  Prtry: "MSISDN",
                 },
               },
             ],
@@ -281,7 +320,7 @@ const EntityProvider = ({ children }: Props) => {
                 Id: crypto.randomUUID().replaceAll("-", ""),
 
                 SchmeNm: {
-                  Prtry: "TAZAMA_EID",
+                  Prtry: "MSISDN",
                 },
               },
             ],
@@ -351,7 +390,7 @@ const EntityProvider = ({ children }: Props) => {
                 Id: crypto.randomUUID().replaceAll("-", ""),
 
                 SchmeNm: {
-                  Prtry: "TAZAMA_EID",
+                  Prtry: "MSISDN",
                 },
               },
             ],
@@ -432,8 +471,11 @@ const EntityProvider = ({ children }: Props) => {
       const debtor: Entity = state.entities[entityIndex]
       console.log("DEBTOR: ", debtor)
       const setPacs008: PACS008 = state.pacs008
-
-      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.DbtrAcct = { ...debtor.Accounts[accountIndex].DbtrAcct }
+      if (accountIndex !== undefined) {
+        let idx = accountIndex
+        let debtorAccount: any = { ...debtor.Accounts[idx]?.DbtrAcct }
+        setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.DbtrAcct = { ...debtorAccount }
+      }
 
       dispatch({ type: ACTIONS.SET_DEBTOR_ACCOUNT_PACS008_SUCCESS, payload: setPacs008 })
       console.log("PACS008: ", setPacs008)
@@ -475,8 +517,11 @@ const EntityProvider = ({ children }: Props) => {
       const creditor: CdtrEntity = state.creditorEntities[entityIndex]
       console.log("CREDITOR: ", creditor, entityIndex, accountIndex)
       const setPacs008: PACS008 = state.pacs008
-
-      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.CdtrAcct = { ...creditor.CreditorAccounts[accountIndex].CdtrAcct }
+      if (accountIndex !== undefined) {
+        let creditorAccount: any = { ...creditor.CreditorAccounts[accountIndex]?.CdtrAcct }
+        setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.CdtrAcct = { ...creditorAccount }
+      }
+      //   setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.CdtrAcct = { ...creditor.CreditorAccounts[accountIndex].CdtrAcct }
 
       dispatch({ type: ACTIONS.SET_CREDITOR_ACCOUNT_PACS008_SUCCESS, payload: setPacs008 })
       console.log("PACS008: ", setPacs008)
@@ -512,9 +557,11 @@ const EntityProvider = ({ children }: Props) => {
         createAccountLoading: state.createAccountLoading,
         createCreditorAccountLoading: state.createCreditorAccountLoading,
         pacs008Loading: state.pacs008Loading,
+        pacs002Loading: state.pacs002Loading,
         creditorEntities: state.creditorEntities,
         entities: state.entities,
         pacs008: state.pacs008,
+        pacs002: state.pacs002,
         selectedDebtorEntity: state.selectedDebtorEntity,
         selectedCreditorEntity: state.selectedCreditorEntity,
         selectDebtorEntity,
@@ -530,6 +577,7 @@ const EntityProvider = ({ children }: Props) => {
         setCreditorPacs008,
         setCreditorAccountPacs008,
         generateTransaction,
+        buildPacs002,
       }}
     >
       {children}

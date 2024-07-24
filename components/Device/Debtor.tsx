@@ -1,3 +1,4 @@
+import { TimeComponent } from "components/timeComponent/TimeComponent"
 import Image from "next/image"
 import { useContext, useEffect, useState } from "react"
 import EntityContext from "store/entities/entity.context"
@@ -90,31 +91,32 @@ function DeviceInfo(props: any) {
 }
 
 export function DebtorDevice(props: DebtorProps) {
-  const [currentTime, setCurrentTime] = useState<string>("")
 
-  useEffect(() => {
-    const updateTime = () => {
-      const date = new Date()
-      const hours = date.getHours().toString().padStart(2, "0")
-      const minutes = date.getMinutes().toString().padStart(2, "0")
-      setCurrentTime(`${hours}:${minutes}`)
-    }
-    const intervalId = setInterval(updateTime, 1000)
-    updateTime()
-    return () => clearInterval(intervalId)
-  }, [])
 
   return (
     <div className="relative col-span-4" style={{ height: "505px" }}>
       <Image src="/device.svg" width="250" height="505" className="absolute left-20 top-0 " alt="" priority={true} />
 
       <div className="absolute" style={{ marginLeft: "94px", width: "222px", top: "15px" }}>
-        <div className="flex">
-          <div className="py-1 pl-7 text-xs font-bold">{currentTime}</div>
-          <div className="py-1 pl-7 text-xs font-bold"></div>
-        </div>
+      <TimeComponent />
 
         <DeviceInfo selectedEntity={props.selectedEntity} />
+      </div>
+
+      <div className="absolute" style={{ marginLeft: "94px", width: "222px", bottom: "25px" }}>
+        <div className="bg-black ml-5 rounded-lg text-white w-4/5" style={{ padding: ".1em" }}>
+          <button className="border border-white p-1 rounded-lg w-full">
+            Send
+          </button>
+        </div>
+      </div>
+
+      <div className="absolute" style={{ marginLeft: "94px", width: "222px", bottom: "25px" }}>
+        <div className="bg-black ml-5 rounded-lg text-white w-4/5" style={{ padding: ".1em" }}>
+          <button className="border border-white p-1 rounded-lg w-full">
+            Send
+          </button>
+        </div>
       </div>
     </div>
   )
