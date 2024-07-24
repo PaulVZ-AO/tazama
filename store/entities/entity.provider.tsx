@@ -96,6 +96,10 @@ const EntityProvider = ({ children }: Props) => {
     }
   }, [])
 
+  const reset = async () => {
+    localStorage.clear()
+  }
+
   const handleDebtorEntityChange = async () => {
     try {
       console.log("handleDebtorEntityChange Active")
@@ -653,6 +657,7 @@ const EntityProvider = ({ children }: Props) => {
         setCreditorAccountPacs008,
         generateTransaction,
         buildPacs002,
+        reset,
       }}
     >
       {children}
