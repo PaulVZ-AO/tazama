@@ -59,36 +59,6 @@ const Web = () => {
   //   }
   // }, [])
 
-  const postPacs002Test = async () => {
-    try {
-      const response = await axios.post(
-        "http://localhost:5001/v1/evaluate/iso20022/pacs.002.001.12",
-        entityCtx.pacs002,
-        { headers: { "Content-Type": "application/json" } }
-      )
-      console.log("Test POST PACS002 response: ", response.data)
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  const postPacs008Test = async () => {
-    try {
-      const response = await axios.post(
-        "http://localhost:5001/v1/evaluate/iso20022/pacs.008.001.10",
-        entityCtx.pacs008,
-        { headers: { "Content-Type": "application/json" } }
-      )
-
-      if (response.status === 200) {
-        await postPacs002Test()
-      }
-      console.log("Test POST PACS008 response: ", response.data)
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
   const handleRuleMouseEnter = (type: any) => {
     setHoveredType(null) // fallback if stats is stuck
     setHoveredRule(type)
@@ -525,7 +495,6 @@ const Web = () => {
           <div className="flex min-h-80 items-center justify-center">
             <StatusIndicator large={true} />
           </div>
-          <button onClick={() => postPacs008Test()}>Test Post</button>
         </div>
       </div>
 

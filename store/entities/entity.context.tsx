@@ -43,6 +43,7 @@ interface Context {
   setCreditorAccountPacs008: (entityIndex: number, accountIndex: number) => void
   generateTransaction: () => void
   buildPacs002: () => void
+  reset: () => void
 }
 
 const EntityContext = createContext<Context>({
@@ -72,6 +73,7 @@ const EntityContext = createContext<Context>({
   setCreditorAccountPacs008: () => {},
   generateTransaction: () => {},
   buildPacs002: () => {},
+  reset: () => {},
 })
 
 export default EntityContext
