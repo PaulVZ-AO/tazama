@@ -11,6 +11,7 @@ interface DebtorProps {
 }
 
 export function DebtorDevice(props: DebtorProps) {
+  
   const entityCtx = useContext(EntityContext)
   const postPacs002Test = async () => {
     try {
@@ -51,7 +52,7 @@ export function DebtorDevice(props: DebtorProps) {
         <DeviceInfo selectedEntity={props.selectedEntity} isDebtor={props.isDebtor} />
       </div>
 
-      <div className="absolute" style={{ marginLeft: "94px", width: "222px", bottom: "25px" }}>
+      <div className="absolute" style={{ marginLeft: "50px", width: "222px", bottom: "25px" }}>
         <div className="ml-5 w-4/5 rounded-lg bg-black text-white" style={{ padding: ".1em" }}>
           <button
             className="w-full rounded-lg border border-white p-1"
