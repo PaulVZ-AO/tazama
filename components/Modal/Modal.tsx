@@ -55,8 +55,8 @@ export function Modal(props: Props) {
               </div>
 
               <div className="my-4 flex justify-around">
-                <button className={`rounded-lg px-4 py-2 ${activeSection === "Entity" ? "bg-gray-400" : "bg-gray-200"}`} onClick={() => setActiveSection("Entity")}>Entity</button>
-                <button className={`rounded-lg px-4 py-2 ${activeSection === "Accounts" ? "bg-gray-400" : "bg-gray-200"}`} onClick={() => setActiveSection("Accounts")}>Account(s)</button>
+                <button className={`rounded-lg px-4 py-2 ${activeSection === "Entity" ? "m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-inner" : "m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"}`} onClick={() => setActiveSection("Entity")}>Entity</button>
+                <button className={`rounded-lg px-4 py-2 ${activeSection === "Accounts" ? "m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-inner" : "m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"}`} onClick={() => setActiveSection("Accounts")}>Account(s)</button>
               </div>
 
               {/* Entities */}
@@ -189,6 +189,7 @@ export function Modal(props: Props) {
                 <>
                 <div className="flex flex-col">
                   {accountDetails.map((accountDetail, index) => (
+                    <>
                     <div className="flex">
                       <div className="mx-[20px] flex flex items-center justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke={props.colour} className="size-20">
@@ -209,9 +210,11 @@ export function Modal(props: Props) {
                           <label htmlFor={`modal-Account-Prtry-${index}`}>Prtry</label>
                           <input type="text" id={`modal-Account-Prtry-${index}`} className="w-full" defaultValue={props.entity?.Dbtr.Id.PrvtId.Othr[0]?.Id} value={accountDetail.DbtrAcct.Id.Othr[0]?.SchmeNm.Prtry} readOnly />
                         </div>
-                        <hr className="mt-5 mb-2 w-[290px] border border-gray-400" />
+                        
                       </div>
                     </div>
+
+                    <hr className="mt-5 mb-2 border-t border-gray-300" /></>
                   ))}
                 </div>
 
