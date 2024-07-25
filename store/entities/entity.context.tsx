@@ -4,6 +4,7 @@ import {
   debtorInitialState,
   pacs002InitialState,
   pacs008InitialState,
+  uiConfigInitialState,
 } from "./entity.initialState"
 import {
   CdtrEntity,
@@ -14,6 +15,7 @@ import {
   PACS008,
   SelectedCreditor,
   SelectedDebtor,
+  UIConfiguration,
 } from "./entity.interface"
 
 interface Context {
@@ -29,6 +31,7 @@ interface Context {
   pacs002: PACS002
   selectedDebtorEntity: SelectedDebtor
   selectedCreditorEntity: SelectedCreditor
+  uiConfig: UIConfiguration
   selectDebtorEntity: (index: number, accountIndex: number) => void
   selectCreditorEntity: (index: number, accountIndex: number) => void
   createEntity: () => void
@@ -59,6 +62,7 @@ const EntityContext = createContext<Context>({
   pacs002: pacs002InitialState,
   selectedDebtorEntity: debtorInitialState,
   selectedCreditorEntity: creditorInitialState,
+  uiConfig: uiConfigInitialState,
   selectDebtorEntity: () => {},
   selectCreditorEntity: () => {},
   createEntity: () => {},

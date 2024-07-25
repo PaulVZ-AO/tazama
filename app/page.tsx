@@ -2,7 +2,6 @@
 
 import axios from "axios"
 // import { Codec, connect, NatsConnection, StringCodec } from "nats.ws"
-import Image from "next/image"
 import { useContext, useEffect, useState } from "react"
 import { DebtorDevice } from "components/Device/Debtor"
 import { Modal } from "components/Modal/Modal"
@@ -219,6 +218,10 @@ const Web = () => {
   const [selectedEntity, setSelectedEntity] = useState<number>(0)
   const [selectedCreditorEntity, setSelectedCreditorEntity] = useState<number>(0)
 
+  const handleAccountChange = async (creditorIdx: number, accountIdx: number) => {
+    await entityCtx.setCreditorAccountPacs008(creditorIdx, accountIdx)
+  }
+
   useEffect(() => {
     axios
       .get("api/rules")
@@ -329,12 +332,13 @@ const Web = () => {
         {/* Device transactions */}
         <div className="col-span-8">
           <div className="grid grid-cols-12 gap-1">
-            <DebtorDevice />
+            <DebtorDevice selectedEntity={selectedEntity} isDebtor={true} />
             <div className="col-span-4 flex items-center justify-between px-5">
               <ProcessIndicator />
             </div>
             <div className="col-span-4">
-              <Image src="/device.svg" height="200" width="200" className="text-center" alt="" priority={true} />
+              <DebtorDevice selectedEntity={selectedCreditorEntity} isDebtor={false} />
+              {/* <Image src="/device.svg" height="200" width="200" className="text-center" alt="" priority={true} /> */}
             </div>
           </div>
         </div>
@@ -349,15 +353,36 @@ const Web = () => {
               entity={entityCtx.creditorEntities[0]?.CreditorEntity}
               creditorAccounts={entityCtx.creditorEntities[0]?.CreditorAccounts}
               setModalVisible={setModal}
-              setSelectedEntity={() => setSelectedCreditorEntity(0)}
+              setSelectedEntity={async (idx: number) => {
+                setSelectedCreditorEntity(0)
+                if (
+                  entityCtx.creditorEntities[0]?.CreditorAccounts.length !== -1 &&
+                  entityCtx.creditorEntities[0]?.CreditorAccounts.length !== undefined
+                ) {
+                  // let idx = 0
+                  // if (entityCtx.creditorEntities[0]?.CreditorAccounts.length !== -1) {
+                  //   // if (entityCtx.entities[0]?.Accounts.length !== -1) {
+                  //   // idx = entityCtx.entities[0]?.Accounts.length - 1
+                  //   idx = entityCtx.creditorEntities[0]?.CreditorAccounts.length - 1
+                  // }
+
+                  await entityCtx.setCreditorAccountPacs008(0, idx)
+                }
+              }}
               index={0}
               selectedEntity={selectedCreditorEntity}
               addAccount={async () => {
                 await entityCtx.createCreditorEntityAccount(0)
-                if (entityCtx.entities[0]?.Accounts.length !== -1 && entityCtx.entities[0]?.Accounts !== undefined) {
+                // if (entityCtx.entities[0]?.Accounts.length !== -1 && entityCtx.entities[0]?.Accounts !== undefined) {
+                if (
+                  entityCtx.creditorEntities[0]?.CreditorAccounts.length !== -1 &&
+                  entityCtx.creditorEntities[0]?.CreditorAccounts.length !== undefined
+                ) {
                   let idx = 0
-                  if (entityCtx.entities[0]?.Accounts.length !== -1) {
-                    idx = entityCtx.entities[0]?.Accounts.length - 1
+                  if (entityCtx.creditorEntities[0]?.CreditorAccounts.length !== -1) {
+                    // if (entityCtx.entities[0]?.Accounts.length !== -1) {
+                    // idx = entityCtx.entities[0]?.Accounts.length - 1
+                    idx = entityCtx.creditorEntities[0]?.CreditorAccounts.length - 1
                   }
                   await entityCtx.setCreditorAccountPacs008(0, idx)
                 }
@@ -369,15 +394,35 @@ const Web = () => {
               entity={entityCtx.creditorEntities[1]?.CreditorEntity}
               creditorAccounts={entityCtx.creditorEntities[1]?.CreditorAccounts}
               setModalVisible={setModal}
-              setSelectedEntity={() => setSelectedCreditorEntity(1)}
+              setSelectedEntity={async () => {
+                setSelectedCreditorEntity(1)
+                if (
+                  entityCtx.creditorEntities[1]?.CreditorAccounts.length !== -1 &&
+                  entityCtx.creditorEntities[1]?.CreditorAccounts.length !== undefined
+                ) {
+                  let idx = 0
+                  if (entityCtx.creditorEntities[1]?.CreditorAccounts.length !== -1) {
+                    // if (entityCtx.entities[1]?.Accounts.length !== -1) {
+                    // idx = entityCtx.entities[1]?.Accounts.length - 1
+                    idx = entityCtx.creditorEntities[1]?.CreditorAccounts.length - 1
+                  }
+                  await entityCtx.selectCreditorEntity(1, idx)
+                  await entityCtx.setCreditorAccountPacs008(1, idx)
+                }
+              }}
               index={1}
               selectedEntity={selectedCreditorEntity}
               addAccount={async () => {
                 await entityCtx.createCreditorEntityAccount(1)
-                if (entityCtx.entities[1]?.Accounts.length !== -1 && entityCtx.entities[1]?.Accounts !== undefined) {
+                if (
+                  entityCtx.creditorEntities[1]?.CreditorAccounts.length !== -1 &&
+                  entityCtx.creditorEntities[1]?.CreditorAccounts.length !== undefined
+                ) {
                   let idx = 0
-                  if (entityCtx.entities[1]?.Accounts.length !== -1) {
-                    idx = entityCtx.entities[1]?.Accounts.length - 1
+                  if (entityCtx.creditorEntities[1]?.CreditorAccounts.length !== -1) {
+                    // if (entityCtx.entities[0]?.Accounts.length !== -1) {
+                    // idx = entityCtx.entities[0]?.Accounts.length - 1
+                    idx = entityCtx.creditorEntities[1]?.CreditorAccounts.length - 1
                   }
                   await entityCtx.setCreditorAccountPacs008(1, idx)
                 }
@@ -394,10 +439,15 @@ const Web = () => {
               selectedEntity={selectedCreditorEntity}
               addAccount={async () => {
                 await entityCtx.createCreditorEntityAccount(2)
-                if (entityCtx.entities[2]?.Accounts.length !== -1 && entityCtx.entities[2]?.Accounts !== undefined) {
+                if (
+                  entityCtx.creditorEntities[2]?.CreditorAccounts.length !== -1 &&
+                  entityCtx.creditorEntities[2]?.CreditorAccounts.length !== undefined
+                ) {
                   let idx = 0
-                  if (entityCtx.entities[2]?.Accounts.length !== -1) {
-                    idx = entityCtx.entities[2]?.Accounts.length - 1
+                  if (entityCtx.creditorEntities[2]?.CreditorAccounts.length !== -1) {
+                    // if (entityCtx.entities[0]?.Accounts.length !== -1) {
+                    // idx = entityCtx.entities[0]?.Accounts.length - 1
+                    idx = entityCtx.creditorEntities[2]?.CreditorAccounts.length - 1
                   }
                   await entityCtx.setCreditorAccountPacs008(2, idx)
                 }
@@ -414,10 +464,15 @@ const Web = () => {
               selectedEntity={selectedCreditorEntity}
               addAccount={async () => {
                 await entityCtx.createCreditorEntityAccount(3)
-                if (entityCtx.entities[3]?.Accounts.length !== -1 && entityCtx.entities[3]?.Accounts !== undefined) {
+                if (
+                  entityCtx.creditorEntities[3]?.CreditorAccounts.length !== -1 &&
+                  entityCtx.creditorEntities[3]?.CreditorAccounts.length !== undefined
+                ) {
                   let idx = 0
-                  if (entityCtx.entities[3]?.Accounts.length !== -1) {
-                    idx = entityCtx.entities[3]?.Accounts.length - 1
+                  if (entityCtx.creditorEntities[3]?.CreditorAccounts.length !== -1) {
+                    // if (entityCtx.entities[0]?.Accounts.length !== -1) {
+                    // idx = entityCtx.entities[0]?.Accounts.length - 1
+                    idx = entityCtx.creditorEntities[3]?.CreditorAccounts.length - 1
                   }
                   await entityCtx.setCreditorAccountPacs008(3, idx)
                 }

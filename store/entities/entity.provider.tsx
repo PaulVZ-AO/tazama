@@ -7,6 +7,7 @@ import {
   debtorInitialState,
   pacs002InitialState,
   pacs008InitialState,
+  uiConfigInitialState,
 } from "./entity.initialState"
 import {
   CdtrEntity,
@@ -19,6 +20,8 @@ import {
   PACS008,
   SelectedCreditor,
   SelectedDebtor,
+  UIConfigs,
+  UIConfiguration,
 } from "./entity.interface"
 import EntityReducer from "./entity.reducer"
 import { GenerateBirthDate, RandomCellNumber, RandomName, RandomNumbers, RandomSurname } from "./entity.utils"
@@ -41,6 +44,7 @@ const EntityProvider = ({ children }: Props) => {
     selectedCreditorEntity: creditorInitialState,
     pacs008: pacs008InitialState,
     pacs002: pacs002InitialState,
+    uiConfig: uiConfigInitialState,
   }
   const [state, dispatch] = useReducer(EntityReducer, initialEntityState)
 
@@ -94,6 +98,11 @@ const EntityProvider = ({ children }: Props) => {
       dispatch({ type: ACTIONS.GENERATE_PACS002_SUCCESS, payload: JSON.parse(pacs002) })
       console.log("PACS002 FROM LS: ", JSON.parse(pacs002))
     }
+  }, [])
+
+  useEffect(() => {
+    console.log("UI CONFIG: ", state.uiConfig)
+    localStorage.setItem("UI_CONFIG", JSON.stringify(state.uiConfig))
   }, [])
 
   const reset = async () => {
@@ -164,6 +173,7 @@ const EntityProvider = ({ children }: Props) => {
       pacs002Payload.FIToFIPmtSts.TxInfAndSts.OrgnlEndToEndId =
         pacs008Data.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.EndToEndId
       pacs002Payload.FIToFIPmtSts.TxInfAndSts.TxSts = "ACCC"
+      pacs002Payload.FIToFIPmtSts.TxInfAndSts.AccptncDtTm = new Date().toISOString()
       dispatch({ type: ACTIONS.GENERATE_PACS002_SUCCESS, payload: pacs002Payload })
       console.log("PACS002: ", state.pacs002)
       localStorage.setItem("PACS002", JSON.stringify(state.pacs002))
@@ -195,7 +205,7 @@ const EntityProvider = ({ children }: Props) => {
 
   const selectCreditorEntity = async (index: number = 0, accountIndex: number = 0) => {
     try {
-      if (state.entities[index]) {
+      if (state.creditorEntities[index]) {
         const selectedCreditor: SelectedCreditor = state.selectedCreditorEntity
 
         const accountsLength: number = state.creditorEntities[index].CreditorAccounts.length
@@ -643,6 +653,7 @@ const EntityProvider = ({ children }: Props) => {
         pacs002: state.pacs002,
         selectedDebtorEntity: state.selectedDebtorEntity,
         selectedCreditorEntity: state.selectedCreditorEntity,
+        uiConfig: state.uiConfig,
         selectDebtorEntity,
         selectCreditorEntity,
         createEntity,
