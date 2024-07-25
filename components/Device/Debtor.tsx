@@ -11,8 +11,12 @@ interface DebtorProps {
 }
 
 export function DebtorDevice(props: DebtorProps) {
-  
   const entityCtx = useContext(EntityContext)
+
+  const entity = entityCtx.entities
+
+  const creditorEntity = entityCtx.creditorEntities
+
   const postPacs002Test = async () => {
     try {
       const response = await axios.post(
@@ -46,24 +50,31 @@ export function DebtorDevice(props: DebtorProps) {
     <div className="relative col-span-4" style={{ height: "505px" }}>
       <Image src="/device.svg" width="250" height="505" className="absolute left-8 top-0 " alt="" priority={true} />
 
-      <div className="absolute" style={{ marginLeft: "46px", width: "222px", top: "15px" }}>
+      <div className="absolute break-words" style={{ marginLeft: "46px", width: "222px", top: "15px" }}>
         <TimeComponent />
 
         <DeviceInfo selectedEntity={props.selectedEntity} isDebtor={props.isDebtor} />
       </div>
 
-      <div className="absolute" style={{ marginLeft: "50px", width: "222px", bottom: "25px" }}>
-        <div className="ml-5 w-4/5 rounded-lg bg-black text-white" style={{ padding: ".1em" }}>
-          <button
-            className="w-full rounded-lg border border-white p-1"
-            onClick={async () => {
-              await postPacs008Test()
-            }}
+      {props.isDebtor ? (
+        <div className="absolute" style={{ marginLeft: "50px", width: "222px", bottom: "25px" }}>
+          <div
+            className={`ml-5 w-4/5 rounded-lg bg-black text-white ${
+              entity.length === 0 || creditorEntity.length === 0 ? " pointer-events-none opacity-30" : ""
+            }`}
+            style={{ padding: ".1em" }}
           >
-            Send
-          </button>
+            <button
+              className="w-full rounded-lg border border-white p-1"
+              onClick={async () => {
+                await postPacs008Test()
+              }}
+            >
+              Send
+            </button>
+          </div>
         </div>
-      </div>
+      ) : null}
     </div>
   )
 }
