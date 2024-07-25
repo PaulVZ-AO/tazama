@@ -1,10 +1,27 @@
 "use client"
 
-import React, { useContext } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import EntityContext from "store/entities/entity.context"
+import { UIConfiguration } from "store/entities/entity.interface"
 
 const Settings = () => {
   const entityCtx = useContext(EntityContext)
+  const [config, setConfig] = useState<UIConfiguration>()
+
+  useEffect(() => {
+    let lsConfig: string
+    lsConfig = localStorage.getItem("UI_CONFIG") || ""
+
+    if (lsConfig !== "") {
+      let updateConfig: any = JSON.parse(lsConfig)
+      setConfig(updateConfig)
+    }
+  }, [entityCtx.uiConfig])
+
+  useEffect(() => {
+    console.log("CONFIG: ", config)
+  }, [config])
+
   return (
     <div className="bg-slate-300/25 p-10">
       <div className="grid grid-cols-12 gap-5">
@@ -15,14 +32,14 @@ const Settings = () => {
           <div className="col-span-full">
             <label htmlFor="tms_id">TMS API Host URL</label>
             <div className="my-2">
-              <input id="tms_id" type="text" className="w-full rounded-lg p-2" placeholder="https://tms.com" />
+              <input id="tms_id" type="text" className="w-full rounded-lg p-2" placeholder={config?.tmsServerUrl} />
             </div>
           </div>
 
           <div className="col-span-full">
             <label htmlFor="tms_key">Key / Token</label>
             <div className="my-2">
-              <input id="tms_key" type="text" className="rounded-lg p-2" placeholder="1234567890" />
+              <input id="tms_key" type="text" className="rounded-lg p-2" placeholder={config?.tmsKey} />
             </div>
           </div>
 
@@ -33,19 +50,19 @@ const Settings = () => {
           <div className="col-span-full">
             <label htmlFor="cms_host">CMS NATS Hosting</label>
             <div className="my-2">
-              <input id="tms_key" type="text" className="rounded-lg p-2" placeholder="1234567890" />
+              <input id="tms_key" type="text" className="rounded-lg p-2" placeholder={config?.cmsNatsHosting} />
             </div>
           </div>
           <div className="col-span-full">
             <label htmlFor="cms_usr">Name</label>
             <div className="my-2">
-              <input id="tms_key" type="text" className="rounded-lg p-2" placeholder="1234567890" />
+              <input id="tms_key" type="text" className="rounded-lg p-2" placeholder={config?.natsUsername} />
             </div>
           </div>
           <div className="col-span-full">
             <label htmlFor="cms_pwd">Password</label>
             <div className="my-2">
-              <input id="tms_key" type="text" className="rounded-lg p-2" placeholder="1234567890" />
+              <input id="tms_key" type="text" className="rounded-lg p-2" placeholder={config?.natsPassword} />
             </div>
           </div>
 
@@ -56,25 +73,25 @@ const Settings = () => {
           <div className="col-span-full">
             <label htmlFor="argo_host">Arango DB hosting</label>
             <div className="my-2">
-              <input id="tms_key" type="text" className="rounded-lg p-2" placeholder="1234567890" />
+              <input id="tms_key" type="text" className="rounded-lg p-2" placeholder={config?.arangoDBHosting} />
             </div>
           </div>
           <div className="col-span-full">
             <label htmlFor="argo_usr">Name</label>
             <div className="my-2">
-              <input id="tms_key" type="text" className="rounded-lg p-2" placeholder="1234567890" />
+              <input id="tms_key" type="text" className="rounded-lg p-2" placeholder={config?.dbUser} />
             </div>
           </div>
           <div className="col-span-full">
             <label htmlFor="argo_pwd">Password</label>
             <div className="my-2">
-              <input id="tms_key" type="text" className="rounded-lg p-2" placeholder="1234567890" />
+              <input id="tms_key" type="text" className="rounded-lg p-2" placeholder={config?.dbPassword} />
             </div>
           </div>
           <div className="col-span-full">
             <label htmlFor="argo_db">Data Base Name</label>
             <div className="my-2">
-              <input id="tms_key" type="text" className="rounded-lg p-2" placeholder="1234567890" />
+              <input id="tms_key" type="text" className="rounded-lg p-2" placeholder={config?.dbName} />
             </div>
           </div>
         </div>
