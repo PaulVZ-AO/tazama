@@ -2,7 +2,6 @@
 
 import axios from "axios"
 // import { Codec, connect, NatsConnection, StringCodec } from "nats.ws"
-import Image from "next/image"
 import { useContext, useEffect, useState } from "react"
 import { DebtorDevice } from "components/Device/Debtor"
 import { Modal } from "components/Modal/Modal"
@@ -333,12 +332,13 @@ const Web = () => {
         {/* Device transactions */}
         <div className="col-span-8">
           <div className="grid grid-cols-12 gap-1">
-            <DebtorDevice />
+            <DebtorDevice selectedEntity={selectedEntity} isDebtor={true} />
             <div className="col-span-4 flex items-center justify-between px-5">
               <ProcessIndicator />
             </div>
             <div className="col-span-4">
-              <Image src="/device.svg" height="200" width="200" className="text-center" alt="" priority={true} />
+              <DebtorDevice selectedEntity={selectedCreditorEntity} isDebtor={false} />
+              {/* <Image src="/device.svg" height="200" width="200" className="text-center" alt="" priority={true} /> */}
             </div>
           </div>
         </div>
