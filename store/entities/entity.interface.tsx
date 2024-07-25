@@ -356,3 +356,19 @@ export interface SelectedCreditor {
   creditorAccountsLength: number | undefined
   creditorAccountSelectedIndex: number | undefined
 }
+
+export interface UIConfiguration {
+  tmsServerUrl: string
+  tmsKey: string
+  cmsNatsHosting: string
+  natsUsername: string
+  natsPassword: string
+  arangoDBHosting: string
+  dbUser: string
+  dbPassword: string
+  dbName: string
+}
+
+export interface UIConfigs {
+  config: Array<UIConfiguration>
+}

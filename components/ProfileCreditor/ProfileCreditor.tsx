@@ -12,7 +12,7 @@ export interface ProfileProps {
   selectedEntity: number
   index: number
   setModalVisible: (value: boolean) => void
-  setSelectedEntity: () => void
+  setSelectedEntity: (idx: number) => void
   addAccount: () => void
 }
 
@@ -91,12 +91,12 @@ export const CreditorProfile = ({ ...props }: ProfileProps) => {
         className="text-black"
         onClick={async () => {
           if (!props.entity && entityCtx.creditorEntities?.length < 4) {
-            props.setSelectedEntity()
+            props.setSelectedEntity(selectedAccountIndex)
             await entityCtx.createCreditorEntity()
             await entityCtx.setCreditorPacs008(props.selectedEntity)
           }
           if (props.entity !== undefined) {
-            props.setSelectedEntity()
+            props.setSelectedEntity(selectedAccountIndex)
             props.setModalVisible(true)
           }
         }}
@@ -119,11 +119,11 @@ export const CreditorProfile = ({ ...props }: ProfileProps) => {
 
       <button
         onClick={async () => {
-          console.log("ATTEMPTING PACS008 FROM DEBTORS SIDE")
-          props.setSelectedEntity()
+          console.log("ATTEMPTING PACS008 FROM CREDITORS SIDE")
+          props.setSelectedEntity(props.index)
           console.log("SELECTED INDEX: " + props.selectedEntity)
-          console.log("ABOUT TO CALL THE setCreditorPacs008")
-          if (entityCtx.entities[props.selectedEntity]) {
+          // console.log("ABOUT TO CALL THE setCreditorPacs008")
+          if (entityCtx.creditorEntities[props.selectedEntity] !== undefined) {
             await entityCtx.selectCreditorEntity(props.index, 0)
             // await entityCtx.setCreditorPacs008(props.selectedEntity)
           }
@@ -159,7 +159,7 @@ export const CreditorProfile = ({ ...props }: ProfileProps) => {
             data-modal-target="default-modal"
             data-modal-toggle="default-modal"
             onClick={async () => {
-              props.setSelectedEntity()
+              props.setSelectedEntity(selectedAccountIndex)
               await props.addAccount()
             }}
           >
