@@ -1,8 +1,13 @@
 import "styles/tailwind.css"
-import Image from "next/image"
+import { Metadata } from "next"
 import Head from "next/head"
+import Image from "next/image"
 import Link from "next/link"
 import EntityProvider from "store/entities/entity.provider"
+
+export const metadata: Metadata = {
+  title: "My Page Title",
+}
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
