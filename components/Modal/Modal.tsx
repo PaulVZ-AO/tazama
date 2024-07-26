@@ -42,7 +42,7 @@ export function Modal(props: Props) {
       <div className="fixed inset-0 bg-gray-500 bg-opacity-75 backdrop-blur-sm transition-opacity" aria-hidden="true"></div>
       <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
         <div className="flex min-h-full items-end justify-center p-4 sm:items-center sm:p-0">
-          <div className="relative w-[470px] overflow-hidden rounded-lg bg-gray-200 p-5">
+          <div className="relative min-w-[470px] overflow-hidden rounded-lg bg-gray-200 p-5">
             <div className="">
               <div className="flex flex-col justify-between ">
                 <h2>{modalProp.modalTitle}</h2>
@@ -191,7 +191,7 @@ export function Modal(props: Props) {
               )}
 
               {/* Accounts */}
-              {activeSection === "Accounts" && (
+              {/* {activeSection === "Accounts" && (
                 <>
                 <div className="flex flex-col">
                   {accountDetails.map((accountDetail, index) => (
@@ -230,7 +230,47 @@ export function Modal(props: Props) {
                 <button type="button" className="m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-inner" onClick={handleClick}>Cancel</button>
                 </div>
                 </>
-              )}
+              )} */}
+
+{activeSection === "Accounts" && (
+  <>
+  <div className={`grid gap-4 ${accountDetails.length >= 3 ? "grid-cols-2" : "grid-cols-1"}`}>
+    {accountDetails.map((accountDetail, index) => (
+      <div key={index} className="flex flex-col border p-4 rounded-lg shadow-sm">
+        <div className="flex items-center mb-4">
+          <div className="mx-[20px] flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke={props.colour} className="size-20">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
+            </svg>
+          </div>
+          <div className="text-left w-full">
+            <div className="mt-5">
+              <label htmlFor={`modal-Account-Number-${index}`}>Account Name</label>
+              <input type="text" id={`modal-Account-Number-${index}`} className="w-full rounded-lg bg-gray-200 p-2 shadow-inner" defaultValue={accountDetail.DbtrAcct.Nm} />
+            </div>
+            <div>
+              <label htmlFor={`modal-Account-ID-${index}`}>ID number</label>
+              <input type="text" id={`modal-Account-ID-${index}`} className="w-full rounded-lg bg-gray-200 p-2 shadow-inner" defaultValue={props.entity?.Dbtr.Id.PrvtId.Othr[0]?.Id} value={accountDetail.DbtrAcct.Id.Othr[0]?.Id} readOnly />
+            </div>
+            <div>
+              <label htmlFor={`modal-Account-Prtry-${index}`}>Prtry</label>
+              <input type="text" id={`modal-Account-Prtry-${index}`} className="w-full rounded-lg bg-gray-200 p-2 shadow-inner" defaultValue={props.entity?.Dbtr.Id.PrvtId.Othr[0]?.Id} value={accountDetail.DbtrAcct.Id.Othr[0]?.SchmeNm.Prtry} readOnly />
+            </div>
+          </div>
+        </div>
+        {/* <hr className="mt-5 mb-2 border-t border-gray-300" /> */}
+      </div>
+    ))}
+  </div>
+  
+<div className="flex">
+<button type="button" className="m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)] hover:shadow-inner">Save</button>
+
+<button type="button" className="m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-inner" onClick={handleClick}>Cancel</button>
+</div>
+  </>
+)}
+
             </div>
           </div>
         </div>
