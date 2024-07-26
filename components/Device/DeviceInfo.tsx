@@ -64,11 +64,11 @@ export function DeviceInfo(props: DeviceProps) {
 
             <div className="m-2 rounded-md border p-2 text-sm">
               <p>Name: {entity?.Accounts[accountIndex || 0]?.DbtrAcct.Nm || " Account Name"} </p>
-              <p>Id:{entity?.Accounts[accountIndex || 0]?.DbtrAcct.Id.Othr[0].Id || " Account Name"} </p>
+              <p>Id:{entity.Entity.Dbtr.Id.PrvtId.Othr[0].Id || " Account Name"} </p>
               <p>Date of birth: {entity?.Entity.Dbtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt}</p>
-              <p>Account: #</p>
+              <p>Account:{entity?.Accounts[accountIndex || 0]?.DbtrAcct.Id.Othr[0].Id}</p>
               <p>Amount:${data.CdtTrfTxInf.InstdAmt.Amt.Amt}</p>
-              <p>Description: text </p>
+              <p>Description: {data.RmtInf.Ustrd}</p>
               <p>Purpose: {data.CdtTrfTxInf.Purp.Cd} </p>
               <p>Latitude: {location.Lat}</p>
               <p>Longitude: {location.Long}</p>
@@ -116,9 +116,9 @@ export function DeviceInfo(props: DeviceProps) {
               <p>
                 Name: {creditorEntity?.CreditorAccounts[creditorAccountIndex || 0]?.CdtrAcct.Nm || " Account Name"}{" "}
               </p>
-              <p>Id:{creditorEntity?.CreditorEntity.Cdtr.Id.PrvtId.Othr[0].Id}</p>
+              <p>Id:{creditorEntity.CreditorEntity.Cdtr.Id.PrvtId.Othr[0].Id}</p>
               <p>Date of birth: {creditorEntity?.CreditorEntity.Cdtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt}</p>
-              <p>Account:${data.CdtTrfTxInf.InstdAmt.Amt.Amt}</p>
+              <p>Account: {creditorEntity?.CreditorEntity.Cdtr.Id.PrvtId.Othr[0].Id}</p>
               <hr className="mt-2" />
               <button className="m-auto mt-2 flex items-center text-blue-500">
                 <svg
