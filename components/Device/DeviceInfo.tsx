@@ -118,7 +118,7 @@ export function DeviceInfo(props: DeviceProps) {
               </p>
               <p>Id:{creditorEntity.CreditorEntity.Cdtr.Id.PrvtId.Othr[0].Id}</p>
               <p>Date of birth: {creditorEntity?.CreditorEntity.Cdtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt}</p>
-              <p>Account: {creditorEntity?.CreditorEntity.Cdtr.Id.PrvtId.Othr[0].Id}</p>
+              <p>Account: {creditorEntity?.CreditorAccounts[creditorAccountIndex || 0]?.CdtrAcct.Id.Othr[0].Id}</p>
               <p>Status: ????</p>
               <hr className="mt-2" />
               <button className="m-auto mt-2 flex items-center text-blue-500">
