@@ -212,7 +212,7 @@ export const pacs002InitialState: PACS002 = {
 }
 
 export const uiConfigInitialState: UIConfiguration = {
-  tmsServerUrl: "http://localhost:5001",
+  tmsServerUrl: "http://localhost:5500",
   tmsKey: "no key set",
   cmsNatsHosting: "nats://localhost:4222",
   natsUsername: "nats_username",

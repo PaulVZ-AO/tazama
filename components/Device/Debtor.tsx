@@ -20,7 +20,7 @@ export function DebtorDevice(props: DebtorProps) {
   const postPacs002Test = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:5001/v1/evaluate/iso20022/pacs.002.001.12",
+        "http://localhost:5500/v1/evaluate/iso20022/pacs.002.001.12",
         entityCtx.pacs002,
         { headers: { "Content-Type": "application/json" } }
       )
@@ -33,7 +33,7 @@ export function DebtorDevice(props: DebtorProps) {
   const postPacs008Test = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:5001/v1/evaluate/iso20022/pacs.008.001.10",
+        "http://localhost:5500/v1/evaluate/iso20022/pacs.008.001.10",
         entityCtx.pacs008,
         { headers: { "Content-Type": "application/json" } }
       )
