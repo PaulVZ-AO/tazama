@@ -83,7 +83,7 @@ export function Modal(props: Props) {
                     </div>
                     <div>
                       <label htmlFor="modal-BirthDt">Birth Date</label>
-                      <input type="text" id="modal-BirthDt" className="w-full" defaultValue={props.entity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt} value={customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt}
+                      <input type="date" id="modal-BirthDt" className="w-full" defaultValue={props.entity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt} value={customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
                             setCustomEntity({
@@ -137,7 +137,10 @@ export function Modal(props: Props) {
                     </div>
                     <div>
                       <label htmlFor="modal-ID">ID number</label>
-                      <input type="text" id="modal-ID" className="w-full" defaultValue={props.entity?.Dbtr.Id.PrvtId.Othr[0].Id} value={customEntity?.Dbtr.Id.PrvtId.Othr[0].Id}
+                      <input
+                        className="w-full"
+                        defaultValue={props.entity?.Dbtr.Id.PrvtId.Othr[0].Id} value={customEntity?.Dbtr.Id.PrvtId.Othr[0].Id}
+                        id="modal-ID"
                         onChange={(e) => {
                           if (customEntity !== undefined) {
                             setCustomEntity({
@@ -151,7 +154,10 @@ export function Modal(props: Props) {
                                     Othr: {
                                       ...customEntity.Dbtr.Id.PrvtId.Othr[0],
                                       Id: e.target.value,
-                                    },},},},})}}} />
+                                    },},},},})}}}
+                          readOnly
+                          type="text"
+                        />
                     </div>
                     <div>
                       <label htmlFor="modal-MobNb">Mobile number</label>
