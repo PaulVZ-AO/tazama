@@ -48,7 +48,7 @@ export function DebtorDevice(props: DebtorProps) {
   }
   return (
     <div className="relative col-span-4" style={{ height: "505px" }}>
-      <Image src="/device.svg" width="250" height="505" className="absolute inset-x-0 mx-auto" alt="" priority={true} />
+      <Image src="/device.svg" width="250" height="505" className="absolute inset-x-0 mx-auto" style={{ maxWidth: "250px", minWidth: "250px" }} alt="device info" priority={true} />
 
       <div className="absolute break-words inset-x-0 mx-auto" style={{ width: "222px", top: "15px" }}>
         <TimeComponent />

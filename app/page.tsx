@@ -332,7 +332,7 @@ const Web = () => {
         {/* Device transactions */}
         <div className="col-span-8">
           <div className="grid grid-cols-12 gap-1">
-            <div className="col-span-4 border">
+            <div className="col-span-4">
               <DebtorDevice selectedEntity={selectedEntity} isDebtor={true} />
             </div>
             <div className="col-span-4 flex items-center justify-between px-5">
