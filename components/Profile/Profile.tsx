@@ -158,6 +158,10 @@ export const Profile = ({ ...props }: ProfileProps) => {
             props.setSelectedEntity()
             await entityCtx.createEntity()
             await entityCtx.setDebtorPacs008(props.selectedEntity)
+          } else {
+            if (confirm("You you sure you want to delete this entity?")) {
+              alert("Deleted");
+            }
           }
         }}
       >
