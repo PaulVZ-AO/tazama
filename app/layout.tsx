@@ -6,7 +6,7 @@ import Link from "next/link"
 import EntityProvider from "store/entities/entity.provider"
 
 export const metadata: Metadata = {
-  title: "My Page Title",
+  title: "Tazama Demo",
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
