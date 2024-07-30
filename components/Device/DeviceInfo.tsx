@@ -62,17 +62,20 @@ export function DeviceInfo(props: DeviceProps) {
               <span className="ml-2 text-white">{entity?.Entity.Dbtr.Nm || "Name"}</span>
             </div>
 
-            <div className="m-2 rounded-md border p-2 text-sm">
-              <p>Name: {entity?.Accounts[accountIndex || 0]?.DbtrAcct.Nm || " Account Name"} </p>
-              <p>Id:{entity?.Accounts[accountIndex || 0]?.DbtrAcct.Id.Othr[0].Id || " Account Name"} </p>
+            <div className="bg-gray-100 m-2 rounded-md border p-2 text-sm shadow-sm">
+              <p className="truncate">Id:{entity.Entity.Dbtr.Id.PrvtId.Othr[0].Id || " Account Name"} </p>
               <p>Date of birth: {entity?.Entity.Dbtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt}</p>
-              <p>Account: #</p>
-              <p>Amount:${data.CdtTrfTxInf.InstdAmt.Amt.Amt}</p>
-              <p>Description: text </p>
+            </div>
+            <div className="bg-gray-100 m-2 rounded-md border p-2 text-sm shadow-sm">
+              <p className="font-bold">{entity?.Accounts[accountIndex || 0]?.DbtrAcct.Nm || " Account Name"} </p>
+              <p className="truncate">Account:{entity?.Accounts[accountIndex || 0]?.DbtrAcct.Id.Othr[0].Id}</p>
+            </div>
+            <div className="bg-gray-100 m-2 rounded-md border p-2 text-sm shadow-sm">
+              <p>Amount: {data.CdtTrfTxInf.InstdAmt.Amt.Ccy} {data.CdtTrfTxInf.InstdAmt.Amt.Amt}</p>
+              <p className="truncate">Description: {data.RmtInf.Ustrd}</p>
               <p>Purpose: {data.CdtTrfTxInf.Purp.Cd} </p>
               <p>Latitude: {location.Lat}</p>
               <p>Longitude: {location.Long}</p>
-
               <hr className="mt-2" />
               <button className="m-auto mt-2 flex items-center text-blue-500">
                 <svg
@@ -116,9 +119,9 @@ export function DeviceInfo(props: DeviceProps) {
               <p>
                 Name: {creditorEntity?.CreditorAccounts[creditorAccountIndex || 0]?.CdtrAcct.Nm || " Account Name"}{" "}
               </p>
-              <p>Id:{creditorEntity?.CreditorEntity.Cdtr.Id.PrvtId.Othr[0].Id}</p>
+              <p>Id:{creditorEntity.CreditorEntity.Cdtr.Id.PrvtId.Othr[0].Id}</p>
               <p>Date of birth: {creditorEntity?.CreditorEntity.Cdtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt}</p>
-              <p>Account:${data.CdtTrfTxInf.InstdAmt.Amt.Amt}</p>
+              <p>Account: {creditorEntity?.CreditorAccounts[creditorAccountIndex || 0]?.CdtrAcct.Id.Othr[0].Id}</p>
               <p>Status: ????</p>
               <hr className="mt-2" />
               <button className="m-auto mt-2 flex items-center text-blue-500">
