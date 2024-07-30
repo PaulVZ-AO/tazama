@@ -17,9 +17,10 @@ export function DeviceInfo(props: DeviceProps) {
 
   const creditorEntity = entityCtx.creditorEntities[props.selectedEntity]
 
-  const data = entityCtx.pacs008.FIToFICstmrCdtTrf
+  const pacs008Data = entityCtx.pacs008.FIToFICstmrCdtTrf
+  const pacs002Data = entityCtx.pacs002.FIToFIPmtSts
 
-  const location = data.SplmtryData.Envlp.Doc.InitgPty.Glctn
+  const location = pacs008Data.SplmtryData.Envlp.Doc.InitgPty.Glctn
 
   let fillColour
 
@@ -72,10 +73,10 @@ export function DeviceInfo(props: DeviceProps) {
             </div>
             <div className="m-2 rounded-md border bg-gray-100 p-2 text-sm shadow-sm">
               <p>
-                Amount: {data.CdtTrfTxInf.InstdAmt.Amt.Ccy} {data.CdtTrfTxInf.InstdAmt.Amt.Amt}
+                Amount: {pacs008Data.CdtTrfTxInf.InstdAmt.Amt.Ccy} {pacs008Data.CdtTrfTxInf.InstdAmt.Amt.Amt}
               </p>
-              <p className="truncate">Description: {data.RmtInf.Ustrd}</p>
-              <p>Purpose: {data.CdtTrfTxInf.Purp.Cd} </p>
+              <p className="truncate">Description: {pacs008Data.RmtInf.Ustrd}</p>
+              <p>Purpose: {pacs008Data.CdtTrfTxInf.Purp.Cd} </p>
               <p>Latitude: {location.Lat}</p>
               <p>Longitude: {location.Long}</p>
               <hr className="mt-2" />
@@ -117,14 +118,19 @@ export function DeviceInfo(props: DeviceProps) {
               <span className="ml-2 text-white">{creditorEntity?.CreditorEntity.Cdtr.Nm || "Name"}</span>
             </div>
 
-            <div className="m-2 rounded-md border p-2 text-sm">
-              <p>
-                Name: {creditorEntity?.CreditorAccounts[creditorAccountIndex || 0]?.CdtrAcct.Nm || " Account Name"}{" "}
-              </p>
-              <p>ID: {creditorEntity.CreditorEntity.Cdtr.Id.PrvtId.Othr[0].Id}</p>
+            <div className="m-2 rounded-md border bg-gray-100 p-2 text-sm shadow-sm">
+              <p className="truncate">ID: {creditorEntity.CreditorEntity.Cdtr.Id.PrvtId.Othr[0].Id} </p>
               <p>Date of birth: {creditorEntity?.CreditorEntity.Cdtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt}</p>
-              <p>Account: {creditorEntity?.CreditorAccounts[creditorAccountIndex || 0]?.CdtrAcct.Id.Othr[0].Id}</p>
-              <p>Status: ????</p>
+            </div>
+            <div className="m-2 rounded-md border bg-gray-100 p-2 text-sm shadow-sm">
+              <p className={`font-bold ${fillColour}`}>
+                {creditorEntity?.CreditorAccounts[creditorAccountIndex || 0]?.CdtrAcct.Nm}{" "}
+              </p>
+              <p className="truncate">
+                ID: {creditorEntity?.CreditorAccounts[creditorAccountIndex || 0]?.CdtrAcct.Id.Othr[0].Id}
+              </p>
+              <p>Status: {pacs002Data.TxInfAndSts.TxSts}</p>
+
               <hr className="mt-2" />
               <button className="m-auto mt-2 flex items-center text-blue-500">
                 <svg

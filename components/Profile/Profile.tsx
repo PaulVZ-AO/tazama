@@ -36,8 +36,22 @@ const AccountsComponent = ({ index, setSelected, selectedEntityIndex, setSelecte
     setSelected(index)
   }
 
-  if (entCtx.selectedDebtorEntity.debtorSelectedIndex === selectedEntityIndex && entCtx.selectedDebtorEntity.debtorAccountSelectedIndex === index)
-    colour = "text-blue-800";
+
+
+  if (
+    entCtx.selectedDebtorEntity.debtorSelectedIndex === selectedEntityIndex &&
+    entCtx.selectedDebtorEntity.debtorAccountSelectedIndex === index
+  ) {
+    if (entCtx.selectedDebtorEntity.debtorSelectedIndex === 0) {
+      colour = "text-blue-700"
+    } else if (entCtx.selectedDebtorEntity.debtorSelectedIndex === 1) {
+      colour = "text-green-700"
+    } else if (entCtx.selectedDebtorEntity.debtorSelectedIndex === 2) {
+      colour = "text-yellow-600"
+    } else if (entCtx.selectedDebtorEntity.debtorSelectedIndex === 3) {
+      colour = "text-orange-700"
+    }
+  }
 
   return (
     <button
