@@ -3,8 +3,10 @@
 import axios from "axios"
 // import { Codec, connect, NatsConnection, StringCodec } from "nats.ws"
 import { useContext, useEffect, useState } from "react"
+import io from "socket.io-client"
 import { DebtorDevice } from "components/Device/Debtor"
 import { Modal } from "components/Modal/Modal"
+// import NatsComponent from "components/Nats/nats"
 import { ProcessIndicator } from "components/ProcessIndicator/ProcessIndicator"
 import { Profile } from "components/Profile/Profile"
 import { CreditorProfile } from "components/ProfileCreditor/ProfileCreditor"
@@ -17,6 +19,28 @@ const Web = () => {
   // const [nats, setNats] = useState<NatsConnection>()
   const [showModal, setModal] = useState(false)
   const entityCtx = useContext(EntityContext)
+
+  useEffect(() => {
+    const socket = io()
+
+    socket.on("connection", () => {
+      console.log("Connected to WebSocket server")
+    })
+    socket.on("welcome", (msg) => {
+      console.log("Received Message from the welcome: ", msg)
+      socket.emit("confirmation", msg)
+    })
+    socket.on("stream", (msg) => {
+      console.log("Received Message from the Stream: ", msg)
+    })
+    socket.onAny((event, ...args) => {
+      console.log(`got ${event}`)
+    })
+
+    return () => {
+      socket.disconnect()
+    }
+  }, [])
 
   // useEffect(() => {
   //   const sc: Codec<string> = StringCodec()
@@ -551,6 +575,10 @@ const Web = () => {
             <StatusIndicator large={true} />
           </div>
         </div>
+      </div>
+      <div className="flex min-h-80 w-full items-center justify-center">
+        {/* <NatsComponent servers={"wss://demo.nats.io:8443"} /> */}
+        {/* <NatsComponent servers={"localhost:4222"} /> */}
       </div>
 
       {showModal && (
