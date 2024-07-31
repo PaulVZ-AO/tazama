@@ -69,7 +69,7 @@ export function DeviceInfo(props: DeviceProps) {
             </div>
             <div className="m-2 rounded-md border bg-gray-100 p-2 text-sm shadow-sm">
               <p className={`font-bold ${fillColour}`}>{entity?.Accounts[accountIndex || 0]?.DbtrAcct.Nm} </p>
-              <p className="truncate">ID: {entity?.Accounts[accountIndex || 0]?.DbtrAcct.Id.Othr[0].Id}</p>
+              <p className="truncate">ID: {entity?.Accounts[accountIndex || 0 ]?.DbtrAcct.Id.Othr[0].Id}</p>
             </div>
             <div className="m-2 rounded-md border bg-gray-100 p-2 text-sm shadow-sm">
               <p>
@@ -124,7 +124,7 @@ export function DeviceInfo(props: DeviceProps) {
             </div>
             <div className="m-2 rounded-md border bg-gray-100 p-2 text-sm shadow-sm">
               <p className={`font-bold ${fillColour}`}>
-                {creditorEntity?.CreditorAccounts[creditorAccountIndex || 0]?.CdtrAcct.Nm}{" "}
+                {creditorEntity?.CreditorAccounts[creditorAccountIndex || 0]?.CdtrAcct.Nm}
               </p>
               <p className="truncate">
                 ID: {creditorEntity?.CreditorAccounts[creditorAccountIndex || 0]?.CdtrAcct.Id.Othr[0].Id}

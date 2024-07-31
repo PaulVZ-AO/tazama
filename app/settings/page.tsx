@@ -36,12 +36,12 @@ const Settings = () => {
             </div>
           </div>
 
-          <div className="col-span-full">
+          {/* <div className="col-span-full">
             <label htmlFor="tms_key">Key / Token</label>
             <div className="my-2">
               <input id="tms_key" type="text" className="w-full rounded-lg p-2" placeholder={config?.tmsKey} />
             </div>
-          </div>
+          </div> */}
 
           <div className="col-span-full">
             <hr className="mb-2 border-black" />

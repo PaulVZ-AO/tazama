@@ -396,23 +396,24 @@ const Web = () => {
               entity={entityCtx.creditorEntities[1]?.CreditorEntity}
               creditorAccounts={entityCtx.creditorEntities[1]?.CreditorAccounts}
               setModalVisible={setModal}
-              setSelectedEntity={async () => {
+              index={1}
+              setSelectedEntity={async (idx: number) => {
                 setSelectedCreditorEntity(1)
                 if (
                   entityCtx.creditorEntities[1]?.CreditorAccounts.length !== -1 &&
                   entityCtx.creditorEntities[1]?.CreditorAccounts.length !== undefined
                 ) {
-                  let idx = 0
-                  if (entityCtx.creditorEntities[1]?.CreditorAccounts.length !== -1) {
-                    // if (entityCtx.entities[1]?.Accounts.length !== -1) {
-                    // idx = entityCtx.entities[1]?.Accounts.length - 1
-                    idx = entityCtx.creditorEntities[1]?.CreditorAccounts.length - 1
-                  }
-                  await entityCtx.selectCreditorEntity(1, idx)
+                  // let idx = 0
+                  // if (entityCtx.creditorEntities[1]?.CreditorAccounts.length !== -1) {
+                  // if (entityCtx.entities[1]?.Accounts.length !== -1) {
+                  // idx = entityCtx.entities[1]?.Accounts.length - 1
+                  // idx = entityCtx.creditorEntities[1]?.CreditorAccounts.length - 1
+                  // }
+                  // await entityCtx.selectCreditorEntity(1, idx)
                   await entityCtx.setCreditorAccountPacs008(1, idx)
                 }
               }}
-              index={1}
+              // setSelectedEntity={() => setSelectedCreditorEntity(1)}
               selectedEntity={selectedCreditorEntity}
               addAccount={async () => {
                 await entityCtx.createCreditorEntityAccount(1)

@@ -103,7 +103,7 @@ export const Profile = ({ ...props }: ProfileProps) => {
             props.setModalVisible(true)
           }
         }}
-        style={ (props.entity !== undefined) ? {cursor: "pointer"} : {cursor: "default"}}
+        style={props.entity !== undefined ? { cursor: "pointer" } : { cursor: "default" }}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -122,7 +122,7 @@ export const Profile = ({ ...props }: ProfileProps) => {
       </button>
 
       {/* Profile Button */}
-      <button style={ (props.entity !== undefined) ? {cursor: "grab"} : {cursor: "default"}}>
+      <button style={props.entity !== undefined ? { cursor: "grab" } : { cursor: "default" }}>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
           <path
             fillRule="evenodd"
@@ -132,24 +132,22 @@ export const Profile = ({ ...props }: ProfileProps) => {
         </svg>
       </button>
 
-      {
-        props?.accounts?.map((account, index) => {
-          if (account !== null && account !== undefined) {
-            return (
-              <AccountsComponent
-                key={crypto.randomUUID().replaceAll("-", "")}
-                index={index}
-                selected={selectedAccountIndex}
-                setSelected={setSelectedAccountIndex}
-                selectedEntityIndex={props.index}
-                setSelectedEntity={props.setSelectedEntity}
-              />
-            )
-          } else {
-            return null
-          }
-        })
-      }
+      {props?.accounts?.map((account, index) => {
+        if (account !== null && account !== undefined) {
+          return (
+            <AccountsComponent
+              key={crypto.randomUUID().replaceAll("-", "")}
+              index={index}
+              selected={selectedAccountIndex}
+              setSelected={setSelectedAccountIndex}
+              selectedEntityIndex={props.index}
+              setSelectedEntity={props.setSelectedEntity}
+            />
+          )
+        } else {
+          return null
+        }
+      })}
 
       {props?.accounts !== null && props.accounts !== undefined && props?.accounts.length < 4 && (
         <button
@@ -173,8 +171,8 @@ export const Profile = ({ ...props }: ProfileProps) => {
             await entityCtx.createEntity()
             await entityCtx.setDebtorPacs008(props.selectedEntity)
           } else {
-            if (confirm("You you sure you want to delete this entity?")) {
-              alert("Deleted");
+            if (confirm("You sure you want to delete this entity?")) {
+              alert("Deleted")
             }
           }
         }}

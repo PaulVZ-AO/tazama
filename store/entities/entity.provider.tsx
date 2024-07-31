@@ -317,7 +317,7 @@ const EntityProvider = ({ children }: Props) => {
         } else if (accountsList.length === 2) {
           return `${state.entities[entityIndex].Entity.Dbtr.Nm.split(" ")[0]}'s third account`
         } else if (accountsList.length === 3) {
-          return `${state.entities[entityIndex].Entity.Dbtr.Nm.split(" ")[0]}'s forth account`
+          return `${state.entities[entityIndex].Entity.Dbtr.Nm.split(" ")[0]}'s fourth account`
         }
       }
 
@@ -452,7 +452,7 @@ const EntityProvider = ({ children }: Props) => {
         } else if (accountsList.length === 2) {
           return `${state.creditorEntities[entityIndex].CreditorEntity.Cdtr.Nm.split(" ")[0]}'s third account`
         } else if (accountsList.length === 3) {
-          return `${state.creditorEntities[entityIndex].CreditorEntity.Cdtr.Nm.split(" ")[0]}'s forth account`
+          return `${state.creditorEntities[entityIndex].CreditorEntity.Cdtr.Nm.split(" ")[0]}'s fourth account`
         }
       }
 

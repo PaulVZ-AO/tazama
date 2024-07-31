@@ -40,15 +40,31 @@ const CreditorAccountsComponent = ({ index, setSelected, selectedEntityIndex, se
     entCtx.selectedCreditorEntity.creditorSelectedIndex === selectedEntityIndex &&
     entCtx.selectedCreditorEntity.creditorAccountSelectedIndex === index
   ) {
-    if (entCtx.selectedCreditorEntity.creditorSelectedIndex === 0) {
-      colour = "text-blue-700"
-    } else if (entCtx.selectedCreditorEntity.creditorSelectedIndex === 1) {
-      colour = "text-green-700"
-    } else if (entCtx.selectedCreditorEntity.creditorSelectedIndex === 2) {
-      colour = "text-yellow-600"
-    } else if (entCtx.selectedCreditorEntity.creditorSelectedIndex === 3) {
-      colour = "text-orange-700"
+    switch (entCtx.selectedCreditorEntity.creditorSelectedIndex) {
+      case 0:
+        colour = "text-blue-700"
+        break
+      case 1:
+        colour = "text-green-700"
+        break
+      case 2:
+        colour = "text-yellow-600"
+        break
+      case 3:
+        colour = "text-orange-700"
+        break
+      default:
+        break
     }
+    // if (entCtx.selectedCreditorEntity.creditorSelectedIndex === 0) {
+    //   colour = "text-blue-700"
+    // } else if (entCtx.selectedCreditorEntity.creditorSelectedIndex === 1) {
+    //   colour = "text-green-700"
+    // } else if (entCtx.selectedCreditorEntity.creditorSelectedIndex === 2) {
+    //   colour = "text-yellow-600"
+    // } else if (entCtx.selectedCreditorEntity.creditorSelectedIndex === 3) {
+    //   colour = "text-orange-700"
+    // }
   }
   return (
     <button
@@ -106,11 +122,6 @@ export const CreditorProfile = ({ ...props }: ProfileProps) => {
       <button
         className="text-black"
         onClick={async () => {
-          if (!props.entity && entityCtx.creditorEntities?.length < 4) {
-            props.setSelectedEntity(selectedAccountIndex)
-            await entityCtx.createCreditorEntity()
-            await entityCtx.setCreditorPacs008(props.selectedEntity)
-          }
           if (props.entity !== undefined) {
             props.setSelectedEntity(selectedAccountIndex)
             props.setModalVisible(true)
@@ -185,7 +196,19 @@ export const CreditorProfile = ({ ...props }: ProfileProps) => {
           </button>
         )}
 
-      <button>
+      <button
+        onClick={async () => {
+          if (!props.entity && entityCtx.creditorEntities?.length < 4) {
+            props.setSelectedEntity(selectedAccountIndex)
+            await entityCtx.createCreditorEntity()
+            await entityCtx.setCreditorPacs008(props.selectedEntity)
+          } else {
+            if (confirm("You sure you want to delete this entity?")) {
+              alert("Deleted")
+            }
+          }
+        }}
+      >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
           <path
             fillRule="evenodd"
