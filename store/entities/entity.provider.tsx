@@ -357,6 +357,28 @@ const EntityProvider = ({ children }: Props) => {
     }
   }
 
+  const updateAccounts = async (accounts: Array<DebtorAccount>, entityIndex: number) => {
+    try {
+      dispatch({ type: ACTIONS.UPDATE_ACCOUNTS_LOADING })
+  
+      let updatedEntity: Entity = {
+        Entity: state.entities[entityIndex]?.Entity,
+        Accounts: accounts,
+      }
+  
+      let accountsList: Array<Entity> = state.entities
+      if (accountsList[entityIndex]?.Entity && typeof entityIndex === "number") {
+        accountsList.splice(entityIndex, 1, updatedEntity)
+      }
+  
+      dispatch({ type: ACTIONS.UPDATE_ACCOUNTS_SUCCESS, payload: [...accountsList] })
+      localStorage.setItem("DEBTOR_ENTITIES", JSON.stringify(state.entities))
+    } catch (error) {
+      dispatch({ type: ACTIONS.UPDATE_ACCOUNTS_FAIL })
+    }
+  }
+  
+
   const createCreditorEntity = async () => {
     try {
       dispatch({ type: ACTIONS.CREATE_CREDITOR_ENTITY_LOADING })
@@ -659,6 +681,11 @@ const EntityProvider = ({ children }: Props) => {
         createEntity,
         updateEntity,
         createEntityAccount,
+
+        accounts: state.accounts,
+        updateAccountsLoading: state.updateAccountsLoading,
+        updateAccounts,
+
         createCreditorEntity,
         updateCreditorEntity,
         createCreditorEntityAccount,

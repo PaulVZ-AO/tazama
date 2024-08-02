@@ -79,7 +79,8 @@ export function Modal(props: Props) {
                                 Dbtr: {
                                   ...customEntity.Dbtr,
                                   Nm: e.target.value,
-                                },})}}} />
+                                },})}}} 
+                          />
                       </div>
                       <div>
                         <label htmlFor="modal-BirthDt">Birth Date</label>
@@ -97,7 +98,8 @@ export function Modal(props: Props) {
                                       DtAndPlcOfBirth: {
                                         ...customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth,
                                         BirthDt: e.target.value,
-                                      },},},},})}}} />
+                                      },},},},})}}} 
+                          />
                       </div>
                       <div>
                         <label htmlFor="modal-CityOfBirth">City of Birth</label>
@@ -115,7 +117,8 @@ export function Modal(props: Props) {
                                       DtAndPlcOfBirth: {
                                         ...customEntity.Dbtr.Id.PrvtId.DtAndPlcOfBirth,
                                         CityOfBirth: e.target.value,
-                                      },},},},})}}} />
+                                      },},},},})}}} 
+                          />
                       </div>
                       <div>
                         <label htmlFor="modal-CtryOfBirth">Country of Birth</label>
@@ -133,7 +136,8 @@ export function Modal(props: Props) {
                                       DtAndPlcOfBirth: {
                                         ...customEntity.Dbtr.Id.PrvtId.DtAndPlcOfBirth,
                                         CtryOfBirth: e.target.value,
-                                      },},},},})}}} />
+                                      },},},},})}}} 
+                          />
                       </div>
                       <div>
                         <label htmlFor="modal-ID">ID number</label>
@@ -171,7 +175,8 @@ export function Modal(props: Props) {
                                   ...customEntity.Dbtr.CtctDtls,
                                   CtctDtls: {
                                     MobNb: e.target.value,
-                                  },},})}}} />
+                                  },},})}}} 
+                          />
                       </div>
                     </div>
                   </div>
@@ -221,7 +226,22 @@ export function Modal(props: Props) {
                   </div>
                   
                   <div className="flex">
-                    <button type="button" className="m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)] hover:shadow-inner">Save</button>
+
+
+
+                    <button
+  type="button"
+  className="m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)] hover:shadow-inner"
+  onClick={async () => {
+    if (accountDetails.length > 0 && typeof props.selectedEntity === "number") {
+      await entityCtx.updateAccounts(accountDetails, props.selectedEntity)
+      handleClick()
+    }
+  }}
+>
+  Save
+</button>
+
 
                     <button type="button" className="m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-inner" onClick={handleClick}>Cancel</button>
                   </div>
