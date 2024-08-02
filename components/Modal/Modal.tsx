@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react"
 import EntityContext from "store/entities/entity.context"
-import { DebtorEntity } from "store/entities/entity.interface"
+import { DebtorAccount, DebtorEntity } from "store/entities/entity.interface"
 
 interface Props {
   colour?: string
@@ -13,6 +13,7 @@ interface Props {
 export function Modal(props: Props) {
   const entityCtx = useContext(EntityContext)
   const [customEntity, setCustomEntity] = useState<DebtorEntity | undefined>(undefined)
+  const [customAccount, setCustomAccount] = useState<DebtorAccount | undefined>(undefined)
   const [activeSection, setActiveSection] = useState<"Entity" | "Accounts">("Entity")
 
   let modalProp = { modalTitle: "Update Entity", }
@@ -36,6 +37,10 @@ export function Modal(props: Props) {
 
   const accounts = typeof props.selectedEntity === "number" ? entityCtx.entities[props.selectedEntity]?.Accounts : []
   const accountDetails = accounts ? accounts.map((account: any) => account) : []
+
+  if (customAccount === undefined) {
+    setCustomAccount(accountDetails[0])
+  }
 
   return (
     <div className={props.showModal ? "relative z-10" : "hidden"} aria-labelledby="modal-title" role="dialog" aria-modal="true">
@@ -209,7 +214,19 @@ export function Modal(props: Props) {
                           <div className="text-left w-full">
                             <div className="mt-5">
                               <label htmlFor={`modal-Account-Number-${index}`}>Account Name</label>
-                              <input type="text" id={`modal-Account-Number-${index}`} className="w-full rounded-lg bg-gray-200 p-2 shadow-inner" defaultValue={accountDetail.DbtrAcct.Nm} />
+                              <input type="text" id={`modal-Account-Number-${index}`} className="w-full rounded-lg bg-gray-200 p-2 shadow-inner"
+                                defaultValue={accountDetail.DbtrAcct.Nm}
+                                value={customAccount?.DbtrAcct.Nm}
+                                onChange={(e) => {
+                                  setCustomAccount({
+                                    ...customAccount,
+                                    DbtrAcct: {
+                                      ...customAccount.DbtrAcct,
+                                      Nm: e.target.value,
+                                    },
+                                  })
+                                }}
+                              />
                             </div>
                             <div>
                               <label htmlFor={`modal-Account-ID-${index}`}>ID number</label>
@@ -233,8 +250,10 @@ export function Modal(props: Props) {
   type="button"
   className="m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)] hover:shadow-inner"
   onClick={async () => {
+    console.log(customAccount);
+
     if (accountDetails.length > 0 && typeof props.selectedEntity === "number") {
-      await entityCtx.updateAccounts(accountDetails, props.selectedEntity)
+      await entityCtx.updateAccounts([customAccount], props.selectedEntity)
       handleClick()
     }
   }}
