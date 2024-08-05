@@ -385,7 +385,6 @@ const EntityProvider = ({ children }: Props) => {
       dispatch({ type: ACTIONS.UPDATE_ACCOUNTS_FAIL })
     }
   }
-  
 
   const createCreditorEntity = async () => {
     try {

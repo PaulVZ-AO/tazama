@@ -52,7 +52,6 @@ const EntityReducer = (state: any, action: any) => {
         entities: [],
       }
 
-
     case ACTIONS.UPDATE_ACCOUNTS_LOADING:
       return {
         ...state,
@@ -71,7 +70,6 @@ const EntityReducer = (state: any, action: any) => {
         updateAccountsLoading: false,
         entities: [],
       }
-
 
     case ACTIONS.CREATE_ENTITY_ACCOUNT_LOADING:
       return {
