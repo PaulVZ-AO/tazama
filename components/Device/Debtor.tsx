@@ -42,8 +42,10 @@ export function DebtorDevice(props: DebtorProps) {
         await postPacs002Test()
       }
       console.log("Test POST PACS008 response: ", response.data)
-    } catch (error) {
-      console.log(error)
+    } catch (error: any) {
+      const errMsg: any = JSON.parse(error.response.data.split("\n").slice(1).join("\n"))
+      console.log(JSON.parse(error.response.data.split("\n").slice(1).join("\n")))
+      alert(`Error sending PACS008 request. ${JSON.stringify(errMsg.errorMessage)}`)
     }
   }
   return (

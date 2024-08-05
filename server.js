@@ -1,12 +1,35 @@
+
+const frms = require('@frmscoe/frms-coe-lib/lib/helpers/protobuf')
 const NATS = require('nats');
 const next = require('next');
-const protobuf = require('protobufjs');
+
 const { Server } = require("socket.io");
 const { createServer } = require('http');
 const { parse } = require('url');
 
 const app = next({ dev: process.env.NODE_ENV !== 'production' });
+
+const port = 3001
+
 const handle = app.getRequestHandler();
+
+const sc = NATS.StringCodec()
+
+const handleMsg = async (msg, socket) => {
+  // let decodedMsg
+  const subject = sc.decode(msg._msg.subject);
+  console.log(subject)
+
+  const decodedMessage = frms.default.decode(msg.data);
+  console.log(decodedMessage)
+  await socket.to('stream').emit('stream', decodedMessage );
+}
+
+const messageListener = async (messages, socket) => {
+  ;(async () => {
+    for await (const msg of messages) await handleMsg(msg, socket)
+  })()
+}
 
 app.prepare().then(() => {
   const server = createServer((req, res) => {
@@ -15,16 +38,29 @@ app.prepare().then(() => {
   });
 
   const io = new Server(server);
-  io.socketsJoin(['stream', 'welcome', 'confirmation'])
-  io.setMaxListeners(0)
-
+  
+  const NATSSubscriptions = []
+  io.on('connect', (socket) => console.log("CONNECT", socket.id))
+  
   io.on('connection', async (socket) => {
+    socket.join(['stream', 'welcome', 'confirmation', 'subscriptions'])
     console.log('Client connected', socket.id);
-    // socket.join('stream')
     socket.emit('welcome', { message: 'NATS Connected' });
   
     socket.on('confirmation', (message) => {
       console.log("Confirmed:", message)
+    });
+
+    socket.on('subscriptions', (message) => {
+      console.log("Subscriptions:", message)
+      
+      message.subscriptions.forEach(subscription => {
+        if (!NATSSubscriptions.includes(subscription)) {
+          console.log("Adding subscription:", subscription)
+          NATSSubscriptions.push(subscription)
+        }
+        
+      })
     });
 
     // Connect to NATS server
@@ -32,10 +68,23 @@ app.prepare().then(() => {
       servers: "localhost:14222"
     })
 
-    const sc = NATS.StringCodec()
+    
+    let subscriptions = []
+
+    NATSSubscriptions.forEach((sub) => {
+      let subscription = nc.subscribe(sub, {queue: "MONITORING"})
+      subscriptions.push(subscription)
+      if (sub === ">"){
+        console.log('Subscribed to all rules')
+        socket.emit('subscriptions', `Subscribed to all rules`)
+      } else {
+        console.log('Subscribed to ', sub)
+        socket.emit('subscriptions', `Subscribed to ${sub}`)
+      }
+    })
 
     console.log(nc.info)
-
+    
     const connected = nc.subscribe("connection")
     const all = nc.subscribe(">", { queue: "MONITORING" })
     const pubRule901 = nc.subscribe("pub-rule-901@1.0.0", { queue: "MONITORING" })
@@ -44,47 +93,41 @@ app.prepare().then(() => {
 
     const type001 = nc.subscribe("typology-999@1.0.0", { queue: "MONITORING" })
 
+    // subscriptions.push(connected)
+    // subscriptions.push(all)
+    // // subscriptions.push(pubRule901)
+    // // subscriptions.push(subRule901)
+    // // subscriptions.push(cms)
+    // subscriptions.push(type001)
 
-    const handleMsg = async (msg) => {
-      const subject = sc.decode(msg._msg.subject);
-      const sid = msg._msg.sid
-      console.log(subject, sid)
-      protobuf.load("Full.proto", function (err, root) {
-        if (err)
-          throw err;
-
-        let Message = root.lookupType("awesomepackage.FRMSMessage")
-
-        let decodedMsg = Message.decode(msg.data).toJSON();
-        console.log(`Connection Received a request: `, decodedMsg)
-        console.log("---------------------------------------------------------------->")
-        socket.emit('stream', decodedMsg );
-      })
-      
-    }
+    // subscriptions.forEach(async (sub) => {
+    //   return await messageListener(sub, socket)
+    // })
 
     ;(async () => {
-      for await (const msg of connected) await handleMsg(msg)
+      for await (const msg of connected) await handleMsg(msg, io)
     })()
 
     ;(async () => {
-      for await (const msg of all) await handleMsg(msg)
+      for await (const msg of all) await handleMsg(msg, io)
     })()
 
     ;(async () => {
-      for await (const msg of type001) await handleMsg(msg)
+      for await (const msg of type001) await handleMsg(msg, io)
     })()
 
     ;(async () => {
-      for await (const msg of pubRule901) await handleMsg(msg)
+      for await (const msg of pubRule901) await handleMsg(msg, io)
     })()
 
     ;(async () => {
-      for await (const msg of subRule901) await handleMsg(msg)
+      for await (const msg of subRule901) await handleMsg(msg, io)
     })()
     ;(async () => {
-      for await (const msg of cms) await handleMsg(msg)
+      for await (const msg of cms) await handleMsg(msg, io)
     })()
+
+    io.to('stream').emit('stream', {message: "Stream Test Message"})
   
     socket.on('disconnect', () => {
       console.log('Client disconnected');
@@ -94,6 +137,6 @@ app.prepare().then(() => {
   
   server.listen(3001, (err) => {
     if (err) throw err;
-    console.log('> Ready on http://localhost:3001');
+    console.log(`> Ready on http://localhost:${port}`);
   });
 });

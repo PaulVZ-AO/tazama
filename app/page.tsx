@@ -1,12 +1,10 @@
 "use client"
 
 import axios from "axios"
-// import { Codec, connect, NatsConnection, StringCodec } from "nats.ws"
 import { useContext, useEffect, useState } from "react"
 import io from "socket.io-client"
 import { DebtorDevice } from "components/Device/Debtor"
 import { Modal } from "components/Modal/Modal"
-// import NatsComponent from "components/Nats/nats"
 import { ProcessIndicator } from "components/ProcessIndicator/ProcessIndicator"
 import { Profile } from "components/Profile/Profile"
 import { CreditorProfile } from "components/ProfileCreditor/ProfileCreditor"
@@ -16,22 +14,27 @@ import EntityContext from "store/entities/entity.context"
 const Web = () => {
   const [hoveredRule, setHoveredRule] = useState<any>(null)
   const [hoveredType, setHoveredType] = useState<any>(null)
-  // const [nats, setNats] = useState<NatsConnection>()
   const [showModal, setModal] = useState(false)
   const entityCtx = useContext(EntityContext)
 
   useEffect(() => {
     const socket = io()
 
-    socket.on("connection", () => {
-      console.log("Connected to WebSocket server")
+    socket.on("connection", (msg) => {
+      console.log("Connected to WebSocket server", msg)
     })
+    socket.emit("subscriptions", { subscriptions: ["connection", ">", "typology-999@1.0.0", "cms"] })
+
     socket.on("welcome", (msg) => {
       console.log("Received Message from the welcome: ", msg)
       socket.emit("confirmation", msg)
     })
+
     socket.on("stream", (msg) => {
       console.log("Received Message from the Stream: ", msg)
+    })
+    socket.on("subscriptions", (msg) => {
+      console.log(msg)
     })
     socket.onAny((event, ...args) => {
       console.log(`got ${event}`)
@@ -41,47 +44,6 @@ const Web = () => {
       socket.disconnect()
     }
   }, [])
-
-  // useEffect(() => {
-  //   const sc: Codec<string> = StringCodec()
-  //   ;(async () => {
-  //     const nc = await connect({
-  //       // servers: ["wss://demo.nats.io:8443"],
-  //       servers: ["wss://nats:4222"],
-  //     })
-  //     setNats(nc)
-  //     console.log("connected to NATS")
-  //     // const sub = nc.subscribe("echo")
-  //     const pacs008Sub = nc.subscribe("sub-rule-901@1.0.0")
-
-  //     const connected = nc.subscribe("connection")
-
-  //     const handle = (msg: any) => {
-  //       console.log(`Received a request: ${sc.decode(msg.data)}`)
-  //       msg.respond(msg.data)
-  //     }
-
-  //     // Wait to receive messages from the subscription and handle them
-  //     // asynchronously..
-  //     ;(async () => {
-  //       for await (const msg of connected) handle(msg)
-  //     })()
-  //     ;(async () => {
-  //       for await (const msg of pacs008Sub) handle(msg)
-  //     })()
-  //     // Now we can send a couple of requests to that subject. Note how we
-  //     // are encoding the string data on request and decoding the reply
-  //     // message data.
-
-  //     let connection = await nc.request("connection", sc.encode("Demo App Connected"))
-  //     console.log(`Received a reply: ${sc.decode(connection.data)}`)
-  //   })()
-
-  //   return () => {
-  //     nats?.drain()
-  //     console.log("closed NATS connection")
-  //   }
-  // }, [])
 
   const handleRuleMouseEnter = (type: any) => {
     setHoveredType(null) // fallback if stats is stuck
