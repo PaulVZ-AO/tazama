@@ -357,13 +357,21 @@ const EntityProvider = ({ children }: Props) => {
     }
   }
 
-  const updateAccounts = async (accounts: Array<DebtorAccount>, entityIndex: number) => {
+  const updateAccounts = async (updatedAccounts: Array<DebtorAccount>, entityIndex: number) => {
     try {
       dispatch({ type: ACTIONS.UPDATE_ACCOUNTS_LOADING })
   
+      // Get the current accounts for the entity
+      const currentAccounts = state.entities[entityIndex]?.Accounts || []
+  
+      // Create a new accounts array by merging current accounts with updated accounts
+      const mergedAccounts = currentAccounts.map((account: any) => {
+        return updatedAccounts.find(updatedAccount => updatedAccount.DbtrAcct.Id.Othr[0].Id === account.DbtrAcct.Id.Othr[0].Id) || account
+      })
+  
       let updatedEntity: Entity = {
         Entity: state.entities[entityIndex]?.Entity,
-        Accounts: accounts,
+        Accounts: mergedAccounts,
       }
   
       let accountsList: Array<Entity> = state.entities
@@ -372,7 +380,7 @@ const EntityProvider = ({ children }: Props) => {
       }
   
       dispatch({ type: ACTIONS.UPDATE_ACCOUNTS_SUCCESS, payload: [...accountsList] })
-      localStorage.setItem("DEBTOR_ENTITIES", JSON.stringify(state.entities))
+      localStorage.setItem("DEBTOR_ENTITIES", JSON.stringify(accountsList))
     } catch (error) {
       dispatch({ type: ACTIONS.UPDATE_ACCOUNTS_FAIL })
     }
@@ -666,6 +674,7 @@ const EntityProvider = ({ children }: Props) => {
         createEntityLoading: state.createEntityLoading,
         updateEntityLoading: state.updateEntityLoading,
         createAccountLoading: state.createAccountLoading,
+        updateAccountsLoading: state.updateAccountsLoading,
         createCreditorAccountLoading: state.createCreditorAccountLoading,
         pacs008Loading: state.pacs008Loading,
         pacs002Loading: state.pacs002Loading,
@@ -681,11 +690,7 @@ const EntityProvider = ({ children }: Props) => {
         createEntity,
         updateEntity,
         createEntityAccount,
-
-        accounts: state.accounts,
-        updateAccountsLoading: state.updateAccountsLoading,
         updateAccounts,
-
         createCreditorEntity,
         updateCreditorEntity,
         createCreditorEntityAccount,

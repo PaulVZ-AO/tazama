@@ -38,17 +38,18 @@ export function Modal(props: Props) {
   const accounts = typeof props.selectedEntity === "number" ? entityCtx.entities[props.selectedEntity]?.Accounts : []
   const accountDetails = accounts ? accounts.map((account: any) => account) : []
 
-  if (customAccount === undefined) {
-    setCustomAccount(accountDetails[0])
-  }
+  useEffect(() => {
+    if (customAccount === undefined && accountDetails.length > 0) {
+      setCustomAccount(accountDetails[0])
+    }
+  }, [accountDetails, customAccount])
 
   return (
     <div className={props.showModal ? "relative z-10" : "hidden"} aria-labelledby="modal-title" role="dialog" aria-modal="true">
       <div className="fixed inset-0 bg-gray-500 bg-opacity-75 backdrop-blur-sm transition-opacity" aria-hidden="true"></div>
       <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
         <div className="flex min-h-full items-end justify-center p-4 sm:items-center sm:p-0">
-          <div className="relative min-w-[470px] overflow-hidden rounded-lg bg-gray-200 p-5">
-            <div className="">
+          <div className="relative min-w-[470px] overflow-hidden rounded-lg bg-gray-200 p-5">       
               <div className="flex flex-col justify-between ">
                 <h2>{modalProp.modalTitle}</h2>
 
@@ -64,7 +65,6 @@ export function Modal(props: Props) {
                 <button className={`rounded-lg px-4 py-2 ${activeSection === "Accounts" ? "m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-inner" : "m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"}`} onClick={() => setActiveSection("Accounts")}>Account(s)</button>
               </div>
 
-              {/* Entities */}
               {activeSection === "Entity" && (
                 <>
                   <div className="flex">
@@ -200,7 +200,7 @@ export function Modal(props: Props) {
                 </>
               )}
 
-              {activeSection === "Accounts" && (
+              {activeSection === "Accounts" && customAccount && (
                 <>
                   <div className={`grid gap-4 ${accountDetails.length >= 3 ? "grid-cols-2" : "grid-cols-1"}`}>
                     {accountDetails.map((accountDetail, index) => (
@@ -216,7 +216,6 @@ export function Modal(props: Props) {
                               <label htmlFor={`modal-Account-Number-${index}`}>Account Name</label>
                               <input type="text" id={`modal-Account-Number-${index}`} className="w-full rounded-lg bg-gray-200 p-2 shadow-inner"
                                 defaultValue={accountDetail.DbtrAcct.Nm}
-                                // value={customAccount?.DbtrAcct.Nm}
                                 onChange={(e) => {
                                   setCustomAccount({
                                     ...customAccount,
@@ -243,26 +242,32 @@ export function Modal(props: Props) {
                   </div>
                   
                   <div className="flex">
-                    <button
-                      type="button"
-                      className="m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)] hover:shadow-inner"
-                      onClick={async () => {
-                        console.log(customAccount);
+                  <button
+                    type="button"
+                    className="m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)] hover:shadow-inner"
+                    onClick={async () => {
+                      if (props.selectedEntity !== undefined) {
+                        // Create an updated accounts list
+                        const updatedAccounts = accountDetails.map(account => 
+                          account.DbtrAcct.Id.Othr[0].Id === customAccount?.DbtrAcct.Id.Othr[0].Id 
+                          ? customAccount 
+                          : account
+                        );
 
-                        if (accountDetails.length > 0 && typeof props.selectedEntity === "number") {
-                          await entityCtx.updateAccounts([customAccount], props.selectedEntity)
-                          handleClick()
-                        }
-                      }}
-                    >
-                      Save
-                    </button>
-                    
+                        await entityCtx.updateAccounts(updatedAccounts, props.selectedEntity)
+                        handleClick()
+                      } else {
+                        console.error("Selected entity index is undefined.");
+                      }
+                    }}
+                  >
+                    Save
+                  </button>
+
                     <button type="button" className="m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-inner" onClick={handleClick}>Cancel</button>
                   </div>
                 </>
               )}
-            </div>
           </div>
         </div>
       </div>
