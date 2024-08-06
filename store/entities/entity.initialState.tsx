@@ -1,4 +1,4 @@
-import { PACS008, SelectedCreditor, SelectedDebtor } from "./entity.interface"
+import { PACS002, PACS008, SelectedCreditor, SelectedDebtor, UIConfiguration } from "./entity.interface"
 
 export const creditorInitialState: SelectedCreditor = {
   creditorSelectedIndex: undefined,
@@ -15,8 +15,8 @@ export const pacs008InitialState: PACS008 = {
   TxTp: "pacs.008.001.10",
   FIToFICstmrCdtTrf: {
     GrpHdr: {
-      MsgId: "%",
-      CreDtTm: "%",
+      MsgId: "",
+      CreDtTm: "",
       NbOfTxs: 1,
       SttlmInf: {
         SttlmMtd: "CLRG",
@@ -24,8 +24,8 @@ export const pacs008InitialState: PACS008 = {
     },
     CdtTrfTxInf: {
       PmtId: {
-        InstrId: "%",
-        EndToEndId: "%",
+        InstrId: "",
+        EndToEndId: "",
       },
       IntrBkSttlmAmt: {
         Amt: {
@@ -48,46 +48,46 @@ export const pacs008InitialState: PACS008 = {
         Agt: {
           FinInstnId: {
             ClrSysMmbId: {
-              MmbId: "dfsp001",
+              MmbId: "fsp001",
             },
           },
         },
       },
       InitgPty: {
-        Nm: "%",
+        Nm: "",
         Id: {
           PrvtId: {
             DtAndPlcOfBirth: {
-              BirthDt: "%",
+              BirthDt: "",
               CityOfBirth: "Unknown",
               CtryOfBirth: "ZZ",
             },
             Othr: [
               {
-                Id: "%",
+                Id: "",
                 SchmeNm: {
-                  Prtry: "TAZAMA_EID",
+                  Prtry: "MSISDN",
                 },
               },
             ],
           },
         },
         CtctDtls: {
-          MobNb: "%",
+          MobNb: "",
         },
       },
       Dbtr: {
-        Nm: "%",
+        Nm: "",
         Id: {
           PrvtId: {
             DtAndPlcOfBirth: {
-              BirthDt: "%",
+              BirthDt: "",
               CityOfBirth: "Unknown",
               CtryOfBirth: "ZZ",
             },
             Othr: [
               {
-                Id: "%",
+                Id: "",
                 SchmeNm: {
                   Prtry: "TAZAMA_EID",
                 },
@@ -96,49 +96,49 @@ export const pacs008InitialState: PACS008 = {
           },
         },
         CtctDtls: {
-          MobNb: "%",
+          MobNb: "",
         },
       },
       DbtrAcct: {
         Id: {
           Othr: [
             {
-              Id: "%",
+              Id: "",
 
               SchmeNm: {
-                Prtry: "Tazama_AID",
+                Prtry: "MSISDN",
               },
             },
           ],
         },
-        Nm: "%",
+        Nm: "",
       },
       DbtrAgt: {
         FinInstnId: {
           ClrSysMmbId: {
-            MmbId: "dfsp001",
+            MmbId: "fsp001",
           },
         },
       },
       CdtrAgt: {
         FinInstnId: {
           ClrSysMmbId: {
-            MmbId: "dfsp002",
+            MmbId: "fsp002",
           },
         },
       },
       Cdtr: {
-        Nm: "%",
+        Nm: "",
         Id: {
           PrvtId: {
             DtAndPlcOfBirth: {
-              BirthDt: "%",
+              BirthDt: "",
               CityOfBirth: "Unknown",
               CtryOfBirth: "ZZ",
             },
             Othr: [
               {
-                Id: "%",
+                Id: "",
                 SchmeNm: {
                   Prtry: "TAZAMA_EID",
                 },
@@ -147,24 +147,24 @@ export const pacs008InitialState: PACS008 = {
           },
         },
         CtctDtls: {
-          MobNb: "%",
+          MobNb: "",
         },
       },
       CdtrAcct: {
         Id: {
           Othr: [
             {
-              Id: "%",
+              Id: "",
               SchmeNm: {
-                Prtry: "Tazama_AID",
+                Prtry: "MSISDN",
               },
             },
           ],
         },
-        Nm: "%",
+        Nm: "",
       },
       Purp: {
-        Cd: "%",
+        Cd: "",
       },
     },
     RgltryRptg: {
@@ -174,7 +174,7 @@ export const pacs008InitialState: PACS008 = {
       },
     },
     RmtInf: {
-      Ustrd: "%",
+      Ustrd: "",
     },
     SplmtryData: {
       Envlp: {
@@ -182,12 +182,43 @@ export const pacs008InitialState: PACS008 = {
           Xprtn: "2021-11-30T10:38:56.000Z",
           InitgPty: {
             Glctn: {
-              Lat: "%",
-              Long: "%",
+              Lat: "",
+              Long: "",
             },
           },
         },
       },
     },
   },
+}
+
+export const pacs002InitialState: PACS002 = {
+  FIToFIPmtSts: {
+    GrpHdr: { MsgId: "", CreDtTm: "" },
+    TxInfAndSts: {
+      OrgnlInstrId: "",
+      OrgnlEndToEndId: "",
+      TxSts: "ACCC",
+      ChrgsInf: [
+        { Amt: { Amt: 0, Ccy: "USD" }, Agt: { FinInstnId: { ClrSysMmbId: { MmbId: "fsp001" } } } },
+        { Amt: { Amt: 0, Ccy: "USD" }, Agt: { FinInstnId: { ClrSysMmbId: { MmbId: "fsp001" } } } },
+        { Amt: { Amt: 0, Ccy: "USD" }, Agt: { FinInstnId: { ClrSysMmbId: { MmbId: "fsp002" } } } },
+      ],
+      AccptncDtTm: "",
+      InstgAgt: { FinInstnId: { ClrSysMmbId: { MmbId: "fsp001" } } },
+      InstdAgt: { FinInstnId: { ClrSysMmbId: { MmbId: "fsp002" } } },
+    },
+  },
+}
+
+export const uiConfigInitialState: UIConfiguration = {
+  tmsServerUrl: "http://localhost:5500",
+  tmsKey: "no key set",
+  cmsNatsHosting: "nats://localhost:4222",
+  natsUsername: "nats_username",
+  natsPassword: "nats_password",
+  arangoDBHosting: "http://localhost:8529",
+  dbUser: "root",
+  dbPassword: "root_password",
+  dbName: "tms_db",
 }

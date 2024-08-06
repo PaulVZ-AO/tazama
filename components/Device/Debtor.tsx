@@ -1,60 +1,80 @@
+import axios from "axios"
 import Image from "next/image"
+import { useContext } from "react"
+import { TimeComponent } from "components/timeComponent/TimeComponent"
+import EntityContext from "store/entities/entity.context"
+import { DeviceInfo } from "./DeviceInfo"
 
-export function DebtorDevice() {
+interface DebtorProps {
+  selectedEntity: number
+  isDebtor?: boolean
+}
+
+export function DebtorDevice(props: DebtorProps) {
+  const entityCtx = useContext(EntityContext)
+
+  const entity = entityCtx.entities
+
+  const creditorEntity = entityCtx.creditorEntities
+
+  const postPacs002Test = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5500/v1/evaluate/iso20022/pacs.002.001.12",
+        entityCtx.pacs002,
+        { headers: { "Content-Type": "application/json" } }
+      )
+      console.log("Test POST PACS002 response: ", response.data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const postPacs008Test = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5500/v1/evaluate/iso20022/pacs.008.001.10",
+        entityCtx.pacs008,
+        { headers: { "Content-Type": "application/json" } }
+      )
+
+      if (response.status === 200) {
+        await postPacs002Test()
+      }
+      console.log("Test POST PACS008 response: ", response.data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
   return (
     <div className="relative col-span-4" style={{ height: "505px" }}>
-      <Image src="/device.svg" width="250" height="505" className="absolute left-20 top-0 " alt="" priority={true} />
-      <div className="absolute" style={{ marginLeft: "94px", width: "222px", top: "15px" }}>
-        <div className="flex">
-          <div className="py-1 pl-7 text-xs font-bold">11:32</div>
-          <div className="py-1 pl-7 text-xs font-bold"></div>
-        </div>
+      <Image src="/device.svg" width="250" height="505" className="absolute left-8 top-0 " alt="" priority={true} />
 
-        {/* device profile */}
-        <div className="flex bg-gray-400 py-2 pl-2 text-blue-500">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
-            <path
-              fillRule="evenodd"
-              d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z"
-              clipRule="evenodd"
-            />
-          </svg>
-          <span className="ml-2 text-white">Sarine Gaelan</span>
-        </div>
+      <div className="absolute break-words" style={{ marginLeft: "46px", width: "222px", top: "15px" }}>
+        <TimeComponent />
 
-        <div className="m-2 rounded-md border p-2 text-sm">
-          <p>ID: &quot;Sarine&lsquo;s first account&quot;</p>
-          <p>Account: $156</p>
-          <p>Description: </p>
-          <p>Lat & Lng: -33.918352,18.401656</p>
-          <hr className="mt-2" />
-          <button className="m-auto mt-2 flex items-center text-blue-500">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-              className="size-4"
+        <DeviceInfo selectedEntity={props.selectedEntity} isDebtor={props.isDebtor} />
+      </div>
+
+      {props.isDebtor ? (
+        <div className="absolute" style={{ marginLeft: "50px", width: "222px", bottom: "25px" }}>
+          <div
+            className={`ml-5 w-4/5 rounded-lg bg-black text-white ${
+              entity.length === 0 || creditorEntity.length === 0 ? " pointer-events-none opacity-30" : ""
+            }`}
+            style={{ padding: ".1em" }}
+          >
+            <button
+              className="w-full rounded-lg border border-white p-1"
+              onClick={async () => {
+                await postPacs008Test()
+              }}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
-              />
-            </svg>
-            edit
-          </button>
+              Send
+            </button>
+          </div>
         </div>
-      </div>
-
-      <div className="absolute" style={{ marginLeft: "94px", width: "222px", bottom: "25px" }}>
-        <div className="bg-black ml-5 rounded-lg text-white w-4/5" style={{ padding: ".1em" }}>
-          <button className="border border-white p-1 rounded-lg w-full">
-            Send
-          </button>
-        </div>
-      </div>
+      ) : null}
     </div>
   )
 }

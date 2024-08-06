@@ -1,14 +1,22 @@
 import { createContext } from "react"
 import {
+  creditorInitialState,
+  debtorInitialState,
+  pacs002InitialState,
+  pacs008InitialState,
+  uiConfigInitialState,
+} from "./entity.initialState"
+import {
   CdtrEntity,
   CreditorEntity,
   DebtorEntity,
   Entity,
+  PACS002,
   PACS008,
   SelectedCreditor,
   SelectedDebtor,
+  UIConfiguration,
 } from "./entity.interface"
-import { creditorInitialState, debtorInitialState, pacs008InitialState } from "./entity.initialState"
 
 interface Context {
   createEntityLoading: boolean
@@ -18,9 +26,12 @@ interface Context {
   creditorEntities: Array<CdtrEntity>
   entities: Array<Entity>
   pacs008Loading: boolean
+  pacs002Loading: boolean
   pacs008: PACS008
+  pacs002: PACS002
   selectedDebtorEntity: SelectedDebtor
   selectedCreditorEntity: SelectedCreditor
+  uiConfig: UIConfiguration
   selectDebtorEntity: (index: number, accountIndex: number) => void
   selectCreditorEntity: (index: number, accountIndex: number) => void
   createEntity: () => void
@@ -34,6 +45,8 @@ interface Context {
   setCreditorPacs008: (entityIndex: number) => void
   setCreditorAccountPacs008: (entityIndex: number, accountIndex: number) => void
   generateTransaction: () => void
+  buildPacs002: () => void
+  reset: () => void
 }
 
 const EntityContext = createContext<Context>({
@@ -44,9 +57,12 @@ const EntityContext = createContext<Context>({
   creditorEntities: [],
   entities: [],
   pacs008Loading: false,
+  pacs002Loading: false,
   pacs008: pacs008InitialState,
+  pacs002: pacs002InitialState,
   selectedDebtorEntity: debtorInitialState,
   selectedCreditorEntity: creditorInitialState,
+  uiConfig: uiConfigInitialState,
   selectDebtorEntity: () => {},
   selectCreditorEntity: () => {},
   createEntity: () => {},
@@ -60,6 +76,8 @@ const EntityContext = createContext<Context>({
   setCreditorPacs008: () => {},
   setCreditorAccountPacs008: () => {},
   generateTransaction: () => {},
+  buildPacs002: () => {},
+  reset: () => {},
 })
 
 export default EntityContext
