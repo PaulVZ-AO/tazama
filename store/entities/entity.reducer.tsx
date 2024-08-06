@@ -52,6 +52,44 @@ const EntityReducer = (state: any, action: any) => {
         entities: [],
       }
 
+    case ACTIONS.RESET_ENTITY_LOADING:
+      return {
+        ...state,
+        resetEntityLoading: true,
+        entities: [],
+      }
+    case ACTIONS.RESET_ENTITY_SUCCESS:
+      return {
+        ...state,
+        resetEntityLoading: false,
+        entities: action.payload,
+      }
+    case ACTIONS.RESET_ENTITY_FAIL:
+      return {
+        ...state,
+        resetEntityLoading: false,
+        entities: [],
+      }
+
+    case ACTIONS.RESET_CREDITOR_ENTITY_LOADING:
+      return {
+        ...state,
+        resetCreditorEntityLoading: true,
+        entities: [],
+      }
+    case ACTIONS.RESET_CREDITOR_ENTITY_SUCCESS:
+      return {
+        ...state,
+        resetCreditorEntityLoading: false,
+        entities: action.payload,
+      }
+    case ACTIONS.RESET_CREDITOR_ENTITY_FAIL:
+      return {
+        ...state,
+        resetCreditorEntityLoading: false,
+        entities: [],
+      }
+
     case ACTIONS.CREATE_ENTITY_ACCOUNT_LOADING:
       return {
         ...state,

@@ -24,7 +24,13 @@ interface AccountProps {
   setSelectedEntity: (value: number) => void
 }
 
-const CreditorAccountsComponent = ({ index, setSelected, selectedEntityIndex, setSelectedEntity }: AccountProps) => {
+const CreditorAccountsComponent = ({
+  index,
+  selected,
+  setSelected,
+  selectedEntityIndex,
+  setSelectedEntity,
+}: AccountProps) => {
   const entCtx = useContext(EntityContext)
   let colour = ""
   const handleClick = async () => {
@@ -36,10 +42,7 @@ const CreditorAccountsComponent = ({ index, setSelected, selectedEntityIndex, se
     setSelected(index)
   }
 
-  if (
-    entCtx.selectedCreditorEntity.creditorSelectedIndex === selectedEntityIndex &&
-    entCtx.selectedCreditorEntity.creditorAccountSelectedIndex === index
-  ) {
+  if (entCtx.selectedCreditorEntity.creditorSelectedIndex === selectedEntityIndex && selected === index) {
     switch (entCtx.selectedCreditorEntity.creditorSelectedIndex) {
       case 0:
         colour = "text-blue-700"
@@ -56,15 +59,6 @@ const CreditorAccountsComponent = ({ index, setSelected, selectedEntityIndex, se
       default:
         break
     }
-    // if (entCtx.selectedCreditorEntity.creditorSelectedIndex === 0) {
-    //   colour = "text-blue-700"
-    // } else if (entCtx.selectedCreditorEntity.creditorSelectedIndex === 1) {
-    //   colour = "text-green-700"
-    // } else if (entCtx.selectedCreditorEntity.creditorSelectedIndex === 2) {
-    //   colour = "text-yellow-600"
-    // } else if (entCtx.selectedCreditorEntity.creditorSelectedIndex === 3) {
-    //   colour = "text-orange-700"
-    // }
   }
   return (
     <button

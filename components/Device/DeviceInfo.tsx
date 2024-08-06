@@ -1,4 +1,4 @@
-import { useContext } from "react"
+import { useContext, useEffect, useState } from "react"
 import EntityContext from "store/entities/entity.context"
 
 interface DeviceProps {
@@ -9,6 +9,8 @@ interface DeviceProps {
 export function DeviceInfo(props: DeviceProps) {
   const entityCtx = useContext(EntityContext)
 
+  const [isTransaction, setIsTransaction] = useState<boolean>(false)
+
   const accountIndex = entityCtx.selectedDebtorEntity.debtorAccountSelectedIndex
 
   const creditorAccountIndex = entityCtx.selectedCreditorEntity.creditorAccountSelectedIndex
@@ -16,6 +18,8 @@ export function DeviceInfo(props: DeviceProps) {
   const entity = entityCtx.entities[props.selectedEntity]
 
   const creditorEntity = entityCtx.creditorEntities[props.selectedEntity]
+
+  const account = entityCtx.selectedDebtorEntity.debtorAccountSelectedIndex
 
   const pacs008Data = entityCtx.pacs008.FIToFICstmrCdtTrf
   const pacs002Data = entityCtx.pacs002.FIToFIPmtSts
@@ -47,6 +51,10 @@ export function DeviceInfo(props: DeviceProps) {
     }
   }
 
+  useEffect(() => {
+    setIsTransaction(false)
+  }, [props.selectedEntity, account])
+
   if (props.isDebtor) {
     return (
       <>
@@ -69,9 +77,11 @@ export function DeviceInfo(props: DeviceProps) {
             </div>
             <div className="m-2 rounded-md border bg-gray-100 p-2 text-sm shadow-sm">
               <p className={`font-bold ${fillColour}`}>{entity?.Accounts[accountIndex || 0]?.DbtrAcct.Nm} </p>
-              <p className="truncate">ID: {entity?.Accounts[accountIndex || 0 ]?.DbtrAcct.Id.Othr[0].Id}</p>
+              <p className="truncate">ID: {entity?.Accounts[accountIndex || 0]?.DbtrAcct.Id.Othr[0].Id}</p>
             </div>
-            <div className="m-2 rounded-md border bg-gray-100 p-2 text-sm shadow-sm">
+            <div
+              className={`m-2 rounded-md border bg-gray-100 p-2 text-sm shadow-sm ${isTransaction ? " " : "hidden"}`}
+            >
               <p>
                 Amount: {pacs008Data.CdtTrfTxInf.InstdAmt.Amt.Ccy} {pacs008Data.CdtTrfTxInf.InstdAmt.Amt.Amt}
               </p>
@@ -96,6 +106,11 @@ export function DeviceInfo(props: DeviceProps) {
                   />
                 </svg>
                 edit
+              </button>
+            </div>
+            <div className={`m-2 rounded-md border bg-gray-100 p-2 text-sm shadow-sm ${isTransaction ? "hidden" : ""}`}>
+              <button className="m-auto mt-2 flex items-center text-blue-500" onClick={() => setIsTransaction(true)}>
+                Create Transaction
               </button>
             </div>
           </>
