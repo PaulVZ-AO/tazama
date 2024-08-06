@@ -199,6 +199,7 @@ const Web = () => {
 
   const [rules, setRules] = useState<any[] | null>(null)
   const [types, setTypes] = useState<any[] | null>(null)
+  const [descriptions, setDescriptions] = useState<any[] | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState(null)
   const [selectedEntity, setSelectedEntity] = useState<number>(0)
@@ -220,6 +221,24 @@ const Web = () => {
         setLoading(false)
       })
   }, [])
+
+  useEffect(() => {
+    axios
+      .get("api/db")
+      .then((response) => {
+        console.log(response)
+        setDescriptions(response.data.rules[0].config.bands)
+        setLoading(false)
+      })
+      .catch((error) => {
+        setError(error)
+        setLoading(false)
+      })
+  }, [])
+
+  useEffect(() => {
+    console.log("RULE DESCRIPTIONS: ", descriptions)
+  }, [descriptions])
 
   useEffect(() => {
     axios

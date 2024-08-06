@@ -1396,7 +1396,7 @@
   resolved "https://registry.yarnpkg.com/@floating-ui/utils/-/utils-0.2.5.tgz#105c37d9d9620ce69b7f692a20c821bf1ad2cbf9"
   integrity sha512-sTcG+QZ6fdEUObICavU+aB3Mp8HY4n14wYHdxK4fXjPmv3PXZZeY5RaguJmGyeH/CJQhX3fqKUtS4qc1LoHwhQ==
 
-"@frmscoe/frms-coe-lib@^4.0.0", "@frmscoe/frms-coe-lib@^4.0.0-rc.5":
+"@frmscoe/frms-coe-lib@4.0.0", "@frmscoe/frms-coe-lib@^4.0.0":
   version "4.0.0"
   resolved "https://npm.pkg.github.com/download/@frmscoe/frms-coe-lib/4.0.0/c4eb5b10f0f04d601394317c10c50fcf5d2eaea5#c4eb5b10f0f04d601394317c10c50fcf5d2eaea5"
   integrity sha512-expl2W52QB+hKDTLvp25GBtevngCwLuUOZkIhhP39Ge1NLOsOsFyTDh0EP7R3xAgizXD7vt4cA08zAtQrzTcow==
@@ -1416,7 +1416,7 @@
     protobufjs "^7.3.2"
     uuid "^10.0.0"
 
-"@frmscoe/frms-coe-startup-lib@^2.2.0-alpha.1":
+"@frmscoe/frms-coe-startup-lib@2.2.0":
   version "2.2.0"
   resolved "https://npm.pkg.github.com/download/@frmscoe/frms-coe-startup-lib/2.2.0/6f62c1f0a38b9dbf3908c371275ad3eb1c9c917b#6f62c1f0a38b9dbf3908c371275ad3eb1c9c917b"
   integrity sha512-6eYSB+4DrbJA2AKD/9SsUAWLsFZ2Ut/xmGEsdwdM3f+oKPDdRyfPJ+AQaKS8JoLFdWuGANyiqamJ6aJ8hOE4HA==
@@ -4934,7 +4934,7 @@
   dependencies:
     undici-types "~5.26.4"
 
-"@types/node@^20.12.13":
+"@types/node@^20.11.26", "@types/node@^20.12.13":
   version "20.14.14"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-20.14.14.tgz#6b655d4a88623b0edb98300bb9dd2107225f885e"
   integrity sha512-d64f00982fS9YoOgJkAMolK7MN8Iq3TDdVjchbYHdEmjth/DHowx82GnoA+tVUAN+7vxfYUgAzi+JXbKNd2SDQ==
@@ -5733,6 +5733,13 @@ arangojs@^8.8.1:
     path-browserify "^1.0.1"
     x3-linkedlist "1.2.0"
     xhr "^2.4.1"
+
+arangojs@^9.0.0:
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/arangojs/-/arangojs-9.0.0.tgz#e7577788769c8833c14de8865a61e42c499aa61f"
+  integrity sha512-nFpMTGsb7Vt76pfqR7M5cbKM+FfmTIc+MiMVZ0FDfPYM0tYfrVj9fqk3QDY7F1ZhURPp9SJeLqfx8/H2bsmOIg==
+  dependencies:
+    "@types/node" "^20.11.26"
 
 archy@^1.0.0, archy@~1.0.0:
   version "1.0.0"
@@ -12164,13 +12171,6 @@ napi-build-utils@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/napi-build-utils/-/napi-build-utils-1.0.2.tgz#b1fddc0b2c46e380a0b7a76f984dd47c41a13806"
   integrity sha512-ONmRUqK7zj7DWX0D9ADe03wbwOBZxNAfF20PlGfCWQcD3+/MakShIHrMqx9YwPTfxDdF1zLeL+RGZiR9kGMLdg==
-
-nats.ws@^1.29.0:
-  version "1.29.2"
-  resolved "https://registry.yarnpkg.com/nats.ws/-/nats.ws-1.29.2.tgz#d32ba6520e9b8fdb20d0670f7b85d1d6c842d81a"
-  integrity sha512-dJf7aWp+5+8LwWEhgoTMc3pvfz5JlhA0yWtXKcTMDxUe43mHvgpvDaPnLyHQNL2LoDpdkjgOG176i5IeHBDlqg==
-  optionalDependencies:
-    nkeys.js "1.1.0"
 
 nats@^2.14.0, nats@^2.2.0, nats@^2.28.2:
   version "2.28.2"
