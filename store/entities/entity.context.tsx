@@ -22,6 +22,7 @@ interface Context {
   createEntityLoading: boolean
   updateEntityLoading: boolean
   createAccountLoading: boolean
+  updateAccountsLoading: boolean
   createCreditorAccountLoading: boolean
   creditorEntities: Array<CdtrEntity>
   entities: Array<Entity>
@@ -37,6 +38,7 @@ interface Context {
   createEntity: () => void
   updateEntity: (entity: DebtorEntity, entityIndex: number) => void
   createEntityAccount: (entityIndex: number) => void
+  updateAccounts: (accounts: any, entityIndex: number) => void
   createCreditorEntity: () => void
   updateCreditorEntity: (entity: CreditorEntity, entityIndex: number) => void
   createCreditorEntityAccount: (entityIndex: number) => void
@@ -53,6 +55,7 @@ const EntityContext = createContext<Context>({
   createEntityLoading: false,
   updateEntityLoading: false,
   createAccountLoading: false,
+  updateAccountsLoading: false,
   createCreditorAccountLoading: false,
   creditorEntities: [],
   entities: [],
@@ -68,6 +71,7 @@ const EntityContext = createContext<Context>({
   createEntity: () => {},
   updateEntity: () => {},
   createEntityAccount: () => {},
+  updateAccounts: () => {},
   createCreditorEntity: () => {},
   updateCreditorEntity: () => {},
   createCreditorEntityAccount: () => {},
