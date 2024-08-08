@@ -15,14 +15,14 @@ const handle = app.getRequestHandler();
 
 const sc = NATS.StringCodec()
 
-const handleMsg = async (msg, socket) => {
+const handleMsg = async (msg, socket, room) => {
   // let decodedMsg
   const subject = sc.decode(msg._msg.subject);
   console.log(subject)
 
   const decodedMessage = frms.default.decode(msg.data);
   console.log(decodedMessage)
-  await socket.to('stream').emit('stream', decodedMessage );
+  await socket.to(room).emit(room, decodedMessage );
 }
 
 const messageListener = async (messages, socket) => {
@@ -41,9 +41,20 @@ app.prepare().then(() => {
   
   const NATSSubscriptions = []
   io.on('connect', (socket) => console.log("CONNECT", socket.id))
+  let roomsList = [
+    'welcome',
+    'confirmation',
+    'subscriptions',
+    'ruleRequest',
+    'ruleResponse',
+    'typoRequest',
+    'typoResponse',
+    'tadProc',
+    'stream'
+  ]
   
   io.on('connection', async (socket) => {
-    socket.join(['stream', 'welcome', 'confirmation', 'subscriptions'])
+    socket.join([...roomsList])
     console.log('Client connected', socket.id);
     socket.emit('welcome', { message: 'NATS Connected' });
   
@@ -86,12 +97,13 @@ app.prepare().then(() => {
     console.log(nc.info)
     
     const connected = nc.subscribe("connection")
-    const all = nc.subscribe(">", { queue: "MONITORING" })
-    const pubRule901 = nc.subscribe("pub-rule-901@1.0.0", { queue: "MONITORING" })
-    const subRule901 = nc.subscribe("sub-rule-901@1.0.0", { queue: "MONITORING" })
-    const cms = nc.subscribe("cms", { queue: "MONITORING" })
+    // const all = nc.subscribe(">", { queue: "MONITORING1" })
+    const pubRule901 = nc.subscribe("pub-rule-901@1.0.0", { queue: "MONITORING_RULE_PUBLISHER" })
+    const subRule901 = nc.subscribe("sub-rule-901@1.0.0", { queue: "MONITORING_RULE_SUBSCRIBER" })
+    const type001 = nc.subscribe("typology-999@1.0.0", { queue: "MONITORING_TYPOLOGY" })
+    const cms = nc.subscribe("cms", { queue: "MONITORING_CMS" })
 
-    const type001 = nc.subscribe("typology-999@1.0.0", { queue: "MONITORING" })
+    
 
     // subscriptions.push(connected)
     // subscriptions.push(all)
@@ -105,26 +117,26 @@ app.prepare().then(() => {
     // })
 
     ;(async () => {
-      for await (const msg of connected) await handleMsg(msg, io)
+      for await (const msg of connected) await handleMsg(msg, io, 'connection')
+    })()
+
+    // ;(async () => {
+    //   for await (const msg of all) await handleMsg(msg, io, 'stream')
+    // })()
+
+    ;(async () => {
+      for await (const msg of type001) await handleMsg(msg, io, 'typoResponse')
     })()
 
     ;(async () => {
-      for await (const msg of all) await handleMsg(msg, io)
+      for await (const msg of pubRule901) await handleMsg(msg, io, 'ruleResponse')
     })()
 
     ;(async () => {
-      for await (const msg of type001) await handleMsg(msg, io)
-    })()
-
-    ;(async () => {
-      for await (const msg of pubRule901) await handleMsg(msg, io)
-    })()
-
-    ;(async () => {
-      for await (const msg of subRule901) await handleMsg(msg, io)
+      for await (const msg of subRule901) await handleMsg(msg, io, 'ruleRequest')
     })()
     ;(async () => {
-      for await (const msg of cms) await handleMsg(msg, io)
+      for await (const msg of cms) await handleMsg(msg, io, 'tadProc')
     })()
 
     io.to('stream').emit('stream', {message: "Stream Test Message"})

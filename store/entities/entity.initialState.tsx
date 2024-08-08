@@ -232,3 +232,5 @@ export const uiConfigInitialState: UIConfiguration = {
   dbPassword: DB_PASSWORD,
   dbName: DB_NAME,
 }
+
+export const rulesLightsInitialState = []

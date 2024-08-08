@@ -8,6 +8,7 @@ import {
   pacs002InitialState,
   pacs008InitialState,
   uiConfigInitialState,
+  rulesLightsInitialState,
 } from "./entity.initialState"
 import {
   CdtrEntity,
@@ -45,6 +46,7 @@ const EntityProvider = ({ children }: Props) => {
     pacs008: pacs008InitialState,
     pacs002: pacs002InitialState,
     uiConfig: uiConfigInitialState,
+    ruleLights: rulesLightsInitialState,
   }
   const [state, dispatch] = useReducer(EntityReducer, initialEntityState)
 
@@ -107,6 +109,22 @@ const EntityProvider = ({ children }: Props) => {
 
   const reset = async () => {
     localStorage.clear()
+  }
+
+  const setRuleLights = async (rules: any[]) => {
+    try {
+      dispatch({ type: ACTIONS.SET_RULE_LIGHTS_LOADING })
+      const array: any[] = []
+      rules.forEach((rule: any) => {
+        let newRule = { id: rule.id, color: "n", title: rule.title, result: null }
+        console.log("CREATING RULE: ", newRule.title)
+        array.push(newRule)
+      })
+      dispatch({ type: ACTIONS.SET_RULE_LIGHTS_SUCCESS, payload: array })
+      return state.ruleLights
+    } catch (err) {
+      dispatch({ type: ACTIONS.SET_RULE_LIGHTS_FAIL })
+    }
   }
 
   const handleDebtorEntityChange = async () => {
@@ -360,25 +378,29 @@ const EntityProvider = ({ children }: Props) => {
   const updateAccounts = async (updatedAccounts: Array<DebtorAccount>, entityIndex: number) => {
     try {
       dispatch({ type: ACTIONS.UPDATE_ACCOUNTS_LOADING })
-  
+
       // Get the current accounts for the entity
       const currentAccounts = state.entities[entityIndex]?.Accounts || []
-  
+
       // Create a new accounts array by merging current accounts with updated accounts
       const mergedAccounts = currentAccounts.map((account: any) => {
-        return updatedAccounts.find(updatedAccount => updatedAccount.DbtrAcct.Id.Othr[0].Id === account.DbtrAcct.Id.Othr[0].Id) || account
+        return (
+          updatedAccounts.find(
+            (updatedAccount) => updatedAccount.DbtrAcct.Id.Othr[0].Id === account.DbtrAcct.Id.Othr[0].Id
+          ) || account
+        )
       })
-  
+
       let updatedEntity: Entity = {
         Entity: state.entities[entityIndex]?.Entity,
         Accounts: mergedAccounts,
       }
-  
+
       let accountsList: Array<Entity> = state.entities
       if (accountsList[entityIndex]?.Entity && typeof entityIndex === "number") {
         accountsList.splice(entityIndex, 1, updatedEntity)
       }
-  
+
       dispatch({ type: ACTIONS.UPDATE_ACCOUNTS_SUCCESS, payload: [...accountsList] })
       localStorage.setItem("DEBTOR_ENTITIES", JSON.stringify(accountsList))
     } catch (error) {
@@ -684,6 +706,7 @@ const EntityProvider = ({ children }: Props) => {
         selectedDebtorEntity: state.selectedDebtorEntity,
         selectedCreditorEntity: state.selectedCreditorEntity,
         uiConfig: state.uiConfig,
+        ruleLights: state.ruleLights,
         selectDebtorEntity,
         selectCreditorEntity,
         createEntity,
@@ -699,6 +722,7 @@ const EntityProvider = ({ children }: Props) => {
         setCreditorAccountPacs008,
         generateTransaction,
         buildPacs002,
+        setRuleLights,
         reset,
       }}
     >

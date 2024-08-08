@@ -9,11 +9,20 @@ const { Database, aql } = require("arangojs");
 //   });
 // };
 
-const getConnection = () => {
+const getRulesConnection = () => {
   // establish database connection
   return new Database({
     url: "tcp://localhost:18529",
     databaseName: "configuration",
+    auth: { username: "root", password: "" },
+  });
+};
+
+const getTADPROCConnection = () => {
+  // establish database connection
+  return new Database({
+    url: "tcp://localhost:18529",
+    databaseName: "evaluationResults",
     auth: { username: "root", password: "" },
   });
 };
@@ -37,7 +46,7 @@ const getCollection = async (cName, db) => {
 
 export const getRulesDescriptions = async () => {
   // make connection
-  const db = getConnection()
+  const db = getRulesConnection()
   // make sure rule collection exists
   await getCollection("ruleConfiguration", db);
   // declare array to hold rules
@@ -56,7 +65,7 @@ export const getRulesDescriptions = async () => {
 
 export const getTypologyDescriptions = async () => {
   // make connection
-  const db = getConnection()
+  const db = getRulesConnection()
   // make sure rule collection exists
   await getCollection("typologyConfiguration", db);
   // declare array to hold typologies
@@ -72,3 +81,19 @@ export const getTypologyDescriptions = async () => {
   // return the list of typologies
   return result;
 };
+
+export const getTADPROCResult = async (transactionID) => {
+  const db = getTADPROCConnection();
+  await getCollection("transactions", db);
+
+  let result = [];
+  const results = await db.query(aql`FOR c IN transactions FILTER c.transactionID == ${transactionID} RETURN c`);
+
+  for await (let transaction of results) {
+    result.push(transaction);
+  }
+  // log results
+  console.log(result);
+  // return the list of typologies
+  return result;
+}

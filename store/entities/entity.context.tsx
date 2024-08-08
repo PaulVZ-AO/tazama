@@ -33,6 +33,7 @@ interface Context {
   selectedDebtorEntity: SelectedDebtor
   selectedCreditorEntity: SelectedCreditor
   uiConfig: UIConfiguration
+  ruleLights: Array<any>
   selectDebtorEntity: (index: number, accountIndex: number) => void
   selectCreditorEntity: (index: number, accountIndex: number) => void
   createEntity: () => void
@@ -48,6 +49,7 @@ interface Context {
   setCreditorAccountPacs008: (entityIndex: number, accountIndex: number) => void
   generateTransaction: () => void
   buildPacs002: () => void
+  setRuleLights: (lights: Array<any>) => void
   reset: () => void
 }
 
@@ -66,6 +68,7 @@ const EntityContext = createContext<Context>({
   selectedDebtorEntity: debtorInitialState,
   selectedCreditorEntity: creditorInitialState,
   uiConfig: uiConfigInitialState,
+  ruleLights: [],
   selectDebtorEntity: () => {},
   selectCreditorEntity: () => {},
   createEntity: () => {},
@@ -81,6 +84,7 @@ const EntityContext = createContext<Context>({
   setCreditorAccountPacs008: () => {},
   generateTransaction: () => {},
   buildPacs002: () => {},
+  setRuleLights: () => {},
   reset: () => {},
 })
 

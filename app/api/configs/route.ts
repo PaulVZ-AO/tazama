@@ -1,4 +1,4 @@
-import { getRulesDescriptions, getTypologyDescriptions } from "./../../../utils/db"
+import { getRulesDescriptions, getTypologyDescriptions, getTADPROCResult } from "../../../utils/db"
 
 export async function GET() {
   const ruleDescriptions = await getRulesDescriptions()

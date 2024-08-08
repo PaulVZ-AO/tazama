@@ -10,15 +10,58 @@ import { Profile } from "components/Profile/Profile"
 import { CreditorProfile } from "components/ProfileCreditor/ProfileCreditor"
 import { StatusIndicator } from "components/StatusIndicator/StatusIndicator"
 import EntityContext from "store/entities/entity.context"
+import { getTADPROCResult } from "utils/db"
+
+interface LightsManager {
+  ED: {
+    pacs008: boolean
+    pacs002: boolean
+    color: "r" | "g" | "y" | "n"
+  }
+}
+
+interface RuleLight {
+  id: number
+  title: string
+  color: "r" | "g" | "y" | "n"
+  result: any
+}
+
+interface RuleLightsManager {
+  lights: Array<RuleLight>
+}
+
+const defaultLights: LightsManager = {
+  ED: {
+    pacs008: false,
+    pacs002: false,
+    color: "n",
+  },
+}
 
 const Web = () => {
+  const [rules, setRules] = useState<any[]>([])
+  const [types, setTypes] = useState<any[] | null>(null)
+  const [descriptions, setDescriptions] = useState<any[] | null>(null)
   const [hoveredRule, setHoveredRule] = useState<any>(null)
   const [hoveredType, setHoveredType] = useState<any>(null)
+  const [lights, setLights] = useState<LightsManager>(defaultLights)
+  const [ruleLights, setRuleLights] = useState<RuleLight[]>([])
   const [showModal, setModal] = useState(false)
   const entityCtx = useContext(EntityContext)
 
   useEffect(() => {
+    console.log("LIGHTS: ", rules)
+  }, [rules])
+
+  useEffect(() => {
     const socket = io()
+    const findIndexOfRule = async (search: string) => {
+      const index = rules?.findIndex((rule: RuleLight) => {
+        rule.title === search
+      })
+      return index
+    }
 
     socket.on("connection", (msg) => {
       console.log("Connected to WebSocket server", msg)
@@ -29,9 +72,57 @@ const Web = () => {
       console.log("Received Message from the welcome: ", msg)
       socket.emit("confirmation", msg)
     })
+    socket.on("ruleRequest", async (msg) => {
+      console.log("Received Message from the RULE REQUEST: ", msg)
+    })
 
-    socket.on("stream", (msg) => {
+    socket.on("ruleResponse", async (msg) => {
+      console.log("Received Message from the RULE RESPONSE: ", msg)
+      console.log("RULE: ", msg.ruleResult.id.split("@")[0], msg.ruleResult.subRuleRef)
+
+      let ruleArray: RuleLight[] = rules.length > 1 ? rules : []
+      const index = rules.findIndex((r) => r.title === msg.ruleResult.id.split("@")[0])
+      console.log("RULE_LIGHTS", rules, index)
+      if ((index > -1 && ruleArray !== undefined && ruleArray.length > 0, index !== undefined)) {
+        rules[index].result = msg.ruleResult
+      }
+      if (msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId !== undefined) {
+        const results = await getTADPROCResult(msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId)
+        console.log("RESULT", results)
+      }
+    })
+
+    socket.on("typoRequest", async (msg) => {
+      console.log("Received Message from the TYPO REQUEST: ", msg)
+    })
+
+    socket.on("typoResponse", async (msg) => {
+      console.log("Received Message from the TYPO RESPONSE: ", msg)
+      if (msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId !== undefined) {
+        const results = await getTADPROCResult(msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId)
+        console.log("RESULT", results)
+      }
+    })
+
+    socket.on("typoRequest", async (msg) => {
+      console.log("Received Message from the TYPO REQUEST: ", msg)
+    })
+
+    socket.on("tadProc", async (msg) => {
+      console.log("Received Message from the TADPROC: ", msg)
+    })
+
+    socket.on("stream", async (msg) => {
       console.log("Received Message from the Stream: ", msg)
+      // Object.keys(msg).forEach(async (key) => {
+      // if (key === "typologyResult" || key === "ruleResult") {
+      //   console.log("MSG_ID: ", msg.transaction.FIToFIPmtSts.GrpHdr.MsgId)
+      if (msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId !== undefined) {
+        const results = await getTADPROCResult(msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId)
+        console.log("RESULT", results)
+      }
+      //   }
+      // })
     })
     socket.on("subscriptions", (msg) => {
       console.log(msg)
@@ -43,7 +134,7 @@ const Web = () => {
     return () => {
       socket.disconnect()
     }
-  }, [])
+  }, [rules!])
 
   const handleRuleMouseEnter = (type: any) => {
     setHoveredType(null) // fallback if stats is stuck
@@ -124,8 +215,7 @@ const Web = () => {
   }
 
   function RuleResult() {
-    // if (hoveredRule == null)
-    // return(null);
+    if (hoveredRule === null) return null
 
     return (
       <div className="rounded-xl p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
@@ -133,7 +223,7 @@ const Web = () => {
 
         <div className="p-5">
           <div className="mb-2 p-2 text-center">
-            001 {hoveredRule && hoveredRule.r ? hoveredRule.r : ""}=
+            {hoveredRule} {hoveredRule && hoveredRule.r ? hoveredRule.r : ""}=
             {hoveredRule ? (hoveredRule.s === "g" ? "true" : "false") : ""} False
           </div>
           <hr className="mb-2 border-black" />
@@ -197,9 +287,6 @@ const Web = () => {
     )
   }
 
-  const [rules, setRules] = useState<any[] | null>(null)
-  const [types, setTypes] = useState<any[] | null>(null)
-  const [descriptions, setDescriptions] = useState<any[] | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState(null)
   const [selectedEntity, setSelectedEntity] = useState<number>(0)
@@ -213,7 +300,16 @@ const Web = () => {
     axios
       .get("api/rules")
       .then((response) => {
+        let array: any = []
         setRules(response.data.rules.rule)
+        // response.data.rules.rule.forEach((rule: any) => {
+        //   let newRules: RuleLight = { id: rule.id, color: "n", title: rule.title, result: null }
+        //   console.log("CREATING RULE: ", newRules.title)
+        //   array.push(newRules)
+        // })
+        // if (array.length > 0) {
+        //   setRuleLights({ lights: array })
+        // }
         setLoading(false)
       })
       .catch((error) => {
@@ -224,7 +320,7 @@ const Web = () => {
 
   useEffect(() => {
     axios
-      .get("api/db")
+      .get("api/configs")
       .then((response) => {
         console.log(response)
         setDescriptions(response.data.rules[0].config.bands)
@@ -235,6 +331,11 @@ const Web = () => {
         setLoading(false)
       })
   }, [])
+
+  const fetchResult = async (transactionID: string) => {
+    const result = await getTADPROCResult(transactionID)
+    return result
+  }
 
   useEffect(() => {
     console.log("RULE DESCRIPTIONS: ", descriptions)
@@ -337,12 +438,17 @@ const Web = () => {
         {/* Device transactions */}
         <div className="col-span-8">
           <div className="grid grid-cols-12 gap-1">
-            <DebtorDevice selectedEntity={selectedEntity} isDebtor={true} />
+            <DebtorDevice selectedEntity={selectedEntity} isDebtor={true} lights={lights} setLights={setLights} />
             <div className="col-span-4 flex items-center justify-between px-5">
               <ProcessIndicator />
             </div>
             <div className="col-span-4">
-              <DebtorDevice selectedEntity={selectedCreditorEntity} isDebtor={false} />
+              <DebtorDevice
+                selectedEntity={selectedCreditorEntity}
+                isDebtor={false}
+                lights={lights}
+                setLights={setLights}
+              />
               {/* <Image src="/device.svg" height="200" width="200" className="text-center" alt="" priority={true} /> */}
             </div>
           </div>
@@ -495,7 +601,7 @@ const Web = () => {
           </h2>
 
           <div className="flex min-h-80 items-center justify-center">
-            <StatusIndicator large={true} />
+            <StatusIndicator large={true} colour={lights.ED.color} />
           </div>
         </div>
 
@@ -509,7 +615,18 @@ const Web = () => {
               <div className="grid grid-cols-3 px-5">
                 {rules &&
                   rules?.map((rule: any) => (
-                    <div className={`mb-1 flex rounded-md px-2 hover:bg-gray-200 hover:shadow`} key={`r-${rule.id}`}>
+                    <div
+                      className={`mb-1 flex rounded-md px-2 hover:bg-gray-200 hover:shadow`}
+                      key={`r-${rule.id}`}
+                      onMouseEnter={() => {
+                        handleRuleMouseEnter(rule.title)
+                        console.log(rule.title)
+                      }}
+                      onMouseLeave={() => {
+                        handleRuleMouseLeave()
+                        console.log(rule)
+                      }}
+                    >
                       <StatusIndicator /> &nbsp;
                       {rule.title}
                     </div>
@@ -557,10 +674,7 @@ const Web = () => {
           </div>
         </div>
       </div>
-      <div className="flex min-h-80 w-full items-center justify-center">
-        {/* <NatsComponent servers={"wss://demo.nats.io:8443"} /> */}
-        {/* <NatsComponent servers={"localhost:4222"} /> */}
-      </div>
+      <div className="flex min-h-80 w-full items-center justify-center"></div>
 
       {showModal && (
         <Modal

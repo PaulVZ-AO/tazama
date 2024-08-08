@@ -5,9 +5,20 @@ import { TimeComponent } from "components/timeComponent/TimeComponent"
 import EntityContext from "store/entities/entity.context"
 import { DeviceInfo } from "./DeviceInfo"
 
+interface EDLights {
+  pacs008: boolean
+  pacs002: boolean
+  color: "r" | "g" | "y" | "n"
+}
+interface LightsManager {
+  ED: EDLights
+}
+
 interface DebtorProps {
   selectedEntity: number
   isDebtor?: boolean
+  lights: LightsManager
+  setLights: (data: LightsManager) => void
 }
 
 export function DebtorDevice(props: DebtorProps) {
@@ -24,9 +35,39 @@ export function DebtorDevice(props: DebtorProps) {
         entityCtx.pacs002,
         { headers: { "Content-Type": "application/json" } }
       )
+      if (response.status === 200) {
+        let data: EDLights = {
+          pacs008: true,
+          pacs002: true,
+          color: "g",
+        }
+        let newData: LightsManager = {
+          ED: data,
+        }
+        props.setLights(newData)
+      } else {
+        let data: EDLights = {
+          pacs008: true,
+          pacs002: false,
+          color: "r",
+        }
+        let newData: LightsManager = {
+          ED: data,
+        }
+        props.setLights(newData)
+      }
       console.log("Test POST PACS002 response: ", response.data)
     } catch (error) {
       console.log(error)
+      let data: EDLights = {
+        pacs008: true,
+        pacs002: false,
+        color: "r",
+      }
+      let newData: LightsManager = {
+        ED: data,
+      }
+      props.setLights(newData)
     }
   }
 
@@ -39,20 +80,50 @@ export function DebtorDevice(props: DebtorProps) {
       )
 
       if (response.status === 200) {
-        await postPacs002Test()
+        if (response.status === 200) {
+          let data: EDLights = {
+            pacs008: true,
+            pacs002: false,
+            color: "y", // orange
+          }
+          let newData: LightsManager = {
+            ED: data,
+          }
+          props.setLights(newData)
+        }
+        setTimeout(async () => {
+          await postPacs002Test()
+        }, 1000)
       }
       console.log("Test POST PACS008 response: ", response.data)
     } catch (error: any) {
       const errMsg: any = JSON.parse(error.response.data.split("\n").slice(1).join("\n"))
       console.log(JSON.parse(error.response.data.split("\n").slice(1).join("\n")))
-      alert(`Error sending PACS008 request. ${JSON.stringify(errMsg.errorMessage)}`)
+      let data: EDLights = {
+        pacs008: props.lights.ED.pacs008,
+        pacs002: false,
+        color: "r",
+      }
+      let newData: LightsManager = {
+        ED: data,
+      }
+      props.setLights(newData)
+      // alert(`Error sending PACS008 request. ${JSON.stringify(errMsg.errorMessage)}`)
     }
   }
   return (
     <div className="relative col-span-4" style={{ height: "505px" }}>
-      <Image src="/device.svg" width="250" height="505" className="absolute inset-x-0 mx-auto" style={{ maxWidth: "250px", minWidth: "250px" }} alt="device info" priority={true} />
+      <Image
+        src="/device.svg"
+        width="250"
+        height="505"
+        className="absolute inset-x-0 mx-auto"
+        style={{ maxWidth: "250px", minWidth: "250px" }}
+        alt="device info"
+        priority={true}
+      />
 
-      <div className="absolute break-words inset-x-0 mx-auto" style={{ width: "222px", top: "15px" }}>
+      <div className="absolute inset-x-0 mx-auto break-words" style={{ width: "222px", top: "15px" }}>
         <TimeComponent />
 
         <DeviceInfo selectedEntity={props.selectedEntity} isDebtor={props.isDebtor} />
@@ -69,7 +140,16 @@ export function DebtorDevice(props: DebtorProps) {
             <button
               className="w-full rounded-lg border border-white p-1"
               onClick={async () => {
-                await postPacs008Test()
+                props.setLights({
+                  ED: {
+                    pacs008: false,
+                    pacs002: false,
+                    color: "n",
+                  },
+                })
+                setTimeout(async () => {
+                  await postPacs008Test()
+                }, 500)
               }}
             >
               Send
