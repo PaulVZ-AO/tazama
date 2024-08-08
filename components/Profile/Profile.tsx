@@ -12,7 +12,7 @@ export interface ProfileProps {
   selectedEntity: number
   index: number
   setModalVisible: (value: boolean) => void
-  setSelectedEntity: () => void
+  setSelectedEntity: (index: number) => void
   addAccount: () => void
 }
 
@@ -25,6 +25,7 @@ interface AccountProps {
 }
 
 const AccountsComponent = ({ index, setSelected, selectedEntityIndex, setSelectedEntity }: AccountProps) => {
+  let colour = ""
   const entCtx = useContext(EntityContext)
   const handleClick = async () => {
     console.log("############## DEBTOR SELECTION TEST START #############")
@@ -34,13 +35,36 @@ const AccountsComponent = ({ index, setSelected, selectedEntityIndex, setSelecte
     console.log("ACCOUNT INDEX CLICKED: ", index)
     setSelected(index)
   }
+
+  if (
+    entCtx.selectedDebtorEntity.debtorSelectedIndex === selectedEntityIndex &&
+    entCtx.selectedDebtorEntity.debtorAccountSelectedIndex === index
+  ) {
+    switch (entCtx.selectedDebtorEntity.debtorSelectedIndex) {
+      case 0:
+        colour = "text-blue-700"
+        break
+      case 1:
+        colour = "text-green-700"
+        break
+      case 2:
+        colour = "text-yellow-600"
+        break
+      case 3:
+        colour = "text-orange-700"
+        break
+      default:
+        break
+    }
+  }
+
   return (
     <button
       onClick={() => {
         handleClick()
       }}
     >
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={`size-6 ${colour}`}>
         <path d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625Z" />
         <path d="M12.971 1.816A5.23 5.23 0 0 1 14.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 0 1 3.434 1.279 9.768 9.768 0 0 0-6.963-6.963Z" />
       </svg>
@@ -65,46 +89,26 @@ export const Profile = ({ ...props }: ProfileProps) => {
   //   }
   // }, [props.selectedEntity, selectedAccountIndex])
 
-  // useEffect(() => {}, [entityCtx.entities])
+
   let reverse = ""
   if (props.reverse) {
     reverse = "flex-row-reverse text-right"
   }
 
-  const DebtorAccounts = props?.accounts?.map((account, index) => {
-    if (account !== null && account !== undefined) {
-      return (
-        <AccountsComponent
-          key={crypto.randomUUID().replaceAll("-", "")}
-          index={index}
-          selected={selectedAccountIndex}
-          setSelected={setSelectedAccountIndex}
-          selectedEntityIndex={props.index}
-          setSelectedEntity={props.setSelectedEntity}
-        />
-      )
-    } else {
-      return null
-    }
-  })
-
   return (
     <div
       className={`mb-7 rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 px-3 py-1 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)] ${props.colour} flex w-full justify-between ${reverse}`}
     >
+      {/* Edit Button */}
       <button
         className="text-black"
         onClick={async () => {
-          if (!props.entity && entityCtx.entities.length < 4) {
-            props.setSelectedEntity()
-            await entityCtx.createEntity()
-            await entityCtx.setDebtorPacs008(props.selectedEntity)
-          }
           if (props.entity !== undefined) {
-            props.setSelectedEntity()
+            // props.setSelectedEntity(selectedAccountIndex)
             props.setModalVisible(true)
           }
         }}
+        style={props.entity !== undefined ? { cursor: "pointer" } : { cursor: "default" }}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -122,19 +126,8 @@ export const Profile = ({ ...props }: ProfileProps) => {
         </svg>
       </button>
 
-      <button
-        onClick={async () => {
-          console.log("ATTEMPTING PACS008 FROM DEBTORS SIDE")
-          props.setSelectedEntity()
-          console.log("SELECTED INDEX: " + props.selectedEntity)
-          console.log("ABOUT TO CALL THE setDebtorPacs008")
-          setSelectedAccountIndex(0)
-          if (entityCtx.entities[props.selectedEntity]) {
-            await entityCtx.selectDebtorEntity(props.index, 0)
-            //   await entityCtx.setDebtorPacs008(props.selectedEntity)
-          }
-        }}
-      >
+      {/* Profile Button */}
+      <button style={props.entity !== undefined ? { cursor: "grab" } : { cursor: "default" }}>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
           <path
             fillRule="evenodd"
@@ -144,7 +137,22 @@ export const Profile = ({ ...props }: ProfileProps) => {
         </svg>
       </button>
 
-      {DebtorAccounts}
+      {props?.accounts?.map((account, index) => {
+        if (account !== null && account !== undefined) {
+          return (
+            <AccountsComponent
+              key={crypto.randomUUID().replaceAll("-", "")}
+              index={index}
+              selected={selectedAccountIndex}
+              setSelected={setSelectedAccountIndex}
+              selectedEntityIndex={props.index}
+              setSelectedEntity={props.setSelectedEntity}
+            />
+          )
+        } else {
+          return null
+        }
+      })}
 
       {props?.accounts !== null && props.accounts !== undefined && props?.accounts.length < 4 && (
         <button
@@ -160,7 +168,21 @@ export const Profile = ({ ...props }: ProfileProps) => {
         </button>
       )}
 
-      <button>
+      {/* D6 button */}
+      <button
+        onClick={async () => {
+          if (!props.entity && entityCtx.entities.length < 4) {
+            props.setSelectedEntity(props.index)
+            await entityCtx.createEntity()
+            await entityCtx.selectDebtorEntity(props.index, 0)
+
+            await entityCtx.setDebtorPacs008(props.selectedEntity)
+          } else if (props.entity) {
+            await entityCtx.resetEntity(props.selectedEntity)
+            await entityCtx.selectDebtorEntity(props.selectedEntity, 0)
+          }
+        }}
+      >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
           <path
             fillRule="evenodd"
