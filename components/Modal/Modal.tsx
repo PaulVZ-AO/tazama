@@ -73,6 +73,22 @@ export function Modal(props: Props) {
   const minDate = new Date(today.getFullYear() - 60, today.getMonth(), today.getDate()).toISOString().split('T')[0];
   const maxDate = new Date(today.getFullYear() - 20, today.getMonth(), today.getDate()).toISOString().split('T')[0];
 
+
+  const handleSectionChange = (section: "Entity" | "Accounts") => {
+    if (typeof props.selectedEntity === "number" && props.entity) {
+      if (section === "Entity") {
+        // Reset customEntity to the initial value
+        setCustomEntity(entityCtx.entities[props.selectedEntity]?.Entity);
+      } else if (section === "Accounts") {
+        // Reset customAccounts to the initial value
+        setCustomAccounts(entityCtx.entities[props.selectedEntity]?.Accounts || []);
+      }
+    }
+    setActiveSection(section);
+  };
+  
+  
+
   return (
     <div className={props.showModal ? "relative z-10" : "hidden"} aria-labelledby="modal-title" role="dialog" aria-modal="true">
       <div className="fixed inset-0 bg-gray-500 bg-opacity-75 backdrop-blur-sm transition-opacity" aria-hidden="true"></div>
@@ -89,8 +105,8 @@ export function Modal(props: Props) {
             </div>
 
             <div className="my-4 flex justify-around">
-              <button className={`rounded-lg px-4 py-2 ${activeSection === "Entity" ? "m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-inner" : "m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"}`} onClick={() => setActiveSection("Entity")}>Entity</button>
-              <button className={`rounded-lg px-4 py-2 ${activeSection === "Accounts" ? "m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-inner" : "m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"}`} onClick={() => setActiveSection("Accounts")}>Account(s)</button>
+              <button className={`rounded-lg px-4 py-2 ${activeSection === "Entity" ? "m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-inner" : "m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"}`} onClick={() => handleSectionChange("Entity")}>Entity</button>
+              <button className={`rounded-lg px-4 py-2 ${activeSection === "Accounts" ? "m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-inner" : "m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"}`} onClick={() => handleSectionChange("Accounts")}>Account(s)</button>
             </div>
 
             {activeSection === "Entity" && (
