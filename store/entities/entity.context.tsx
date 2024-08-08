@@ -24,6 +24,8 @@ interface Context {
   createAccountLoading: boolean
   updateAccountsLoading: boolean
   createCreditorAccountLoading: boolean
+  resetEntityLoading: boolean
+  resetCreditorEntityLoading: boolean
   creditorEntities: Array<CdtrEntity>
   entities: Array<Entity>
   pacs008Loading: boolean
@@ -51,6 +53,8 @@ interface Context {
   buildPacs002: () => void
   setRuleLights: (lights: Array<any>) => void
   reset: () => void
+  resetEntity: ( entityIndex: number) => void,
+  resetCreditorEntity: ( entityIndex: number) => void,
 }
 
 const EntityContext = createContext<Context>({
@@ -59,6 +63,8 @@ const EntityContext = createContext<Context>({
   createAccountLoading: false,
   updateAccountsLoading: false,
   createCreditorAccountLoading: false,
+  resetEntityLoading: false,
+  resetCreditorEntityLoading: false,
   creditorEntities: [],
   entities: [],
   pacs008Loading: false,
@@ -86,6 +92,8 @@ const EntityContext = createContext<Context>({
   buildPacs002: () => {},
   setRuleLights: () => {},
   reset: () => {},
+  resetEntity: () => {},
+  resetCreditorEntity: () => {}
 })
 
 export default EntityContext

@@ -25,7 +25,15 @@ import {
   UIConfiguration,
 } from "./entity.interface"
 import EntityReducer from "./entity.reducer"
-import { GenerateBirthDate, RandomCellNumber, RandomName, RandomNumbers, RandomSurname } from "./entity.utils"
+import {
+  GenerateBirthDate,
+  RandomCellNumber,
+  RandomName,
+  RandomNumbers,
+  RandomSurname,
+  createAnEntity,
+  createAnCreditorEntity,
+} from "./entity.utils"
 
 interface Props {
   children: ReactNode
@@ -127,14 +135,21 @@ const EntityProvider = ({ children }: Props) => {
     }
   }
 
-  const handleDebtorEntityChange = async () => {
+  const handleDebtorEntityChange = async (debtorIndex: number | undefined, accountIndex: number | undefined) => {
     try {
-      console.log("handleDebtorEntityChange Active")
-      await setDebtorPacs008(state.selectedDebtorEntity.debtorSelectedIndex)
-      await setDebtorAccountPacs008(
-        state.selectedDebtorEntity.debtorSelectedIndex,
-        state.selectedDebtorEntity.debtorAccountSelectedIndex
-      )
+      if (debtorIndex !== undefined && accountIndex !== undefined) {
+        console.log("handleDebtorEntityChange Active")
+        await setDebtorPacs008(debtorIndex)
+        await setDebtorAccountPacs008(debtorIndex, accountIndex)
+      } else {
+        console.log("handleDebtorEntityChange Active")
+        await setDebtorPacs008(state.selectedDebtorEntity.debtorSelectedIndex)
+        await setDebtorAccountPacs008(
+          state.selectedDebtorEntity.debtorSelectedIndex,
+          state.selectedDebtorEntity.debtorAccountSelectedIndex
+        )
+      }
+
       // await generateTransaction()
       console.log("handleDebtorEntityChange Done")
       console.log("PACS008: ", state.pacs008)
@@ -143,7 +158,12 @@ const EntityProvider = ({ children }: Props) => {
     }
   }
 
-  const handleCreditorEntityChange = async () => {
+  const handleCreditorEntityChange = async (creditorIndex: number | undefined, accountIndex: number | undefined) => {
+    if (creditorIndex !== undefined && accountIndex !== undefined) {
+      console.log("handleCreditorEntityChange Active")
+      await setCreditorPacs008(creditorIndex)
+      await setCreditorAccountPacs008(creditorIndex, accountIndex)
+    }
     console.log("handleCreditorEntityChange Active")
     await setCreditorPacs008(state.selectedCreditorEntity.creditorSelectedIndex)
     await setCreditorAccountPacs008(
@@ -159,7 +179,7 @@ const EntityProvider = ({ children }: Props) => {
     if (state.selectedDebtorEntity.debtorSelectedIndex !== undefined) {
       console.log("Selected Debtor Changed: ", state.selectedDebtorEntity)
       if (state.entities.length > 0) {
-        handleDebtorEntityChange()
+        handleDebtorEntityChange(undefined, undefined)
         buildPacs002()
       }
     }
@@ -170,7 +190,7 @@ const EntityProvider = ({ children }: Props) => {
       console.log("Selected Creditor Changed: ", state.selectedCreditorEntity)
 
       if (state.creditorEntities.length > 0) {
-        handleCreditorEntityChange()
+        handleCreditorEntityChange(undefined, undefined)
         buildPacs002()
       }
     }
@@ -243,51 +263,53 @@ const EntityProvider = ({ children }: Props) => {
     try {
       dispatch({ type: ACTIONS.CREATE_ENTITY_LOADING })
 
-      const newEntity: DebtorEntity = {
-        Dbtr: {
-          Nm: `${await RandomName()} ${await RandomSurname()}`,
-          Id: {
-            PrvtId: {
-              DtAndPlcOfBirth: {
-                BirthDt: await GenerateBirthDate(),
-                CityOfBirth: "Unknown",
-                CtryOfBirth: "ZZ",
-              },
-              Othr: [
-                {
-                  Id: crypto.randomUUID().replaceAll("-", ""),
-                  SchmeNm: {
-                    Prtry: "TAZAMA_EID",
-                  },
-                },
-              ],
-            },
-          },
-          CtctDtls: { MobNb: await RandomCellNumber() },
-        },
-      }
+      // const newEntity: DebtorEntity = {
+      //   Dbtr: {
+      //     Nm: `${await RandomName()} ${await RandomSurname()}`,
+      //     Id: {
+      //       PrvtId: {
+      //         DtAndPlcOfBirth: {
+      //           BirthDt: await GenerateBirthDate(),
+      //           CityOfBirth: "Unknown",
+      //           CtryOfBirth: "ZZ",
+      //         },
+      //         Othr: [
+      //           {
+      //             Id: crypto.randomUUID().replaceAll("-", ""),
+      //             SchmeNm: {
+      //               Prtry: "TAZAMA_EID",
+      //             },
+      //           },
+      //         ],
+      //       },
+      //     },
+      //     CtctDtls: { MobNb: await RandomCellNumber() },
+      //   },
+      // }
 
-      const newAccount: DebtorAccount = {
-        DbtrAcct: {
-          Id: {
-            Othr: [
-              {
-                Id: crypto.randomUUID().replaceAll("-", ""),
+      // const newAccount: DebtorAccount = {
+      //   DbtrAcct: {
+      //     Id: {
+      //       Othr: [
+      //         {
+      //           Id: crypto.randomUUID().replaceAll("-", ""),
 
-                SchmeNm: {
-                  Prtry: "MSISDN",
-                },
-              },
-            ],
-          },
-          Nm: newEntity.Dbtr.Nm.split(" ")[0] + "'s first account",
-        },
-      }
+      //           SchmeNm: {
+      //             Prtry: "MSISDN",
+      //           },
+      //         },
+      //       ],
+      //     },
+      //     Nm: newEntity.Dbtr.Nm.split(" ")[0] + "'s first account",
+      //   },
+      // }
 
-      const payload: Entity = {
-        Entity: newEntity,
-        Accounts: [newAccount],
-      }
+      // const payload: Entity = {
+      //   Entity: newEntity,
+      //   Accounts: [newAccount],
+      // }
+
+      const payload = await createAnEntity()
 
       let entitiesList: Array<Entity> = state.entities
 
@@ -313,6 +335,7 @@ const EntityProvider = ({ children }: Props) => {
       if (entitiesList[entityIndex]?.Entity && typeof entityIndex === "number") {
         entitiesList.splice(entityIndex, 1, updatedEntity)
       }
+      console.log(state.entities, "------??")
 
       dispatch({ type: ACTIONS.UPDATE_ENTITY_SUCCESS, payload: [...entitiesList] })
       localStorage.setItem("DEBTOR_ENTITIES", JSON.stringify(state.entities))
@@ -335,7 +358,7 @@ const EntityProvider = ({ children }: Props) => {
         } else if (accountsList.length === 2) {
           return `${state.entities[entityIndex].Entity.Dbtr.Nm.split(" ")[0]}'s third account`
         } else if (accountsList.length === 3) {
-          return `${state.entities[entityIndex].Entity.Dbtr.Nm.split(" ")[0]}'s forth account`
+          return `${state.entities[entityIndex].Entity.Dbtr.Nm.split(" ")[0]}'s fourth account`
         }
       }
 
@@ -411,6 +434,7 @@ const EntityProvider = ({ children }: Props) => {
   const createCreditorEntity = async () => {
     try {
       dispatch({ type: ACTIONS.CREATE_CREDITOR_ENTITY_LOADING })
+
       const newEntity: CreditorEntity = {
         Cdtr: {
           Nm: `${await RandomName()} ${await RandomSurname()}`,
@@ -503,7 +527,7 @@ const EntityProvider = ({ children }: Props) => {
         } else if (accountsList.length === 2) {
           return `${state.creditorEntities[entityIndex].CreditorEntity.Cdtr.Nm.split(" ")[0]}'s third account`
         } else if (accountsList.length === 3) {
-          return `${state.creditorEntities[entityIndex].CreditorEntity.Cdtr.Nm.split(" ")[0]}'s forth account`
+          return `${state.creditorEntities[entityIndex].CreditorEntity.Cdtr.Nm.split(" ")[0]}'s fourth account`
         }
       }
 
@@ -689,6 +713,48 @@ const EntityProvider = ({ children }: Props) => {
     }
   }
 
+  const resetEntity = async (entityIndex: number) => {
+    try {
+      dispatch({ type: ACTIONS.RESET_ENTITY_LOADING })
+
+      const newEntity = await createAnEntity()
+
+      let entitiesList: Array<Entity> = state.entities
+
+      if (entityIndex >= -1) {
+        entitiesList.splice(entityIndex, 1, newEntity)
+      }
+
+      dispatch({ type: ACTIONS.RESET_ENTITY_SUCCESS, payload: [...entitiesList] })
+
+      localStorage.setItem("DEBTOR_ENTITIES", JSON.stringify(state.entities))
+      handleDebtorEntityChange(entityIndex, 0)
+    } catch (error) {
+      dispatch({ type: ACTIONS.RESET_ENTITY_FAIL })
+    }
+  }
+
+  const resetCreditorEntity = async (entityIndex: number) => {
+    try {
+      dispatch({ type: ACTIONS.RESET_CREDITOR_ENTITY_LOADING })
+
+      const newEntity = await createAnCreditorEntity()
+
+      let entitiesList: Array<CdtrEntity> = state.creditorEntities
+
+      if (entityIndex >= -1) {
+        entitiesList.splice(entityIndex, 1, newEntity)
+      }
+
+      dispatch({ type: ACTIONS.RESET_CREDITOR_ENTITY_SUCCESS, payload: [...entitiesList] })
+
+      localStorage.setItem("CREDITOR_ENTITIES", JSON.stringify(state.creditorEntities))
+      handleCreditorEntityChange(entityIndex, 0)
+    } catch (error) {
+      dispatch({ type: ACTIONS.RESET_CREDITOR_ENTITY_FAIL })
+    }
+  }
+
   return (
     <EntityContext.Provider
       value={{
@@ -697,6 +763,8 @@ const EntityProvider = ({ children }: Props) => {
         createAccountLoading: state.createAccountLoading,
         updateAccountsLoading: state.updateAccountsLoading,
         createCreditorAccountLoading: state.createCreditorAccountLoading,
+        resetEntityLoading: state.resetEntityLoading,
+        resetCreditorEntityLoading: state.resetCreditorEntityLoading,
         pacs008Loading: state.pacs008Loading,
         pacs002Loading: state.pacs002Loading,
         creditorEntities: state.creditorEntities,
@@ -724,6 +792,8 @@ const EntityProvider = ({ children }: Props) => {
         buildPacs002,
         setRuleLights,
         reset,
+        resetEntity,
+        resetCreditorEntity,
       }}
     >
       {children}

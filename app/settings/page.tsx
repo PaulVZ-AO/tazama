@@ -36,12 +36,12 @@ const Settings = () => {
             </div>
           </div>
 
-          <div className="col-span-full">
+          {/* <div className="col-span-full">
             <label htmlFor="tms_key">Key / Token</label>
             <div className="my-2">
-              <input id="tms_key" type="text" className="rounded-lg p-2" placeholder={config?.tmsKey} />
+              <input id="tms_key" type="text" className="w-full rounded-lg p-2" placeholder={config?.tmsKey} />
             </div>
-          </div>
+          </div> */}
 
           <div className="col-span-full">
             <hr className="mb-2 border-black" />
@@ -50,19 +50,19 @@ const Settings = () => {
           <div className="col-span-full">
             <label htmlFor="cms_host">CMS NATS Hosting</label>
             <div className="my-2">
-              <input id="tms_key" type="text" className="rounded-lg p-2" placeholder={config?.cmsNatsHosting} />
+              <input id="tms_key" type="text" className="w-full rounded-lg p-2" placeholder={config?.cmsNatsHosting} />
             </div>
           </div>
           <div className="col-span-full">
             <label htmlFor="cms_usr">Name</label>
             <div className="my-2">
-              <input id="tms_key" type="text" className="rounded-lg p-2" placeholder={config?.natsUsername} />
+              <input id="tms_key" type="text" className="w-full rounded-lg p-2" placeholder={config?.natsUsername} />
             </div>
           </div>
           <div className="col-span-full">
             <label htmlFor="cms_pwd">Password</label>
             <div className="my-2">
-              <input id="tms_key" type="text" className="rounded-lg p-2" placeholder={config?.natsPassword} />
+              <input id="tms_key" type="text" className="w-full rounded-lg p-2" placeholder={config?.natsPassword} />
             </div>
           </div>
 
@@ -73,25 +73,25 @@ const Settings = () => {
           <div className="col-span-full">
             <label htmlFor="argo_host">Arango DB hosting</label>
             <div className="my-2">
-              <input id="tms_key" type="text" className="rounded-lg p-2" placeholder={config?.arangoDBHosting} />
+              <input id="tms_key" type="text" className="w-full rounded-lg p-2" placeholder={config?.arangoDBHosting} />
             </div>
           </div>
           <div className="col-span-full">
             <label htmlFor="argo_usr">Name</label>
             <div className="my-2">
-              <input id="tms_key" type="text" className="rounded-lg p-2" placeholder={config?.dbUser} />
+              <input id="tms_key" type="text" className="w-full rounded-lg p-2" placeholder={config?.dbUser} />
             </div>
           </div>
           <div className="col-span-full">
             <label htmlFor="argo_pwd">Password</label>
             <div className="my-2">
-              <input id="tms_key" type="text" className="rounded-lg p-2" placeholder={config?.dbPassword} />
+              <input id="tms_key" type="text" className="w-full rounded-lg p-2" placeholder={config?.dbPassword} />
             </div>
           </div>
           <div className="col-span-full">
             <label htmlFor="argo_db">Data Base Name</label>
             <div className="my-2">
-              <input id="tms_key" type="text" className="rounded-lg p-2" placeholder={config?.dbName} />
+              <input id="tms_key" type="text" className="w-full rounded-lg p-2" placeholder={config?.dbName} />
             </div>
           </div>
         </div>

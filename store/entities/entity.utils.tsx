@@ -1,3 +1,4 @@
+import { CdtrEntity, CreditorAccount, CreditorEntity, DebtorAccount, DebtorEntity, Entity } from "./entity.interface"
 import { countries, namesList, surnamesList } from "./mock.data"
 
 const randomDate = (start: Date, end: Date) => {
@@ -50,4 +51,107 @@ export const RandomCellNumber = async () => {
     }
   }
   return phoneNumber.join("")
+}
+
+export const createAnEntity = async () => {
+
+  const newEntity: DebtorEntity = {
+    Dbtr: {
+      Nm: `${await RandomName()} ${await RandomSurname()}`,
+      Id: {
+        PrvtId: {
+          DtAndPlcOfBirth: {
+            BirthDt: await GenerateBirthDate(),
+            CityOfBirth: "Unknown",
+            CtryOfBirth: "ZZ",
+          },
+          Othr: [
+            {
+              Id: crypto.randomUUID().replaceAll("-", ""),
+              SchmeNm: {
+                Prtry: "TAZAMA_EID",
+              },
+            },
+          ],
+        },
+      },
+      CtctDtls: { MobNb: await RandomCellNumber() },
+    },
+  }
+  const newAccount: DebtorAccount = {
+    DbtrAcct: {
+      Id: {
+        Othr: [
+          {
+            Id: crypto.randomUUID().replaceAll("-", ""),
+
+            SchmeNm: {
+              Prtry: "MSISDN",
+            },
+          },
+        ],
+      },
+      Nm: newEntity.Dbtr.Nm.split(" ")[0] + "'s first account",
+    },
+  }
+  const payload: Entity = {
+    Entity: newEntity,
+    Accounts: [newAccount],
+  }
+
+  return payload;
+
+}
+
+export const createAnCreditorEntity= async () => {
+  
+  const newEntity: CreditorEntity = {
+    Cdtr: {
+      Nm: `${await RandomName()} ${await RandomSurname()}`,
+      Id: {
+        PrvtId: {
+          DtAndPlcOfBirth: {
+            BirthDt: await GenerateBirthDate(),
+            CityOfBirth: "Unknown",
+            CtryOfBirth: "ZZ",
+          },
+          Othr: [
+            {
+              Id: crypto.randomUUID().replaceAll("-", ""),
+              SchmeNm: {
+                Prtry: "TAZAMA_EID",
+              },
+            },
+          ],
+        },
+      },
+      CtctDtls: { MobNb: await RandomCellNumber() },
+    },
+  }
+
+  const newAccount: CreditorAccount = {
+    CdtrAcct: {
+      Id: {
+        Othr: [
+          {
+            Id: crypto.randomUUID().replaceAll("-", ""),
+
+            SchmeNm: {
+              Prtry: "MSISDN",
+            },
+          },
+        ],
+      },
+      Nm: newEntity.Cdtr.Nm.split(" ")[0] + "'s first account",
+    },
+  }
+
+  const payload: CdtrEntity = {
+    CreditorEntity: newEntity,
+    CreditorAccounts: [newAccount],
+  }
+
+  return payload;
+
+
 }

@@ -297,6 +297,14 @@ const Web = () => {
   }
 
   useEffect(() => {
+    setSelectedEntity(entityCtx.selectedDebtorEntity.debtorSelectedIndex || 0)
+  }, [entityCtx.selectedDebtorEntity.debtorSelectedIndex])
+
+  useEffect(() => {
+    setSelectedCreditorEntity(entityCtx.selectedCreditorEntity.creditorSelectedIndex || 0)
+  }, [entityCtx.selectedCreditorEntity.creditorSelectedIndex])
+
+  useEffect(() => {
     axios
       .get("api/rules")
       .then((response) => {
@@ -391,6 +399,7 @@ const Web = () => {
               addAccount={async () => {
                 await entityCtx.createEntityAccount(0)
                 await entityCtx.selectDebtorEntity(0, 0)
+                // await entityCtx.selectDebtorEntity
               }}
             />
             <Profile
@@ -438,7 +447,9 @@ const Web = () => {
         {/* Device transactions */}
         <div className="col-span-8">
           <div className="grid grid-cols-12 gap-1">
-            <DebtorDevice selectedEntity={selectedEntity} isDebtor={true} lights={lights} setLights={setLights} />
+            <div className="col-span-4">
+              <DebtorDevice selectedEntity={selectedEntity} isDebtor={true} lights={lights} setLights={setLights} />
+            </div>
             <div className="col-span-4 flex items-center justify-between px-5">
               <ProcessIndicator />
             </div>
@@ -505,23 +516,24 @@ const Web = () => {
               entity={entityCtx.creditorEntities[1]?.CreditorEntity}
               creditorAccounts={entityCtx.creditorEntities[1]?.CreditorAccounts}
               setModalVisible={setModal}
-              setSelectedEntity={async () => {
+              index={1}
+              setSelectedEntity={async (idx: number) => {
                 setSelectedCreditorEntity(1)
                 if (
                   entityCtx.creditorEntities[1]?.CreditorAccounts.length !== -1 &&
                   entityCtx.creditorEntities[1]?.CreditorAccounts.length !== undefined
                 ) {
-                  let idx = 0
-                  if (entityCtx.creditorEntities[1]?.CreditorAccounts.length !== -1) {
-                    // if (entityCtx.entities[1]?.Accounts.length !== -1) {
-                    // idx = entityCtx.entities[1]?.Accounts.length - 1
-                    idx = entityCtx.creditorEntities[1]?.CreditorAccounts.length - 1
-                  }
-                  await entityCtx.selectCreditorEntity(1, idx)
+                  // let idx = 0
+                  // if (entityCtx.creditorEntities[1]?.CreditorAccounts.length !== -1) {
+                  // if (entityCtx.entities[1]?.Accounts.length !== -1) {
+                  // idx = entityCtx.entities[1]?.Accounts.length - 1
+                  // idx = entityCtx.creditorEntities[1]?.CreditorAccounts.length - 1
+                  // }
+                  // await entityCtx.selectCreditorEntity(1, idx)
                   await entityCtx.setCreditorAccountPacs008(1, idx)
                 }
               }}
-              index={1}
+              // setSelectedEntity={() => setSelectedCreditorEntity(1)}
               selectedEntity={selectedCreditorEntity}
               addAccount={async () => {
                 await entityCtx.createCreditorEntityAccount(1)
