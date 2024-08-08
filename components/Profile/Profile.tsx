@@ -12,7 +12,7 @@ export interface ProfileProps {
   selectedEntity: number
   index: number
   setModalVisible: (value: boolean) => void
-  setSelectedEntity: () => void
+  setSelectedEntity: (index: number) => void
   addAccount: () => void
 }
 
@@ -58,28 +58,6 @@ const AccountsComponent = ({ index, setSelected, selectedEntityIndex, setSelecte
     }
   }
 
-  // if (
-  //   entCtx.selectedDebtorEntity.debtorSelectedIndex === selectedEntityIndex &&
-  //   entCtx.selectedDebtorEntity.debtorAccountSelectedIndex === index
-  // ) {
-  //   switch (entCtx.selectedDebtorEntity.debtorSelectedIndex) {
-  //     case 0:
-  //       colour = "text-blue-700"
-  //       break
-  //     case 1:
-  //       colour = "text-green-700"
-  //       break
-  //     case 2:
-  //       colour = "text-yellow-600"
-  //       break
-  //     case 3:
-  //       colour = "text-orange-700"
-  //       break
-  //     default:
-  //       break
-  //   }
-  // }
-
   return (
     <button
       onClick={() => {
@@ -111,9 +89,7 @@ export const Profile = ({ ...props }: ProfileProps) => {
   //   }
   // }, [props.selectedEntity, selectedAccountIndex])
 
-  // useEffect(() => {}, [entityCtx.entities])
 
-  console.log(selectedAccountIndex)
   let reverse = ""
   if (props.reverse) {
     reverse = "flex-row-reverse text-right"
@@ -128,7 +104,7 @@ export const Profile = ({ ...props }: ProfileProps) => {
         className="text-black"
         onClick={async () => {
           if (props.entity !== undefined) {
-            props.setSelectedEntity()
+            // props.setSelectedEntity(selectedAccountIndex)
             props.setModalVisible(true)
           }
         }}
@@ -195,24 +171,15 @@ export const Profile = ({ ...props }: ProfileProps) => {
       {/* D6 button */}
       <button
         onClick={async () => {
-          console.log(entityCtx.entities.length)
           if (!props.entity && entityCtx.entities.length < 4) {
-            props.setSelectedEntity()
+            props.setSelectedEntity(props.index)
             await entityCtx.createEntity()
-            // await entityCtx.selectDebtorEntity(props.selectedEntity, 0)
-            // setSelectedAccountIndex(entityCtx.selectedDebtorEntity.debtorAccountSelectedIndex || 0)
-            console.log(props.selectedEntity, "do you change???")
+            await entityCtx.selectDebtorEntity(props.index, 0)
 
             await entityCtx.setDebtorPacs008(props.selectedEntity)
           } else if (props.entity) {
             await entityCtx.resetEntity(props.selectedEntity)
-            // await entityCtx.selectDebtorEntity(props.selectedEntity, 0)
-            // setSelectedAccountIndex(0)
-            console.log(selectedAccountIndex, "reset")
-            // await entityCtx.createEntity()
-            // if (confirm("You sure you want to delete this entity?")) {
-            //   alert("Deleted")
-            // }
+            await entityCtx.selectDebtorEntity(props.selectedEntity, 0)
           }
         }}
       >

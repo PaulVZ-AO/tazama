@@ -117,7 +117,7 @@ export const CreditorProfile = ({ ...props }: ProfileProps) => {
         className="text-black"
         onClick={async () => {
           if (props.entity !== undefined) {
-            props.setSelectedEntity(selectedAccountIndex)
+            // props.setSelectedEntity(selectedAccountIndex)
             props.setModalVisible(true)
           }
         }}
@@ -193,13 +193,13 @@ export const CreditorProfile = ({ ...props }: ProfileProps) => {
       <button
         onClick={async () => {
           if (!props.entity && entityCtx.creditorEntities?.length < 4) {
-            props.setSelectedEntity(selectedAccountIndex)
+            props.setSelectedEntity(props.index)
             await entityCtx.createCreditorEntity()
-            await entityCtx.setCreditorPacs008(props.selectedEntity)
-          } else {
-            if (confirm("You sure you want to delete this entity?")) {
-              alert("Deleted")
-            }
+            await entityCtx.selectCreditorEntity(props.index, 0)
+            // await entityCtx.setCreditorPacs008(props.selectedEntity)
+          } else if (props.entity) {
+            await entityCtx.resetCreditorEntity(props.selectedEntity)
+            await entityCtx.selectCreditorEntity(props.selectedEntity, 0)
           }
         }}
       >

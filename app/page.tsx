@@ -223,6 +223,14 @@ const Web = () => {
   }
 
   useEffect(() => {
+    setSelectedEntity(entityCtx.selectedDebtorEntity.debtorSelectedIndex || 0)
+  }, [entityCtx.selectedDebtorEntity.debtorSelectedIndex])
+
+  useEffect(() => {
+    setSelectedCreditorEntity(entityCtx.selectedCreditorEntity.creditorSelectedIndex || 0)
+  }, [entityCtx.selectedCreditorEntity.creditorSelectedIndex])
+
+  useEffect(() => {
     axios
       .get("api/rules")
       .then((response) => {
@@ -285,6 +293,7 @@ const Web = () => {
               addAccount={async () => {
                 await entityCtx.createEntityAccount(0)
                 await entityCtx.selectDebtorEntity(0, 0)
+                // await entityCtx.selectDebtorEntity
               }}
             />
             <Profile
