@@ -380,6 +380,35 @@ const EntityProvider = ({ children }: Props) => {
     }
   }
 
+  const updateAccounts = async (updatedAccounts: Array<DebtorAccount>, entityIndex: number) => {
+    try {
+      dispatch({ type: ACTIONS.UPDATE_ACCOUNTS_LOADING })
+  
+      // Get the current accounts for the entity
+      const currentAccounts = state.entities[entityIndex]?.Accounts || []
+  
+      // Create a new accounts array by merging current accounts with updated accounts
+      const mergedAccounts = currentAccounts.map((account: any) => {
+        return updatedAccounts.find(updatedAccount => updatedAccount.DbtrAcct.Id.Othr[0].Id === account.DbtrAcct.Id.Othr[0].Id) || account
+      })
+  
+      let updatedEntity: Entity = {
+        Entity: state.entities[entityIndex]?.Entity,
+        Accounts: mergedAccounts,
+      }
+  
+      let accountsList: Array<Entity> = state.entities
+      if (accountsList[entityIndex]?.Entity && typeof entityIndex === "number") {
+        accountsList.splice(entityIndex, 1, updatedEntity)
+      }
+  
+      dispatch({ type: ACTIONS.UPDATE_ACCOUNTS_SUCCESS, payload: [...accountsList] })
+      localStorage.setItem("DEBTOR_ENTITIES", JSON.stringify(accountsList))
+    } catch (error) {
+      dispatch({ type: ACTIONS.UPDATE_ACCOUNTS_FAIL })
+    }
+  }
+
   const createCreditorEntity = async () => {
     try {
       dispatch({ type: ACTIONS.CREATE_CREDITOR_ENTITY_LOADING })
@@ -710,6 +739,7 @@ const EntityProvider = ({ children }: Props) => {
         createEntityLoading: state.createEntityLoading,
         updateEntityLoading: state.updateEntityLoading,
         createAccountLoading: state.createAccountLoading,
+        updateAccountsLoading: state.updateAccountsLoading,
         createCreditorAccountLoading: state.createCreditorAccountLoading,
         resetEntityLoading: state.resetEntityLoading,
         resetCreditorEntityLoading: state.resetCreditorEntityLoading,
@@ -727,6 +757,7 @@ const EntityProvider = ({ children }: Props) => {
         createEntity,
         updateEntity,
         createEntityAccount,
+        updateAccounts,
         createCreditorEntity,
         updateCreditorEntity,
         createCreditorEntityAccount,

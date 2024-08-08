@@ -52,6 +52,25 @@ const EntityReducer = (state: any, action: any) => {
         entities: [],
       }
 
+    case ACTIONS.UPDATE_ACCOUNTS_LOADING:
+      return {
+        ...state,
+        updateAccountsLoading: true,
+        entities: [],
+      }
+    case ACTIONS.UPDATE_ACCOUNTS_SUCCESS:
+      return {
+        ...state,
+        updateAccountsLoading: false,
+        entities: action.payload,
+      }
+    case ACTIONS.UPDATE_ACCOUNTS_FAIL:
+      return {
+        ...state,
+        updateAccountsLoading: false,
+        entities: [],
+      }
+
     case ACTIONS.RESET_ENTITY_LOADING:
       return {
         ...state,
