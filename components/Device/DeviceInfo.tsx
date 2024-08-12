@@ -9,19 +9,36 @@ interface DeviceProps {
 export function DeviceInfo(props: DeviceProps) {
   const entityCtx = useContext(EntityContext)
 
+  const [getPacs008, setGetPacs008] = useState<any>()
+
   const accountIndex = entityCtx.selectedDebtorEntity.debtorAccountSelectedIndex
 
   const creditorAccountIndex = entityCtx.selectedCreditorEntity.creditorAccountSelectedIndex
 
   const entity = entityCtx.entities[props.selectedEntity]
 
+  const entities = entityCtx.entities
+
+  const creditorEntities = entityCtx.creditorEntities
+
   const creditorEntity = entityCtx.creditorEntities[props.selectedEntity]
 
-
-  const pacs008Data = entityCtx.pacs008.FIToFICstmrCdtTrf
+  // const pacs008Data = entityCtx.pacs008?.FIToFICstmrCdtTrf
   const pacs002Data = entityCtx.pacs002.FIToFIPmtSts
 
-  const location = pacs008Data.SplmtryData.Envlp.Doc.InitgPty.Glctn
+  const location = getPacs008?.FIToFICstmrCdtTrf?.SplmtryData.Envlp.Doc.InitgPty.Glctn
+
+  const [isTransaction, setIsTransaction] = useState<boolean>(false)
+
+  const handleClick = async () => {
+    await entityCtx.generateTransaction()
+    setGetPacs008(entityCtx.pacs008)
+    setIsTransaction(true)
+  }
+
+  useEffect(() => {
+    setIsTransaction(false)
+  }, [props.selectedEntity])
 
   let fillColour
 
@@ -48,8 +65,6 @@ export function DeviceInfo(props: DeviceProps) {
     }
   }
 
-
-
   if (props.isDebtor) {
     return (
       <>
@@ -74,36 +89,47 @@ export function DeviceInfo(props: DeviceProps) {
               <p className={`font-bold ${fillColour}`}>{entity?.Accounts[accountIndex || 0]?.DbtrAcct?.Nm} </p>
               <p className="truncate">ID: {entity?.Accounts[accountIndex || 0]?.DbtrAcct.Id.Othr[0].Id}</p>
             </div>
-            <div
-              className={`m-2 rounded-md border bg-gray-100 p-2 text-sm shadow-sm`}
-            >
-              <p>
-                Amount: {pacs008Data.CdtTrfTxInf.InstdAmt.Amt.Ccy} {pacs008Data.CdtTrfTxInf.InstdAmt.Amt.Amt}
-              </p>
-              <p className="truncate">Description: {pacs008Data.RmtInf.Ustrd}</p>
-              <p>Purpose: {pacs008Data.CdtTrfTxInf.Purp.Cd} </p>
-              <p>Latitude: {location.Lat}</p>
-              <p>Longitude: {location.Long}</p>
-              <hr className="mt-2" />
-              <button className="m-auto mt-2 flex items-center text-blue-500">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className="size-4"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
-                  />
-                </svg>
-                edit
+
+            {isTransaction ? (
+              <div className={`m-2 rounded-md border bg-gray-100 p-2 text-sm shadow-sm`}>
+                <p>
+                  Amount: {getPacs008?.FIToFICstmrCdtTrf?.CdtTrfTxInf.InstdAmt.Amt.Ccy}{" "}
+                  {getPacs008?.FIToFICstmrCdtTrf?.CdtTrfTxInf.InstdAmt.Amt.Amt}
+                </p>
+                <p className="truncate">Description: {getPacs008?.FIToFICstmrCdtTrf?.RmtInf.Ustrd}</p>
+                <p>Purpose: {getPacs008?.FIToFICstmrCdtTrf?.CdtTrfTxInf.Purp.Cd} </p>
+                <p>Latitude: {location?.Lat}</p>
+                <p>Longitude: {location?.Long}</p>
+                <hr className="mt-2" />
+                <button className="m-auto mt-2 flex items-center text-blue-500">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="size-4"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                    />
+                  </svg>
+                  edit
+                </button>
+              </div>
+            ) : null}
+            <div className={`m-2 rounded-lg border bg-gray-300 p-2 text-sm shadow-md`}>
+              <button
+                className={`m-auto flex items-center justify-center font-semibold text-black ${
+                  entities.length === 0 || creditorEntities.length === 0 ? " pointer-events-none opacity-40" : ""
+                }`}
+                onClick={() => handleClick()}
+              >
+                New Transaction
               </button>
             </div>
-
           </>
         ) : null}
       </>
