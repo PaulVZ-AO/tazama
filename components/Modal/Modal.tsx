@@ -73,7 +73,6 @@ export function Modal(props: Props) {
   const minDate = new Date(today.getFullYear() - 60, today.getMonth(), today.getDate()).toISOString().split('T')[0];
   const maxDate = new Date(today.getFullYear() - 20, today.getMonth(), today.getDate()).toISOString().split('T')[0];
 
-
   const handleSectionChange = (section: "Entity" | "Accounts") => {
     if (typeof props.selectedEntity === "number" && props.entity) {
       if (section === "Entity") {
@@ -87,8 +86,6 @@ export function Modal(props: Props) {
     setActiveSection(section);
   };
   
-  
-
   return (
     <div className={props.showModal ? "relative z-10" : "hidden"} aria-labelledby="modal-title" role="dialog" aria-modal="true">
       <div className="fixed inset-0 bg-gray-500 bg-opacity-75 backdrop-blur-sm transition-opacity" aria-hidden="true"></div>
