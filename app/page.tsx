@@ -46,22 +46,17 @@ const Web = () => {
   const [hoveredRule, setHoveredRule] = useState<any>(null)
   const [hoveredType, setHoveredType] = useState<any>(null)
   const [lights, setLights] = useState<LightsManager>(defaultLights)
-  const [ruleLights, setRuleLights] = useState<RuleLight[]>([])
+  const [ruleLights, setRuleLights] = useState<boolean>(true)
   const [showModal, setModal] = useState(false)
+  const [started, setStarted] = useState(false)
   const entityCtx = useContext(EntityContext)
 
   useEffect(() => {
-    console.log("LIGHTS: ", rules)
-  }, [rules])
+    console.log("LIGHTS: ", started)
+  }, [started])
 
   useEffect(() => {
     const socket = io()
-    const findIndexOfRule = async (search: string) => {
-      const index = rules?.findIndex((rule: RuleLight) => {
-        rule.title === search
-      })
-      return index
-    }
 
     socket.on("connection", (msg) => {
       console.log("Connected to WebSocket server", msg)
@@ -80,12 +75,21 @@ const Web = () => {
       console.log("Received Message from the RULE RESPONSE: ", msg)
       console.log("RULE: ", msg.ruleResult.id.split("@")[0], msg.ruleResult.subRuleRef)
 
-      let ruleArray: RuleLight[] = rules.length > 1 ? rules : []
       const index = rules.findIndex((r) => r.title === msg.ruleResult.id.split("@")[0])
       console.log("RULE_LIGHTS", rules, index)
-      if ((index > -1 && ruleArray !== undefined && ruleArray.length > 0, index !== undefined)) {
-        rules[index].result = msg.ruleResult
+      const updatedRules = [...rules]
+      updatedRules[index].result = msg.ruleResult.subRuleRef
+      if (msg.ruleResult.subRuleRef === ".01") {
+        updatedRules[index].color = "g"
       }
+      if (msg.ruleResult.subRuleRef === ".02") {
+        updatedRules[index].color = "y"
+      }
+      if (msg.ruleResult.subRuleRef === ".03") {
+        updatedRules[index].color = "r"
+      }
+      setRules(updatedRules)
+
       if (msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId !== undefined) {
         const results = await getTADPROCResult(msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId)
         console.log("RESULT", results)
@@ -134,7 +138,7 @@ const Web = () => {
     return () => {
       socket.disconnect()
     }
-  }, [rules!])
+  }, [rules])
 
   const handleRuleMouseEnter = (type: any) => {
     setHoveredType(null) // fallback if stats is stuck
@@ -179,7 +183,7 @@ const Web = () => {
         onMouseEnter={() => handleRuleMouseEnter(props.rule)}
         onMouseLeave={handleRuleMouseLeave}
       >
-        <StatusIndicator colour={props.rule.s} /> &nbsp;
+        <StatusIndicator colour={props.rule.s} rule={props.rule} /> &nbsp;
         {props.rule.v}
       </li>
     )
@@ -208,10 +212,15 @@ const Web = () => {
         onMouseEnter={() => handleTypeMouseEnter(props.rule)}
         onMouseLeave={handleTypeMouseLeave}
       >
-        <StatusIndicator colour={props.rule.s} /> &nbsp;
+        <StatusIndicator colour={props.rule.s} rule={props.rule} /> &nbsp;
         {props.rule.v}
       </li>
     )
+  }
+
+  const getRuleDescriptions = (result: string) => {
+    const description: any = descriptions!.find((item) => item.subRuleRef === result)
+    return description.reason
   }
 
   function RuleResult() {
@@ -223,13 +232,15 @@ const Web = () => {
 
         <div className="p-5">
           <div className="mb-2 p-2 text-center">
-            {hoveredRule} {hoveredRule && hoveredRule.r ? hoveredRule.r : ""}=
-            {hoveredRule ? (hoveredRule.s === "g" ? "true" : "false") : ""} False
+            {hoveredRule?.title} {/* {hoveredRule.title} {hoveredRule && hoveredRule.r ? hoveredRule.r : ""}= */}
+            {hoveredRule ? (hoveredRule.color === "g" ? "= True" : "= False") : ""}
           </div>
           <hr className="mb-2 border-black" />
           <div className="mb-2 p-2 text-center">
-            Creditor account is less than 1 day old.
-            {hoveredRule && hoveredRule.s !== "g" && hoveredRule.d ? hoveredRule.d : ""}
+            {/* Creditor account is less than 1 day old. */}
+            {hoveredRule && hoveredRule.color !== "g" && hoveredRule.result
+              ? getRuleDescriptions(hoveredRule.result)
+              : ""}
           </div>
         </div>
       </div>
@@ -305,26 +316,29 @@ const Web = () => {
   }, [entityCtx.selectedCreditorEntity.creditorSelectedIndex])
 
   useEffect(() => {
-    axios
-      .get("api/rules")
-      .then((response) => {
-        let array: any = []
-        setRules(response.data.rules.rule)
-        // response.data.rules.rule.forEach((rule: any) => {
-        //   let newRules: RuleLight = { id: rule.id, color: "n", title: rule.title, result: null }
-        //   console.log("CREATING RULE: ", newRules.title)
-        //   array.push(newRules)
-        // })
-        // if (array.length > 0) {
-        //   setRuleLights({ lights: array })
-        // }
-        setLoading(false)
-      })
-      .catch((error) => {
-        setError(error)
-        setLoading(false)
-      })
-  }, [])
+    if (ruleLights) {
+      axios
+        .get("api/rules")
+        .then((response) => {
+          let array: any = []
+          setRules(response.data.rules.rule)
+          // response.data.rules.rule.forEach((rule: any) => {
+          //   let newRules: RuleLight = { id: rule.id, color: "n", title: rule.title, result: null }
+          //   console.log("CREATING RULE: ", newRules.title)
+          //   array.push(newRules)
+          // })
+          // if (array.length > 0) {
+          //   setRuleLights({ lights: array })
+          // }
+          setLoading(false)
+          setRuleLights(false)
+        })
+        .catch((error) => {
+          setError(error)
+          setLoading(false)
+        })
+    }
+  }, [ruleLights])
 
   useEffect(() => {
     axios
@@ -448,10 +462,17 @@ const Web = () => {
         <div className="col-span-8">
           <div className="grid grid-cols-12 gap-1">
             <div className="col-span-4">
-              <DebtorDevice selectedEntity={selectedEntity} isDebtor={true} lights={lights} setLights={setLights} />
+              <DebtorDevice
+                selectedEntity={selectedEntity}
+                isDebtor={true}
+                lights={lights}
+                setLights={setLights}
+                resetLights={setRuleLights}
+                setStarted={setStarted}
+              />
             </div>
             <div className="col-span-4 flex items-center justify-between px-5">
-              <ProcessIndicator />
+              <ProcessIndicator started={started} />
             </div>
             <div className="col-span-4">
               <DebtorDevice
@@ -459,6 +480,8 @@ const Web = () => {
                 isDebtor={false}
                 lights={lights}
                 setLights={setLights}
+                resetLights={setRuleLights}
+                setStarted={setStarted}
               />
               {/* <Image src="/device.svg" height="200" width="200" className="text-center" alt="" priority={true} /> */}
             </div>
@@ -625,24 +648,23 @@ const Web = () => {
           <div className="grid grid-cols-12">
             <div className="col-span-6">
               <div className="grid grid-cols-3 px-5">
-                {rules &&
-                  rules?.map((rule: any) => (
-                    <div
-                      className={`mb-1 flex rounded-md px-2 hover:bg-gray-200 hover:shadow`}
-                      key={`r-${rule.id}`}
-                      onMouseEnter={() => {
-                        handleRuleMouseEnter(rule.title)
-                        console.log(rule.title)
-                      }}
-                      onMouseLeave={() => {
-                        handleRuleMouseLeave()
-                        console.log(rule)
-                      }}
-                    >
-                      <StatusIndicator /> &nbsp;
-                      {rule.title}
-                    </div>
-                  ))}
+                {rules?.map((rule: any) => (
+                  <div
+                    className={`mb-1 flex rounded-md px-2 hover:bg-gray-200 hover:shadow`}
+                    key={`r-${rule.id}`}
+                    onMouseEnter={() => {
+                      handleRuleMouseEnter(rule)
+                      console.log(rule)
+                    }}
+                    onMouseLeave={() => {
+                      handleRuleMouseLeave()
+                      console.log(rule)
+                    }}
+                  >
+                    <StatusIndicator colour={rule.color} /> &nbsp;
+                    {rule.title}
+                  </div>
+                ))}
               </div>
             </div>
             <div className="col-span-6 px-5">

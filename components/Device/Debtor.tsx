@@ -19,6 +19,8 @@ interface DebtorProps {
   isDebtor?: boolean
   lights: LightsManager
   setLights: (data: LightsManager) => void
+  resetLights: (data: boolean) => void
+  setStarted: (data: boolean) => void
 }
 
 export function DebtorDevice(props: DebtorProps) {
@@ -45,6 +47,9 @@ export function DebtorDevice(props: DebtorProps) {
           ED: data,
         }
         props.setLights(newData)
+        setTimeout(async () => {
+          props.setStarted(false)
+        }, 1000)
       } else {
         let data: EDLights = {
           pacs008: true,
@@ -55,6 +60,9 @@ export function DebtorDevice(props: DebtorProps) {
           ED: data,
         }
         props.setLights(newData)
+        setTimeout(async () => {
+          props.setStarted(false)
+        }, 1000)
       }
       console.log("Test POST PACS002 response: ", response.data)
     } catch (error) {
@@ -68,11 +76,15 @@ export function DebtorDevice(props: DebtorProps) {
         ED: data,
       }
       props.setLights(newData)
+      setTimeout(async () => {
+        props.setStarted(false)
+      }, 1000)
     }
   }
 
   const postPacs008Test = async () => {
     try {
+      props.setStarted(true)
       const response = await axios.post(
         "http://localhost:5001/v1/evaluate/iso20022/pacs.008.001.10",
         entityCtx.pacs008,
@@ -108,6 +120,9 @@ export function DebtorDevice(props: DebtorProps) {
         ED: data,
       }
       props.setLights(newData)
+      setTimeout(async () => {
+        props.setStarted(false)
+      }, 1000)
       // alert(`Error sending PACS008 request. ${JSON.stringify(errMsg.errorMessage)}`)
     }
   }
@@ -147,6 +162,7 @@ export function DebtorDevice(props: DebtorProps) {
                     color: "n",
                   },
                 })
+                props.resetLights(true)
                 setTimeout(async () => {
                   await postPacs008Test()
                 }, 500)
