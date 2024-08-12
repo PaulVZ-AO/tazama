@@ -704,7 +704,9 @@ const EntityProvider = ({ children }: Props) => {
       setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt = RandomNumbers()
       setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.InstdAmt.Amt.Amt =
         setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt
-      dispatch({ type: ACTIONS.GENERATE_TRANSACTION_PACS008_SUCCESS })
+      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.InstrId = crypto.randomUUID().replaceAll("-", "")
+      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.EndToEndId = crypto.randomUUID().replaceAll("-", "")
+      dispatch({ type: ACTIONS.GENERATE_TRANSACTION_PACS008_SUCCESS, payload: setPacs008 })
       console.log("PACS008: ", setPacs008)
       localStorage.setItem("PACS008", JSON.stringify(state.pacs008))
     } catch (error) {
