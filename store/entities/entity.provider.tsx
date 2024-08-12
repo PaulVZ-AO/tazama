@@ -383,25 +383,29 @@ const EntityProvider = ({ children }: Props) => {
   const updateAccounts = async (updatedAccounts: Array<DebtorAccount>, entityIndex: number) => {
     try {
       dispatch({ type: ACTIONS.UPDATE_ACCOUNTS_LOADING })
-  
+
       // Get the current accounts for the entity
       const currentAccounts = state.entities[entityIndex]?.Accounts || []
-  
+
       // Create a new accounts array by merging current accounts with updated accounts
       const mergedAccounts = currentAccounts.map((account: any) => {
-        return updatedAccounts.find(updatedAccount => updatedAccount.DbtrAcct.Id.Othr[0].Id === account.DbtrAcct.Id.Othr[0].Id) || account
+        return (
+          updatedAccounts.find(
+            (updatedAccount) => updatedAccount.DbtrAcct.Id.Othr[0].Id === account.DbtrAcct.Id.Othr[0].Id
+          ) || account
+        )
       })
-  
+
       let updatedEntity: Entity = {
         Entity: state.entities[entityIndex]?.Entity,
         Accounts: mergedAccounts,
       }
-  
+
       let accountsList: Array<Entity> = state.entities
       if (accountsList[entityIndex]?.Entity && typeof entityIndex === "number") {
         accountsList.splice(entityIndex, 1, updatedEntity)
       }
-  
+
       dispatch({ type: ACTIONS.UPDATE_ACCOUNTS_SUCCESS, payload: [...accountsList] })
       localStorage.setItem("DEBTOR_ENTITIES", JSON.stringify(accountsList))
     } catch (error) {
@@ -682,7 +686,9 @@ const EntityProvider = ({ children }: Props) => {
       setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt = RandomNumbers()
       setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.InstdAmt.Amt.Amt =
         setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt
-      dispatch({ type: ACTIONS.GENERATE_TRANSACTION_PACS008_SUCCESS })
+      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.InstrId = crypto.randomUUID().replaceAll("-", "")
+      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.EndToEndId = crypto.randomUUID().replaceAll("-", "")
+      dispatch({ type: ACTIONS.GENERATE_TRANSACTION_PACS008_SUCCESS, payload: setPacs008 })
       console.log("PACS008: ", setPacs008)
       localStorage.setItem("PACS008", JSON.stringify(state.pacs008))
     } catch (error) {
