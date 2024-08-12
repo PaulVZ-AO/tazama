@@ -3,24 +3,31 @@
 import React, { useContext, useEffect, useState } from "react"
 import EntityContext from "store/entities/entity.context"
 import { UIConfiguration } from "store/entities/entity.interface"
+import ResetModal from "./ResetModal"
 
 const Settings = () => {
-  const entityCtx = useContext(EntityContext)
-  const [config, setConfig] = useState<UIConfiguration>()
+  const entityCtx = useContext(EntityContext);
+  const [config, setConfig] = useState<UIConfiguration>();
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    let lsConfig: string
-    lsConfig = localStorage.getItem("UI_CONFIG") || ""
+    let lsConfig: string;
+    lsConfig = localStorage.getItem("UI_CONFIG") || "";
 
     if (lsConfig !== "") {
-      let updateConfig: any = JSON.parse(lsConfig)
-      setConfig(updateConfig)
+      let updateConfig: any = JSON.parse(lsConfig);
+      setConfig(updateConfig);
     }
-  }, [entityCtx.uiConfig])
+  }, [entityCtx.uiConfig]);
 
   useEffect(() => {
-    console.log("CONFIG: ", config)
-  }, [config])
+    console.log("CONFIG: ", config);
+  }, [config]);
+
+  const handleReset = async () => {
+    await entityCtx.reset();
+    window.location.replace("/");
+  };
 
   return (
     <div className="bg-slate-300/25 p-10">
@@ -115,20 +122,17 @@ const Settings = () => {
         </div>
         <div className="col-span-2"></div>
         <div className="col-span-2">
-          <button
+        <button
             className="w-full rounded-lg py-3 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"
             type="button"
-            value="Reset"
-            onClick={async () => {
-              await entityCtx.reset()
-              alert("All data has been reset")
-              window.location.replace("/")
-            }}
+            onClick={() => setShowModal(true)}
           >
             Reset
           </button>
         </div>
       </div>
+
+      <ResetModal show={showModal} onClose={() => setShowModal(false)} onConfirm={handleReset} />
     </div>
   )
 }

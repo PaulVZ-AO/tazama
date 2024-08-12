@@ -15,6 +15,7 @@ export function Modal(props: Props) {
   const [customEntity, setCustomEntity] = useState<DebtorEntity | undefined>(undefined)
   const [activeSection, setActiveSection] = useState<"Entity" | "Accounts">("Entity")
   const [customAccounts, setCustomAccounts] = useState<DebtorAccount[]>([])
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});  
 
   let modalProp = { modalTitle: "Update Entity" }
 
@@ -45,6 +46,46 @@ export function Modal(props: Props) {
     setCustomAccounts(updatedAccounts)
   }
 
+  // Validate Form
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+    // Entity
+    if (!customEntity?.Dbtr.Nm) newErrors.Nm = "Full Name is required";
+    if (!customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt) newErrors.BirthDt = "Birth Date is required";
+    if (!customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.CityOfBirth) newErrors.CityOfBirth = "City of Birth is required";
+    if (!customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.CtryOfBirth) newErrors.CtryOfBirth = "Country of Birth is required";
+    if (!customEntity?.Dbtr.Id.PrvtId.Othr[0].Id) newErrors.Id = "ID number is required";
+    if (!customEntity?.Dbtr.CtctDtls.MobNb) {
+      newErrors.MobNb = "Mobile number is required";
+    } else if (!/^\+[0-9]{1,3}-[0-9()+\-]{1,30}$/.test(customEntity.Dbtr.CtctDtls.MobNb)) {
+      newErrors.MobNb = "Invalid mobile number format";
+    }
+    // Accounts
+    customAccounts.forEach((account, index) => {
+      if (!account.DbtrAcct.Nm) newErrors[`accountName-${index}`] = "Account Name is required";
+    });
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // Set min and max age of Birth Date input
+  const today = new Date();
+  const minDate = new Date(today.getFullYear() - 60, today.getMonth(), today.getDate()).toISOString().split('T')[0];
+  const maxDate = new Date(today.getFullYear() - 20, today.getMonth(), today.getDate()).toISOString().split('T')[0];
+
+  const handleSectionChange = (section: "Entity" | "Accounts") => {
+    if (typeof props.selectedEntity === "number" && props.entity) {
+      if (section === "Entity") {
+        // Reset customEntity to the initial value
+        setCustomEntity(entityCtx.entities[props.selectedEntity]?.Entity);
+      } else if (section === "Accounts") {
+        // Reset customAccounts to the initial value
+        setCustomAccounts(entityCtx.entities[props.selectedEntity]?.Accounts || []);
+      }
+    }
+    setActiveSection(section);
+  };
+  
   return (
     <div className={props.showModal ? "relative z-10" : "hidden"} aria-labelledby="modal-title" role="dialog" aria-modal="true">
       <div className="fixed inset-0 bg-gray-500 bg-opacity-75 backdrop-blur-sm transition-opacity" aria-hidden="true"></div>
@@ -61,8 +102,8 @@ export function Modal(props: Props) {
             </div>
 
             <div className="my-4 flex justify-around">
-              <button className={`rounded-lg px-4 py-2 ${activeSection === "Entity" ? "m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-inner" : "m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"}`} onClick={() => setActiveSection("Entity")}>Entity</button>
-              <button className={`rounded-lg px-4 py-2 ${activeSection === "Accounts" ? "m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-inner" : "m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"}`} onClick={() => setActiveSection("Accounts")}>Account(s)</button>
+              <button className={`rounded-lg px-4 py-2 ${activeSection === "Entity" ? "m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-inner" : "m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"}`} onClick={() => handleSectionChange("Entity")}>Entity</button>
+              <button className={`rounded-lg px-4 py-2 ${activeSection === "Accounts" ? "m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-inner" : "m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"}`} onClick={() => handleSectionChange("Accounts")}>Account(s)</button>
             </div>
 
             {activeSection === "Entity" && (
@@ -82,6 +123,7 @@ export function Modal(props: Props) {
                         className="w-full"
                         defaultValue={props.entity?.Dbtr.Nm}
                         value={customEntity?.Dbtr.Nm}
+                        maxLength={140}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
                           setCustomEntity({
@@ -89,8 +131,9 @@ export function Modal(props: Props) {
                           Dbtr: {
                           ...customEntity.Dbtr,
                           Nm: e.target.value,
-                          },})}}}
+                          },});}}}
                       />
+                      {errors.Nm && <p className="text-red-500">{errors.Nm}</p>}
                     </div>
                     <div>
                       <label htmlFor="modal-BirthDt">Birth Date</label>
@@ -100,6 +143,8 @@ export function Modal(props: Props) {
                         className="w-full"
                         defaultValue={props.entity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt}
                         value={customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt}
+                        min={minDate}
+                        max={maxDate}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
                           setCustomEntity({
@@ -113,8 +158,9 @@ export function Modal(props: Props) {
                           DtAndPlcOfBirth: {
                           ...customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth,
                           BirthDt: e.target.value,
-                          },},},},})}}}
+                          },},},},});}}}
                       />
+                      {errors.BirthDt && <p className="text-red-500">{errors.BirthDt}</p>}
                     </div>
                     <div>
                       <label htmlFor="modal-CityOfBirth">City of Birth</label>
@@ -137,8 +183,9 @@ export function Modal(props: Props) {
                           DtAndPlcOfBirth: {
                           ...customEntity.Dbtr.Id.PrvtId.DtAndPlcOfBirth,
                           CityOfBirth: e.target.value,
-                          },},},},})}}}
+                          },},},},});}}}
                       />
+                      {errors.CityOfBirth && <p className="text-red-500">{errors.CityOfBirth}</p>}
                     </div>
                     <div>
                       <label htmlFor="modal-CtryOfBirth">Country of Birth</label>
@@ -161,8 +208,9 @@ export function Modal(props: Props) {
                           DtAndPlcOfBirth: {
                           ...customEntity.Dbtr.Id.PrvtId.DtAndPlcOfBirth,
                           CtryOfBirth: e.target.value,
-                          },},},},})}}}
+                          },},},},});}}}
                       />
+                      {errors.CtryOfBirth && <p className="text-red-500">{errors.CtryOfBirth}</p>}
                     </div>
                     <div>
                       <label htmlFor="modal-ID">ID number</label>
@@ -171,6 +219,7 @@ export function Modal(props: Props) {
                         defaultValue={props.entity?.Dbtr.Id.PrvtId.Othr[0].Id}
                         value={customEntity?.Dbtr.Id.PrvtId.Othr[0].Id}
                         id="modal-ID"
+                        maxLength={35}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
                           setCustomEntity({
@@ -184,10 +233,11 @@ export function Modal(props: Props) {
                           Othr: {
                           ...customEntity.Dbtr.Id.PrvtId.Othr[0],
                           Id: e.target.value,
-                          },},},},})}}}
+                          },},},},});}}}
                         readOnly
                         type="text"
                       />
+                      {errors.Id && <p className="text-red-500">{errors.Id}</p>}
                     </div>
                     <div>
                       <label htmlFor="modal-MobNb">Mobile number</label>
@@ -197,6 +247,7 @@ export function Modal(props: Props) {
                         className="w-full"
                         defaultValue={props.entity?.Dbtr.CtctDtls.MobNb}
                         value={customEntity?.Dbtr.CtctDtls.MobNb}
+                        maxLength={35}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
                           setCustomEntity({
@@ -206,20 +257,21 @@ export function Modal(props: Props) {
                           ...customEntity.Dbtr.CtctDtls,
                           CtctDtls: {
                           MobNb: e.target.value,
-                          },},})}}}
+                          },},});}}}
                       />
+                      {errors.MobNb && <p className="text-red-500">{errors.MobNb}</p>}
                     </div>
                   </div>
                 </div>
-
                 <div className="flex">
                   <button type="button" className="m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)] hover:shadow-inner"
                     onClick={async () => {
                       if (customEntity !== undefined && typeof props.selectedEntity === "number") {
-                        console.log("HIT")
-                        await entityCtx.updateEntity(customEntity, props.selectedEntity)
-                        handleClick()
-                      }}}
+                      if (validateForm()) {
+                      console.log("HIT");
+                      await entityCtx.updateEntity(customEntity, props.selectedEntity);
+                      handleClick();
+                    }}}}
                   >Save</button>
                   <button type="button" className="m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-inner" onClick={handleClick}>Cancel</button>
                 </div>
@@ -244,7 +296,8 @@ export function Modal(props: Props) {
                               type="text"
                               id={`modal-Account-Number-${index}`}
                               className="w-full rounded-lg bg-gray-200 p-2 shadow-inner"
-                              defaultValue={accountDetail.DbtrAcct.Nm}
+                              value={accountDetail.DbtrAcct.Nm}
+                              maxLength={35}
                               onChange={(e) => {
                                 handleAccountChange(index, {
                                 ...accountDetail,
@@ -253,6 +306,7 @@ export function Modal(props: Props) {
                                 Nm: e.target.value,
                                 },})}}
                             />
+                              {errors[`accountName-${index}`] && <p className="text-red-500">{errors[`accountName-${index}`]}</p>}
                           </div>
                           <div>
                             <label htmlFor={`modal-Account-ID-${index}`}>ID number</label>
@@ -267,20 +321,15 @@ export function Modal(props: Props) {
                     </div>
                   ))}
                 </div>
-
                 <div className="flex">
-                  <button
-                    type="button"
-                    className="m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)] hover:shadow-inner"
+                  <button type="button" className="m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)] hover:shadow-inner"
                     onClick={async () => {
                       if (props.selectedEntity !== undefined) {
-                        await entityCtx.updateAccounts(customAccounts, props.selectedEntity)
-                        handleClick()
-                      } else {
-                        console.error("Selected entity index is undefined.")
-                      }}}
+                      if (validateForm()) {
+                      await entityCtx.updateAccounts(customAccounts, props.selectedEntity)
+                      handleClick();
+                    }}}}
                   >Save</button>
-
                   <button type="button" className="m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-inner" onClick={handleClick}>Cancel</button>
                 </div>
               </>
