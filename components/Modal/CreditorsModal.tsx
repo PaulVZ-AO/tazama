@@ -1,23 +1,23 @@
 import React, { useContext, useEffect, useState } from "react"
 import EntityContext from "store/entities/entity.context"
-import { DebtorAccount, DebtorEntity } from "store/entities/entity.interface"
+import { CreditorAccount, CreditorEntity } from "store/entities/entity.interface"
 
 interface Props {
   colour?: string
-  entity?: DebtorEntity | undefined
-  selectedEntity: number | undefined
+  entity?: CreditorEntity | undefined
+  selectedCreditorEntity: number | undefined
   showModal: boolean
   setModal: (value: boolean) => void
 }
 
-export function Modal(props: Props) {
+export function CreditorModal(props: Props) {
   const entityCtx = useContext(EntityContext)
-  const [customEntity, setCustomEntity] = useState<DebtorEntity | undefined>(undefined)
+  const [customEntity, setCustomEntity] = useState<CreditorEntity | undefined>(undefined)
   const [activeSection, setActiveSection] = useState<"Entity" | "Accounts">("Entity")
-  const [customAccounts, setCustomAccounts] = useState<DebtorAccount[]>([])
+  const [customAccounts, setCustomAccounts] = useState<CreditorAccount[]>([])
   const [errors, setErrors] = useState<{ [key: string]: string }>({});  
 
-  let modalProp = { modalTitle: "Update Debtor Entity" }
+  let modalProp = { modalTitle: "Update Creditor Entity" }
 
   function handleClick() {
     setCustomEntity(undefined)
@@ -25,44 +25,40 @@ export function Modal(props: Props) {
   }
 
   useEffect(() => {
-    console.log(customEntity)
-  }, [customEntity])
-
-  useEffect(() => {
     if (props.entity !== undefined) {
-      if (entityCtx.entities.length > 0 && typeof props.selectedEntity === "number") {
-        setCustomEntity(entityCtx.entities[props.selectedEntity]?.Entity)
-        setCustomAccounts(entityCtx.entities[props.selectedEntity]?.Accounts || [])
+      if (entityCtx.creditorEntities.length > 0 && typeof props.selectedCreditorEntity === "number") {
+        setCustomEntity(entityCtx.creditorEntities[props.selectedCreditorEntity]?.CreditorEntity)
+        setCustomAccounts(entityCtx.creditorEntities[props.selectedCreditorEntity]?.CreditorAccounts || [])
       }
     }
   }, [props.entity])
 
-  const accounts = typeof props.selectedEntity === "number" ? entityCtx.entities[props.selectedEntity]?.Accounts : []
+  const accounts = typeof props.selectedCreditorEntity === "number" ? entityCtx.creditorEntities[props.selectedCreditorEntity]?.CreditorAccounts : []
   const accountDetails = accounts ? accounts.map((account: any) => account) : []
 
-  const handleAccountChange = (index: number, updatedAccount: DebtorAccount) => {
-    const updatedAccounts = [...customAccounts]
-    updatedAccounts[index] = updatedAccount
-    setCustomAccounts(updatedAccounts)
+  const handleCreditorAccountChange = (index: number, updatedAccount: CreditorAccount) => {
+    const updatedCreditorAccounts = [...customAccounts]
+    updatedCreditorAccounts[index] = updatedAccount
+    setCustomAccounts(updatedCreditorAccounts)
   }
 
   // Validate Form
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
     // Entity
-    if (!customEntity?.Dbtr.Nm) newErrors.Nm = "Full Name is required";
-    if (!customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt) newErrors.BirthDt = "Birth Date is required";
-    if (!customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.CityOfBirth) newErrors.CityOfBirth = "City of Birth is required";
-    if (!customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.CtryOfBirth) newErrors.CtryOfBirth = "Country of Birth is required";
-    if (!customEntity?.Dbtr.Id.PrvtId.Othr[0].Id) newErrors.Id = "ID number is required";
-    if (!customEntity?.Dbtr.CtctDtls.MobNb) {
+    if (!customEntity?.Cdtr.Nm) newErrors.Nm = "Full Name is required";
+    if (!customEntity?.Cdtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt) newErrors.BirthDt = "Birth Date is required";
+    if (!customEntity?.Cdtr.Id.PrvtId.DtAndPlcOfBirth.CityOfBirth) newErrors.CityOfBirth = "City of Birth is required";
+    if (!customEntity?.Cdtr.Id.PrvtId.DtAndPlcOfBirth.CtryOfBirth) newErrors.CtryOfBirth = "Country of Birth is required";
+    if (!customEntity?.Cdtr.Id.PrvtId.Othr[0].Id) newErrors.Id = "ID number is required";
+    if (!customEntity?.Cdtr.CtctDtls.MobNb) {
       newErrors.MobNb = "Mobile number is required";
-    } else if (!/^\+[0-9]{1,3}-[0-9()+\-]{1,30}$/.test(customEntity.Dbtr.CtctDtls.MobNb)) {
+    } else if (!/^\+[0-9]{1,3}-[0-9()+\-]{1,30}$/.test(customEntity.Cdtr.CtctDtls.MobNb)) {
       newErrors.MobNb = "Invalid mobile number format";
     }
     // Accounts
     customAccounts.forEach((account, index) => {
-      if (!account.DbtrAcct.Nm) newErrors[`accountName-${index}`] = "Account Name is required";
+      if (!account.CdtrAcct.Nm) newErrors[`accountName-${index}`] = "Account Name is required";
     });
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -74,13 +70,13 @@ export function Modal(props: Props) {
   const maxDate = new Date(today.getFullYear() - 20, today.getMonth(), today.getDate()).toISOString().split('T')[0];
 
   const handleSectionChange = (section: "Entity" | "Accounts") => {
-    if (typeof props.selectedEntity === "number" && props.entity) {
+    if (typeof props.selectedCreditorEntity === "number" && props.entity) {
       if (section === "Entity") {
         // Reset customEntity to the initial value
-        setCustomEntity(entityCtx.entities[props.selectedEntity]?.Entity);
+        setCustomEntity(entityCtx.creditorEntities[props.selectedCreditorEntity]?.CreditorEntity);
       } else if (section === "Accounts") {
         // Reset customAccounts to the initial value
-        setCustomAccounts(entityCtx.entities[props.selectedEntity]?.Accounts || []);
+        setCustomAccounts(entityCtx.creditorEntities[props.selectedCreditorEntity]?.CreditorAccounts || []);
       }
     }
     setActiveSection(section);
@@ -121,15 +117,15 @@ export function Modal(props: Props) {
                         type="text"
                         id="modal-Nm"
                         className="w-full"
-                        defaultValue={props.entity?.Dbtr.Nm}
-                        value={customEntity?.Dbtr.Nm}
+                        defaultValue={props.entity?.Cdtr.Nm}
+                        value={customEntity?.Cdtr.Nm}
                         maxLength={140}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
                           setCustomEntity({
                           ...customEntity,
-                          Dbtr: {
-                          ...customEntity.Dbtr,
+                          Cdtr: {
+                          ...customEntity.Cdtr,
                           Nm: e.target.value,
                           },});}}}
                       />
@@ -141,22 +137,22 @@ export function Modal(props: Props) {
                         type="date"
                         id="modal-BirthDt"
                         className="w-full"
-                        defaultValue={props.entity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt}
-                        value={customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt}
+                        defaultValue={props.entity?.Cdtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt}
+                        value={customEntity?.Cdtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt}
                         min={minDate}
                         max={maxDate}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
                           setCustomEntity({
                           ...customEntity,
-                          Dbtr: {
-                          ...customEntity?.Dbtr,
-                          ...customEntity?.Dbtr.Id,
+                          Cdtr: {
+                          ...customEntity?.Cdtr,
+                          ...customEntity?.Cdtr.Id,
                           Id: {
                           PrvtId: {
-                          ...customEntity?.Dbtr.Id.PrvtId,
+                          ...customEntity?.Cdtr.Id.PrvtId,
                           DtAndPlcOfBirth: {
-                          ...customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth,
+                          ...customEntity?.Cdtr.Id.PrvtId.DtAndPlcOfBirth,
                           BirthDt: e.target.value,
                           },},},},});}}}
                       />
@@ -168,20 +164,20 @@ export function Modal(props: Props) {
                         type="text"
                         id="modal-CityOfBirth"
                         className="w-full"
-                        defaultValue={props.entity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.CityOfBirth}
-                        value={customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.CityOfBirth}
+                        defaultValue={props.entity?.Cdtr.Id.PrvtId.DtAndPlcOfBirth.CityOfBirth}
+                        value={customEntity?.Cdtr.Id.PrvtId.DtAndPlcOfBirth.CityOfBirth}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
                           setCustomEntity({
                           ...customEntity,
-                          Dbtr: {
-                          ...customEntity.Dbtr,
-                          ...customEntity.Dbtr.Id,
+                          Cdtr: {
+                          ...customEntity.Cdtr,
+                          ...customEntity.Cdtr.Id,
                           Id: {
                           PrvtId: {
-                          ...customEntity.Dbtr.Id.PrvtId,
+                          ...customEntity.Cdtr.Id.PrvtId,
                           DtAndPlcOfBirth: {
-                          ...customEntity.Dbtr.Id.PrvtId.DtAndPlcOfBirth,
+                          ...customEntity.Cdtr.Id.PrvtId.DtAndPlcOfBirth,
                           CityOfBirth: e.target.value,
                           },},},},});}}}
                       />
@@ -193,20 +189,20 @@ export function Modal(props: Props) {
                         type="text"
                         id="modal-CtryOfBirth"
                         className="w-full"
-                        defaultValue={props.entity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.CtryOfBirth}
-                        value={customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.CtryOfBirth}
+                        defaultValue={props.entity?.Cdtr.Id.PrvtId.DtAndPlcOfBirth.CtryOfBirth}
+                        value={customEntity?.Cdtr.Id.PrvtId.DtAndPlcOfBirth.CtryOfBirth}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
                           setCustomEntity({
                           ...customEntity,
-                          Dbtr: {
-                          ...customEntity.Dbtr,
-                          ...customEntity.Dbtr.Id,
+                          Cdtr: {
+                          ...customEntity.Cdtr,
+                          ...customEntity.Cdtr.Id,
                           Id: {
                           PrvtId: {
-                          ...customEntity.Dbtr.Id.PrvtId,
+                          ...customEntity.Cdtr.Id.PrvtId,
                           DtAndPlcOfBirth: {
-                          ...customEntity.Dbtr.Id.PrvtId.DtAndPlcOfBirth,
+                          ...customEntity.Cdtr.Id.PrvtId.DtAndPlcOfBirth,
                           CtryOfBirth: e.target.value,
                           },},},},});}}}
                       />
@@ -216,22 +212,22 @@ export function Modal(props: Props) {
                       <label htmlFor="modal-ID">ID number</label>
                       <input
                         className="w-full"
-                        defaultValue={props.entity?.Dbtr.Id.PrvtId.Othr[0].Id}
-                        value={customEntity?.Dbtr.Id.PrvtId.Othr[0].Id}
+                        defaultValue={props.entity?.Cdtr.Id.PrvtId.Othr[0].Id}
+                        value={customEntity?.Cdtr.Id.PrvtId.Othr[0].Id}
                         id="modal-ID"
                         maxLength={35}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
                           setCustomEntity({
                           ...customEntity,
-                          Dbtr: {
-                          ...customEntity.Dbtr,
-                          ...customEntity.Dbtr.Id,
+                          Cdtr: {
+                          ...customEntity.Cdtr,
+                          ...customEntity.Cdtr.Id,
                           Id: {
                           PrvtId: {
-                          ...customEntity.Dbtr.Id.PrvtId,
+                          ...customEntity.Cdtr.Id.PrvtId,
                           Othr: {
-                          ...customEntity.Dbtr.Id.PrvtId.Othr[0],
+                          ...customEntity.Cdtr.Id.PrvtId.Othr[0],
                           Id: e.target.value,
                           },},},},});}}}
                         readOnly
@@ -245,16 +241,16 @@ export function Modal(props: Props) {
                         type="text"
                         id="modal-MobNb"
                         className="w-full"
-                        defaultValue={props.entity?.Dbtr.CtctDtls.MobNb}
-                        value={customEntity?.Dbtr.CtctDtls.MobNb}
+                        defaultValue={props.entity?.Cdtr.CtctDtls.MobNb}
+                        value={customEntity?.Cdtr.CtctDtls.MobNb}
                         maxLength={35}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
                           setCustomEntity({
                           ...customEntity,
-                          Dbtr: {
-                          ...customEntity.Dbtr,
-                          ...customEntity.Dbtr.CtctDtls,
+                          Cdtr: {
+                          ...customEntity.Cdtr,
+                          ...customEntity.Cdtr.CtctDtls,
                           CtctDtls: {
                           MobNb: e.target.value,
                           },},});}}}
@@ -266,10 +262,10 @@ export function Modal(props: Props) {
                 <div className="flex">
                   <button type="button" className="m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)] hover:shadow-inner"
                     onClick={async () => {
-                      if (customEntity !== undefined && typeof props.selectedEntity === "number") {
+                      if (customEntity !== undefined && typeof props.selectedCreditorEntity === "number") {
                       if (validateForm()) {
-                      console.log("HIT");
-                      await entityCtx.updateEntity(customEntity, props.selectedEntity);
+                
+                      await entityCtx.updateCreditorEntity(customEntity, props.selectedCreditorEntity);
                       handleClick();
                     }}}}
                   >Save</button>
@@ -296,13 +292,13 @@ export function Modal(props: Props) {
                               type="text"
                               id={`modal-Account-Number-${index}`}
                               className="w-full rounded-lg bg-gray-200 p-2 shadow-inner"
-                              value={accountDetail.DbtrAcct.Nm}
+                              value={accountDetail.CdtrAcct.Nm}
                               maxLength={35}
                               onChange={(e) => {
-                                handleAccountChange(index, {
+                                handleCreditorAccountChange(index, {
                                 ...accountDetail,
-                                DbtrAcct: {
-                                ...accountDetail.DbtrAcct,
+                                CdtrAcct: {
+                                ...accountDetail.CdtrAcct,
                                 Nm: e.target.value,
                                 },})}}
                             />
@@ -310,11 +306,11 @@ export function Modal(props: Props) {
                           </div>
                           <div>
                             <label htmlFor={`modal-Account-ID-${index}`}>ID number</label>
-                            <input type="text" id={`modal-Account-ID-${index}`} className="w-full rounded-lg bg-gray-200 p-2 shadow-inner" defaultValue={props.entity?.Dbtr.Id.PrvtId.Othr[0]?.Id} value={accountDetail.DbtrAcct.Id.Othr[0]?.Id} readOnly />
+                            <input type="text" id={`modal-Account-ID-${index}`} className="w-full rounded-lg bg-gray-200 p-2 shadow-inner" defaultValue={props.entity?.Cdtr.Id.PrvtId.Othr[0]?.Id} value={accountDetail.CdtrAcct.Id.Othr[0]?.Id} readOnly />
                           </div>
                           <div>
                             <label htmlFor={`modal-Account-Prtry-${index}`}>Prtry</label>
-                            <input type="text" id={`modal-Account-Prtry-${index}`} className="w-full rounded-lg bg-gray-200 p-2 shadow-inner" defaultValue={props.entity?.Dbtr.Id.PrvtId.Othr[0]?.Id} value={accountDetail.DbtrAcct.Id.Othr[0]?.SchmeNm.Prtry} readOnly />
+                            <input type="text" id={`modal-Account-Prtry-${index}`} className="w-full rounded-lg bg-gray-200 p-2 shadow-inner" defaultValue={props.entity?.Cdtr.Id.PrvtId.Othr[0]?.Id} value={accountDetail.CdtrAcct.Id.Othr[0]?.SchmeNm.Prtry} readOnly />
                           </div>
                         </div>
                       </div>
@@ -324,9 +320,9 @@ export function Modal(props: Props) {
                 <div className="flex">
                   <button type="button" className="m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)] hover:shadow-inner"
                     onClick={async () => {
-                      if (props.selectedEntity !== undefined) {
+                      if (props.selectedCreditorEntity !== undefined) {
                       if (validateForm()) {
-                      await entityCtx.updateAccounts(customAccounts, props.selectedEntity)
+                      await entityCtx.updateCreditorAccounts(customAccounts, props.selectedCreditorEntity)
                       handleClick();
                     }}}}
                   >Save</button>

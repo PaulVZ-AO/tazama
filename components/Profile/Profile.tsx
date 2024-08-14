@@ -76,9 +76,7 @@ export const Profile = ({ ...props }: ProfileProps) => {
   if (props.reverse) {reverse = "flex-row-reverse text-right"}
 
   return (
-    <div
-      className={`mb-7 rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 px-3 py-1 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)] ${props.colour} flex w-full justify-between ${reverse}`}
-    >
+    <div className={`mb-7 rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 px-3 py-1 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)] ${props.colour} flex w-full justify-between ${reverse}`}>
       {/* Edit Button */}
       <button
         className="text-black"
@@ -126,7 +124,6 @@ export const Profile = ({ ...props }: ProfileProps) => {
             props.setSelectedEntity(props.index)
             await entityCtx.createEntity()
             await entityCtx.selectDebtorEntity(props.index, 0)
-
             await entityCtx.setDebtorPacs008(props.selectedEntity)
           } else if (props.entity) {
             await entityCtx.resetEntity(props.selectedEntity)
