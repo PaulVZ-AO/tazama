@@ -132,19 +132,19 @@ const EntityReducer = (state: any, action: any) => {
       return {
         ...state,
         updateCreditorAccountsLoading: true,
-        entities: [],
+        creditorEntities: [],
       }
     case ACTIONS.UPDATE_CREDITOR_ACCOUNTS_SUCCESS:
       return {
         ...state,
         updateCreditorAccountsLoading: false,
-        entities: action.payload,
+        creditorEntities: action.payload,
       }
     case ACTIONS.UPDATE_CREDITOR_ACCOUNTS_FAIL:
       return {
         ...state,
         updateCreditorAccountsLoading: false,
-        entities: [],
+        creditorEntities: [],
       }
 
     case ACTIONS.CREATE_CREDITOR_ENTITY_LOADING:
