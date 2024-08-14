@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react"
 import EntityContext from "store/entities/entity.context"
 
 interface DeviceProps {
-  selectedEntity: number
+  selectedDebtorEntity: number
   isDebtor?: boolean
 }
 
@@ -15,13 +15,13 @@ export function DeviceInfo(props: DeviceProps) {
 
   const creditorAccountIndex = entityCtx.selectedCreditorEntity.creditorAccountSelectedIndex
 
-  const entity = entityCtx.entities[props.selectedEntity]
+  const entity = entityCtx.entities[props.selectedDebtorEntity]
 
   const entities = entityCtx.entities
 
   const creditorEntities = entityCtx.creditorEntities
 
-  const creditorEntity = entityCtx.creditorEntities[props.selectedEntity]
+  const creditorEntity = entityCtx.creditorEntities[entityCtx.selectedCreditorEntity.creditorSelectedIndex!]
 
   // const pacs008Data = entityCtx.pacs008?.FIToFICstmrCdtTrf
   const pacs002Data = entityCtx.pacs002.FIToFIPmtSts
@@ -38,11 +38,11 @@ export function DeviceInfo(props: DeviceProps) {
 
   useEffect(() => {
     setIsTransaction(false)
-  }, [props.selectedEntity])
+  }, [props.selectedDebtorEntity])
 
   let fillColour
 
-  switch (props.selectedEntity) {
+  switch (props.selectedDebtorEntity) {
     case 0: {
       fillColour = "text-blue-500"
       break

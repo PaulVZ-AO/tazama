@@ -699,6 +699,8 @@ const EntityProvider = ({ children }: Props) => {
       dispatch({ type: ACTIONS.GENERATE_TRANSACTION_PACS008_LOADING })
       const setPacs008: PACS008 = state.pacs008
 
+      setPacs008.FIToFICstmrCdtTrf.GrpHdr.MsgId = crypto.randomUUID().replaceAll("-", "")
+      setPacs008.FIToFICstmrCdtTrf.GrpHdr.CreDtTm = new Date().toISOString()
       // Set Random Details
       setPacs008.FIToFICstmrCdtTrf.RmtInf.Ustrd = crypto.randomUUID().replaceAll("-", "")
       setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt = RandomNumbers()
@@ -706,8 +708,11 @@ const EntityProvider = ({ children }: Props) => {
         setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt
       setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.InstrId = crypto.randomUUID().replaceAll("-", "")
       setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.EndToEndId = crypto.randomUUID().replaceAll("-", "")
+
+      await buildPacs002()
+
       dispatch({ type: ACTIONS.GENERATE_TRANSACTION_PACS008_SUCCESS, payload: setPacs008 })
-      console.log("PACS008: ", setPacs008)
+      console.log("PACS008 NEW GENERATED: ", setPacs008)
       localStorage.setItem("PACS008", JSON.stringify(state.pacs008))
     } catch (error) {
       dispatch({ type: ACTIONS.GENERATE_TRANSACTION_PACS008_FAIL })

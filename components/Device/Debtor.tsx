@@ -14,11 +14,21 @@ interface LightsManager {
   ED: EDLights
 }
 
+interface TadProcLightsManager {
+  TADPROC: {
+    result: any
+    color: "r" | "g" | "y" | "n"
+    stop: boolean
+    status: string
+  }
+}
+
 interface DebtorProps {
   selectedEntity: number
   isDebtor?: boolean
   lights: LightsManager
   setLights: (data: LightsManager) => void
+  resetAllLights: () => void
   resetLights: (data: boolean) => void
   setStarted: (data: boolean) => void
 }
@@ -43,7 +53,7 @@ export function DebtorDevice(props: DebtorProps) {
           pacs002: true,
           color: "g",
         }
-        let newData: LightsManager = {
+        let newData: any = {
           ED: data,
         }
         props.setLights(newData)
@@ -111,7 +121,7 @@ export function DebtorDevice(props: DebtorProps) {
     } catch (error: any) {
       const errMsg: any = JSON.parse(error.response.data.split("\n").slice(1).join("\n"))
       console.log(JSON.parse(error.response.data.split("\n").slice(1).join("\n")))
-      let data: EDLights = {
+      let data: any = {
         pacs008: props.lights.ED.pacs008,
         pacs002: false,
         color: "r",
@@ -141,7 +151,7 @@ export function DebtorDevice(props: DebtorProps) {
       <div className="absolute inset-x-0 mx-auto break-words" style={{ width: "222px", top: "15px" }}>
         <TimeComponent />
 
-        <DeviceInfo selectedEntity={props.selectedEntity} isDebtor={props.isDebtor} />
+        <DeviceInfo selectedDebtorEntity={props.selectedEntity} isDebtor={props.isDebtor} />
       </div>
 
       {props.isDebtor ? (
@@ -155,6 +165,7 @@ export function DebtorDevice(props: DebtorProps) {
             <button
               className="w-full rounded-lg border border-white p-1"
               onClick={async () => {
+                props.resetAllLights()
                 props.setLights({
                   ED: {
                     pacs008: false,

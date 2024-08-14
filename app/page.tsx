@@ -2,6 +2,7 @@
 
 import axios from "axios"
 import { useContext, useEffect, useState } from "react"
+import Image from "next/image"
 import io from "socket.io-client"
 import { DebtorDevice } from "components/Device/Debtor"
 import { Modal } from "components/Modal/Modal"
@@ -10,6 +11,8 @@ import { Profile } from "components/Profile/Profile"
 import { CreditorProfile } from "components/ProfileCreditor/ProfileCreditor"
 import { StatusIndicator } from "components/StatusIndicator/StatusIndicator"
 import EntityContext from "store/entities/entity.context"
+import ProcessorContext from "store/processors/processor.context"
+import { WS } from "./../utils/ws"
 import { getTADPROCResult } from "utils/db"
 
 interface LightsManager {
@@ -17,6 +20,15 @@ interface LightsManager {
     pacs008: boolean
     pacs002: boolean
     color: "r" | "g" | "y" | "n"
+  }
+}
+
+interface TadProcLightsManager {
+  TADPROC: {
+    result: any
+    color: "r" | "g" | "y" | "n"
+    stop: boolean
+    status: string
   }
 }
 
@@ -39,106 +51,180 @@ const defaultLights: LightsManager = {
   },
 }
 
+const defaultTadProcLights: TadProcLightsManager = {
+  TADPROC: {
+    result: null,
+    color: "n",
+    stop: false,
+    status: "NALT",
+  },
+}
+
+interface Rule {
+  id: number
+  title: string
+  color: "r" | "g" | "y" | "n"
+  result: any
+}
+
 const Web = () => {
-  const [rules, setRules] = useState<any[]>([])
+  // const [rules, setRules] = useState<Rule[]>([])
   const [types, setTypes] = useState<any[] | null>(null)
   const [descriptions, setDescriptions] = useState<any[] | null>(null)
   const [hoveredRule, setHoveredRule] = useState<any>(null)
   const [hoveredType, setHoveredType] = useState<any>(null)
   const [lights, setLights] = useState<LightsManager>(defaultLights)
+  // const [tadpLights, setTadpLights] = useState<TadProcLightsManager>(defaultTadProcLights)
   const [ruleLights, setRuleLights] = useState<boolean>(true)
   const [showModal, setModal] = useState(false)
   const [started, setStarted] = useState(false)
   const entityCtx = useContext(EntityContext)
+  const procCtx = useContext(ProcessorContext)
 
   useEffect(() => {
     console.log("LIGHTS: ", started)
   }, [started])
 
-  useEffect(() => {
-    const socket = io()
+  // useEffect(() => {
+  //   console.log("SOMETHING CHANGED", tadpLights)
+  // }, [tadpLights])
 
-    socket.on("connection", (msg) => {
-      console.log("Connected to WebSocket server", msg)
-    })
-    socket.emit("subscriptions", { subscriptions: ["connection", ">", "typology-999@1.0.0", "cms"] })
+  // const WS = async () => {
+  //   const socket = io()
 
-    socket.on("welcome", (msg) => {
-      console.log("Received Message from the welcome: ", msg)
-      socket.emit("confirmation", msg)
-    })
-    socket.on("ruleRequest", async (msg) => {
-      console.log("Received Message from the RULE REQUEST: ", msg)
-    })
+  //   socket.on("connection", (msg) => {
+  //     console.log("Connected to WebSocket server", msg)
+  //   })
+  //   socket.emit("subscriptions", { subscriptions: ["connection", ">", "typology-999@1.0.0", "cms"] })
 
-    socket.on("ruleResponse", async (msg) => {
-      console.log("Received Message from the RULE RESPONSE: ", msg)
-      console.log("RULE: ", msg.ruleResult.id.split("@")[0], msg.ruleResult.subRuleRef)
+  //   socket.on("welcome", (msg) => {
+  //     console.log("Received Message from the welcome: ", msg)
+  //     socket.emit("confirmation", msg)
+  //   })
+  //   socket.on("ruleRequest", async (msg) => {
+  //     console.log("Received Message from the RULE REQUEST: ", msg)
+  //   })
 
-      const index = rules.findIndex((r) => r.title === msg.ruleResult.id.split("@")[0])
-      console.log("RULE_LIGHTS", rules, index)
-      const updatedRules = [...rules]
-      updatedRules[index].result = msg.ruleResult.subRuleRef
-      if (msg.ruleResult.subRuleRef === ".01") {
-        updatedRules[index].color = "g"
-      }
-      if (msg.ruleResult.subRuleRef === ".02") {
-        updatedRules[index].color = "y"
-      }
-      if (msg.ruleResult.subRuleRef === ".03") {
-        updatedRules[index].color = "r"
-      }
-      setRules(updatedRules)
+  //   socket.on("ruleResponse", async (msg) => {
+  //     console.log("Received Message from the RULE RESPONSE: ", msg)
+  //     // console.log("RULE: ", msg.ruleResult.id.split("@")[0], msg.ruleResult.subRuleRef)
 
-      if (msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId !== undefined) {
-        const results = await getTADPROCResult(msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId)
-        console.log("RESULT", results)
-      }
-    })
+  //     // const index = rules.findIndex((r) => r.title === msg.ruleResult.id.split("@")[0])
+  //     // console.log("RULE_LIGHTS", rules, index)
+  //     // const updatedRules = [...rules]
+  //     // updatedRules[index].result = msg.ruleResult.subRuleRef
+  //     // if (msg.ruleResult.subRuleRef === ".01") {
+  //     //   updatedRules[index].color = "g"
+  //     // }
+  //     // if (msg.ruleResult.subRuleRef === ".02") {
+  //     //   updatedRules[index].color = "y"
+  //     // }
+  //     // if (msg.ruleResult.subRuleRef === ".03") {
+  //     //   updatedRules[index].color = "r"
+  //     // }
+  //     // setRules(updatedRules)
+  //     await handleRuleMessage(msg, rules)
 
-    socket.on("typoRequest", async (msg) => {
-      console.log("Received Message from the TYPO REQUEST: ", msg)
-    })
+  //     if (msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId !== undefined) {
+  //       const results: any = await getTADPROCResult(msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId)
+  //       setTadpLights(results)
+  //     }
+  //   })
 
-    socket.on("typoResponse", async (msg) => {
-      console.log("Received Message from the TYPO RESPONSE: ", msg)
-      if (msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId !== undefined) {
-        const results = await getTADPROCResult(msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId)
-        console.log("RESULT", results)
-      }
-    })
+  //   socket.on("typoRequest", async (msg) => {
+  //     console.log("Received Message from the TYPO REQUEST: ", msg)
+  //   })
 
-    socket.on("typoRequest", async (msg) => {
-      console.log("Received Message from the TYPO REQUEST: ", msg)
-    })
+  //   socket.on("typoResponse", async (msg) => {
+  //     console.log("Received Message from the TYPO RESPONSE: ", msg)
+  //     console.log("TYPOLOGY: ", msg.typologyResult.cfg.split("@")[0], msg.typologyResult.result)
+  //   })
 
-    socket.on("tadProc", async (msg) => {
-      console.log("Received Message from the TADPROC: ", msg)
-    })
+  //   socket.on("stream", async (msg) => {
+  //     console.log("Received Message from the Stream: ", msg)
+  //   })
+  //   socket.on("subscriptions", (msg) => {
+  //     console.log(msg)
+  //   })
+  //   socket.onAny((event, ...args) => {
+  //     console.log(`got ${event}`)
+  //   })
 
-    socket.on("stream", async (msg) => {
-      console.log("Received Message from the Stream: ", msg)
-      // Object.keys(msg).forEach(async (key) => {
-      // if (key === "typologyResult" || key === "ruleResult") {
-      //   console.log("MSG_ID: ", msg.transaction.FIToFIPmtSts.GrpHdr.MsgId)
-      if (msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId !== undefined) {
-        const results = await getTADPROCResult(msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId)
-        console.log("RESULT", results)
-      }
-      //   }
-      // })
-    })
-    socket.on("subscriptions", (msg) => {
-      console.log(msg)
-    })
-    socket.onAny((event, ...args) => {
-      console.log(`got ${event}`)
-    })
+  //   return () => {
+  //     socket.disconnect()
+  //   }
+  // }
 
-    return () => {
-      socket.disconnect()
-    }
-  }, [rules])
+  // useEffect(() => {
+  //   WS()
+  // }, [])
+
+  // useEffect(() => {
+  //   const socket = io()
+
+  //   socket.on("connection", (msg) => {
+  //     console.log("Connected to WebSocket server", msg)
+  //   })
+  //   socket.emit("subscriptions", { subscriptions: ["connection", ">", "typology-999@1.0.0", "cms"] })
+
+  //   socket.on("welcome", (msg) => {
+  //     console.log("Received Message from the welcome: ", msg)
+  //     socket.emit("confirmation", msg)
+  //   })
+  //   socket.on("ruleRequest", async (msg) => {
+  //     console.log("Received Message from the RULE REQUEST: ", msg)
+  //   })
+
+  //   socket.on("ruleResponse", async (msg) => {
+  //     console.log("Received Message from the RULE RESPONSE: ", msg)
+  //     // console.log("RULE: ", msg.ruleResult.id.split("@")[0], msg.ruleResult.subRuleRef)
+
+  //     // const index = rules.findIndex((r) => r.title === msg.ruleResult.id.split("@")[0])
+  //     // console.log("RULE_LIGHTS", rules, index)
+  //     // const updatedRules = [...rules]
+  //     // updatedRules[index].result = msg.ruleResult.subRuleRef
+  //     // if (msg.ruleResult.subRuleRef === ".01") {
+  //     //   updatedRules[index].color = "g"
+  //     // }
+  //     // if (msg.ruleResult.subRuleRef === ".02") {
+  //     //   updatedRules[index].color = "y"
+  //     // }
+  //     // if (msg.ruleResult.subRuleRef === ".03") {
+  //     //   updatedRules[index].color = "r"
+  //     // }
+  //     // setRules(updatedRules)
+  //     await handleRuleMessage(msg, rules)
+
+  //     if (msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId !== undefined) {
+  //       const results: any = await getTADPROCResult(msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId)
+  //       setTadpLights(results)
+  //     }
+  //   })
+
+  //   socket.on("typoRequest", async (msg) => {
+  //     console.log("Received Message from the TYPO REQUEST: ", msg)
+  //   })
+
+  //   socket.on("typoResponse", async (msg) => {
+  //     console.log("Received Message from the TYPO RESPONSE: ", msg)
+  //     console.log("TYPOLOGY: ", msg.typologyResult.cfg.split("@")[0], msg.typologyResult.result)
+  //   })
+
+  //   socket.on("stream", async (msg) => {
+  //     console.log("Received Message from the Stream: ", msg)
+  //   })
+  //   socket.on("subscriptions", (msg) => {
+  //     console.log(msg)
+  //   })
+  //   socket.onAny((event, ...args) => {
+  //     console.log(`got ${event}`)
+  //   })
+
+  //   return () => {
+  //     socket.disconnect()
+  //   }
+  // }, [])
+  // }, [rules, tadpLights])
 
   const handleRuleMouseEnter = (type: any) => {
     setHoveredType(null) // fallback if stats is stuck
@@ -233,7 +319,7 @@ const Web = () => {
         <div className="p-5">
           <div className="mb-2 p-2 text-center">
             {hoveredRule?.title} {/* {hoveredRule.title} {hoveredRule && hoveredRule.r ? hoveredRule.r : ""}= */}
-            {hoveredRule ? (hoveredRule.color === "g" ? "= True" : "= False") : ""}
+            {hoveredRule ? (hoveredRule.color === "g" ? "= False" : "= True") : ""}
           </div>
           <hr className="mb-2 border-black" />
           <div className="mb-2 p-2 text-center">
@@ -315,30 +401,21 @@ const Web = () => {
     setSelectedCreditorEntity(entityCtx.selectedCreditorEntity.creditorSelectedIndex || 0)
   }, [entityCtx.selectedCreditorEntity.creditorSelectedIndex])
 
-  useEffect(() => {
-    if (ruleLights) {
-      axios
-        .get("api/rules")
-        .then((response) => {
-          let array: any = []
-          setRules(response.data.rules.rule)
-          // response.data.rules.rule.forEach((rule: any) => {
-          //   let newRules: RuleLight = { id: rule.id, color: "n", title: rule.title, result: null }
-          //   console.log("CREATING RULE: ", newRules.title)
-          //   array.push(newRules)
-          // })
-          // if (array.length > 0) {
-          //   setRuleLights({ lights: array })
-          // }
-          setLoading(false)
-          setRuleLights(false)
-        })
-        .catch((error) => {
-          setError(error)
-          setLoading(false)
-        })
-    }
-  }, [ruleLights])
+  // useEffect(() => {
+  //   if (ruleLights) {
+  //     axios
+  //       .get("api/rules")
+  //       .then((response) => {
+  //         setRules(response.data.rules.rule)
+  //         setLoading(false)
+  //         setRuleLights(false)
+  //       })
+  //       .catch((error) => {
+  //         setError(error)
+  //         setLoading(false)
+  //       })
+  //   }
+  // }, [ruleLights])
 
   useEffect(() => {
     axios
@@ -469,6 +546,8 @@ const Web = () => {
                 setLights={setLights}
                 resetLights={setRuleLights}
                 setStarted={setStarted}
+                // resetAllLights={() => setTadpLights(defaultTadProcLights)}
+                resetAllLights={() => procCtx.resetAllLights()}
               />
             </div>
             <div className="col-span-4 flex items-center justify-between px-5">
@@ -482,6 +561,8 @@ const Web = () => {
                 setLights={setLights}
                 resetLights={setRuleLights}
                 setStarted={setStarted}
+                // resetAllLights={() => setTadpLights(defaultTadProcLights)}
+                resetAllLights={() => procCtx.resetAllLights()}
               />
               {/* <Image src="/device.svg" height="200" width="200" className="text-center" alt="" priority={true} /> */}
             </div>
@@ -648,26 +729,35 @@ const Web = () => {
           <div className="grid grid-cols-12">
             <div className="col-span-6">
               <div className="grid grid-cols-3 px-5">
-                {rules?.map((rule: any) => (
-                  <div
-                    className={`mb-1 flex rounded-md px-2 hover:bg-gray-200 hover:shadow`}
-                    key={`r-${rule.id}`}
-                    onMouseEnter={() => {
-                      handleRuleMouseEnter(rule)
-                      console.log(rule)
-                    }}
-                    onMouseLeave={() => {
-                      handleRuleMouseLeave()
-                      console.log(rule)
-                    }}
-                  >
-                    <StatusIndicator colour={rule.color} /> &nbsp;
-                    {rule.title}
-                  </div>
-                ))}
+                {procCtx.rulesLoading ? (
+                  <p className="mb-5 w-80 rounded-t-lg py-5 text-center">Loading</p>
+                ) : (
+                  procCtx.rules?.map((rule: any) => (
+                    <div
+                      className={`mb-1 flex rounded-md px-2 hover:bg-gray-200 hover:shadow`}
+                      key={`r-${rule.id}`}
+                      onMouseEnter={() => {
+                        handleRuleMouseEnter(rule)
+                        console.log(rule)
+                      }}
+                      onClick={() => {
+                        handleRuleMouseLeave()
+                        console.log(rule)
+                      }}
+                    >
+                      <StatusIndicator colour={rule.color} /> &nbsp;
+                      {rule.title}
+                    </div>
+                  ))
+                )}
               </div>
             </div>
-            <div className="col-span-6 px-5">
+            <div
+              className="col-span-6 px-5"
+              onClick={() => {
+                handleRuleMouseLeave()
+              }}
+            >
               <RuleResult />
             </div>
           </div>
@@ -704,11 +794,28 @@ const Web = () => {
           </h2>
 
           <div className="flex min-h-80 items-center justify-center">
-            <StatusIndicator large={true} />
+            <StatusIndicator large={true} colour={procCtx.tadpLights.TADPROC.color} />
           </div>
         </div>
       </div>
-      <div className="flex min-h-80 w-full items-center justify-center"></div>
+      {procCtx.tadpLights.TADPROC.stop && (
+        <Image
+          src="/stop.png"
+          width="250"
+          height="250"
+          className="absolute inset-x-0 inset-y-0 mx-auto my-auto"
+          style={{
+            position: "absolute",
+            top: -355,
+            right: `${window.innerWidth / 2}`,
+            zIndex: 1,
+            maxWidth: "250px",
+            minWidth: "250px",
+          }}
+          alt="stop"
+          priority={true}
+        />
+      )}
 
       {showModal && (
         <Modal
