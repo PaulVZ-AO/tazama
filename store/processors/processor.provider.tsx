@@ -3,8 +3,13 @@ import React, { ReactNode, useEffect, useReducer, useContext } from "react"
 import { io } from "socket.io-client"
 import { ACTIONS } from "./processor.actions"
 import ProcessorContext from "./processor.context"
-import { ruleInitialState, defaultTadProcLights } from "./processor.initialState"
-import { Rule, TadProcLightsManager } from "./processor.interface"
+import {
+  ruleInitialState,
+  defaultEDLights,
+  defaultTadProcLights,
+  typologiesInitialState,
+} from "./processor.initialState"
+import { EDLightsManager, Rule, TadProcLightsManager, Typology } from "./processor.interface"
 import ProcessorReducer from "./processor.reducer"
 import axios, { AxiosResponse } from "axios"
 import { getTADPROCResult } from "utils/db"
@@ -17,6 +22,10 @@ const ProcessorProvider = ({ children }: Props) => {
   const initialProcessorState = {
     rulesLoading: false,
     tadprocLoading: false,
+    edLightsLoading: false,
+    typologiesLoading: false,
+    typologies: typologiesInitialState,
+    edLights: defaultEDLights,
     rules: ruleInitialState,
     tadpLights: defaultTadProcLights,
   }
@@ -24,6 +33,7 @@ const ProcessorProvider = ({ children }: Props) => {
 
   useEffect(() => {
     createRules()
+    createTypologies()
   }, [])
 
   useEffect(() => {
@@ -53,7 +63,7 @@ const ProcessorProvider = ({ children }: Props) => {
 
     socket.on("typoResponse", async (msg) => {
       console.log("Received Message from the TYPO RESPONSE: ", msg)
-      console.log("TYPOLOGY: ", msg.typologyResult.cfg.split("@")[0], msg.typologyResult.result)
+      await updateTypologies(msg)
     })
 
     socket.on("stream", async (msg) => {
@@ -81,6 +91,18 @@ const ProcessorProvider = ({ children }: Props) => {
       console.error(error.message)
     }
   }
+
+  const createTypologies = async () => {
+    try {
+      dispatch({ type: ACTIONS.CREATE_TYPO_LOADING })
+      const res: AxiosResponse = await axios.get("api/typologies")
+      dispatch({ type: ACTIONS.CREATE_TYPO_SUCCESS, payload: res.data.types.type })
+    } catch (error: any) {
+      dispatch({ type: ACTIONS.CREATE_TYPO_FAIL })
+      console.error(error.message)
+    }
+  }
+
   const updateRules = async (msg: any) => {
     try {
       dispatch({ type: ACTIONS.UPDATE_RULES_LOADING })
@@ -115,12 +137,62 @@ const ProcessorProvider = ({ children }: Props) => {
     }
   }
 
+  const updateTypologies = async (msg: any) => {
+    try {
+      dispatch({ type: ACTIONS.UPDATE_TYPO_LOADING })
+      console.log("TYPOLOGY: ", msg.typologyResult.cfg.split("@")[0], msg.typologyResult.result)
+      const index: number = state.typologies.findIndex(
+        (r: Typology) => r.title === msg.typologyResult.cfg.split("@")[0]
+      )
+
+      const updatedTypo: any[] = [...state.typologies]
+
+      updatedTypo[index].result = msg.typologyResult.result
+
+      // FIX THIS LOGIC AS PER DOCUMENTATION
+
+      let interThreshold = msg.typologyResult.workflow.interdictionThreshold
+      let alertThreshold = msg.typologyResult.workflow.alertThreshold
+
+      if (msg.typologyResult.result >= alertThreshold) {
+        updatedTypo[index].color = "r"
+      }
+
+      if (msg.typologyResult.result >= alertThreshold && msg.typologyResult.result < interThreshold) {
+        updatedTypo[index].color = "y"
+      }
+
+      if (msg.typologyResult.result < alertThreshold) {
+        updatedTypo[index].color = "g"
+      }
+
+      dispatch({ type: ACTIONS.UPDATE_TYPO_SUCCESS, payload: updatedTypo })
+      if (msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId !== undefined) {
+        const results: any = await getTADPROCResult(msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId)
+        console.log(results)
+        updateTadpLights(results)
+      }
+    } catch (error: any) {
+      dispatch({ type: ACTIONS.UPDATE_TYPO_FAIL })
+      console.error(error.message)
+    }
+  }
+
   const updateTadpLights = async (data: TadProcLightsManager) => {
     try {
       dispatch({ type: ACTIONS.UPDATE_TADPROC_LOADING })
       dispatch({ type: ACTIONS.UPDATE_TADPROC_SUCCESS, payload: data })
     } catch (error) {
       dispatch({ type: ACTIONS.UPDATE_TADPROC_FAIL })
+    }
+  }
+
+  const updateEDLights = async (data: EDLightsManager) => {
+    try {
+      dispatch({ type: ACTIONS.UPDATE_ED_LOADING })
+      dispatch({ type: ACTIONS.UPDATE_ED_SUCCESS, payload: data })
+    } catch (error) {
+      dispatch({ type: ACTIONS.UPDATE_ED_FAIL })
     }
   }
 
@@ -133,11 +205,18 @@ const ProcessorProvider = ({ children }: Props) => {
       value={{
         rulesLoading: false,
         tadprocLoading: false,
+        edLightsLoading: false,
+        typologyLoading: false,
+        typologies: state.typologies,
+        edLights: state.edLights,
         rules: state.rules,
         tadpLights: state.tadpLights,
         createRules,
+        createTypologies,
         updateRules,
+        updateTypologies,
         updateTadpLights,
+        updateEDLights,
         resetAllLights,
       }}
     >

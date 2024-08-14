@@ -1,6 +1,7 @@
-import { Rule, TadProcLightsManager } from "./processor.interface"
+import { EDLightsManager, Rule, TadProcLightsManager, Typology } from "./processor.interface"
 
 export const ruleInitialState: Rule[] = []
+export const typologiesInitialState: Typology[] = []
 
 export const defaultTadProcLights: TadProcLightsManager = {
   TADPROC: {
@@ -8,5 +9,13 @@ export const defaultTadProcLights: TadProcLightsManager = {
     color: "n",
     stop: false,
     status: "NALT",
+  },
+}
+
+export const defaultEDLights: EDLightsManager = {
+  ED: {
+    pacs008: false,
+    pacs002: false,
+    color: "n",
   },
 }
