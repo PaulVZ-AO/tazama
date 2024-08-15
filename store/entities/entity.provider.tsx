@@ -549,6 +549,37 @@ const EntityProvider = ({ children }: Props) => {
     }
   }
 
+  const updateCreditorAccounts = async (updatedCreditorAccounts: Array<CreditorAccount>, entityIndex: number) => {
+    try {
+      dispatch({ type: ACTIONS.UPDATE_CREDITOR_ACCOUNTS_LOADING })
+
+      const currentCdtrAccounts = state.creditorEntities[entityIndex]?.CreditorAccounts || []
+
+      const mergedCdtrAccounts = currentCdtrAccounts.map((cdtrAccount: any) => {
+        return (
+          updatedCreditorAccounts.find(
+            (updatedCreditorAccount) => updatedCreditorAccount.CdtrAcct.Id.Othr[0].Id === cdtrAccount.CdtrAcct.Id.Othr[0].Id
+          ) || cdtrAccount
+        )
+      })
+
+      let updatedCdtrEntity: CdtrEntity = {
+        CreditorEntity: state.creditorEntities[entityIndex]?.CreditorEntity,
+        CreditorAccounts: mergedCdtrAccounts,
+      }
+
+      let accountsList: Array<CdtrEntity> = state.creditorEntities
+      if (accountsList[entityIndex]?.CreditorEntity && typeof entityIndex === "number") {
+        accountsList.splice(entityIndex, 1, updatedCdtrEntity)
+      }
+
+      dispatch({ type: ACTIONS.UPDATE_CREDITOR_ACCOUNTS_SUCCESS, payload: [...accountsList] })
+      localStorage.setItem("CREDITOR_ENTITIES", JSON.stringify(accountsList))
+    } catch (error) {
+      dispatch({ type: ACTIONS.UPDATE_CREDITOR_ACCOUNTS_FAIL })
+    }
+  }
+
   const setDebtorPacs008 = async (entityIndex: number) => {
     try {
       dispatch({ type: ACTIONS.SET_DEBTOR_PACS008_LOADING })
@@ -747,6 +778,7 @@ const EntityProvider = ({ children }: Props) => {
         createAccountLoading: state.createAccountLoading,
         updateAccountsLoading: state.updateAccountsLoading,
         createCreditorAccountLoading: state.createCreditorAccountLoading,
+        updateCreditorAccountsLoading: state.updateCreditorAccountsLoading,
         resetEntityLoading: state.resetEntityLoading,
         resetCreditorEntityLoading: state.resetCreditorEntityLoading,
         pacs008Loading: state.pacs008Loading,
@@ -767,6 +799,7 @@ const EntityProvider = ({ children }: Props) => {
         createCreditorEntity,
         updateCreditorEntity,
         createCreditorEntityAccount,
+        updateCreditorAccounts,
         setDebtorPacs008,
         setDebtorAccountPacs008,
         setCreditorPacs008,

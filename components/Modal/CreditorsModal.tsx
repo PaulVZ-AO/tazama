@@ -1,21 +1,21 @@
 import React, { useContext, useEffect, useState } from "react"
 import EntityContext from "store/entities/entity.context"
-import { DebtorAccount, DebtorEntity } from "store/entities/entity.interface"
+import { CreditorAccount, CreditorEntity } from "store/entities/entity.interface"
 
 interface Props {
   color?: string
-  entity?: DebtorEntity | undefined
+  entity?: CreditorEntity | undefined
   selectedEntity: number | undefined
   showModal: boolean
   setModal: (value: boolean) => void
-  modalTitle?: string
+  modalTitle?: string;
 }
 
-const DebtorModal = ({ ...props }: Props) => {
+const CreditorModal = ({ ...props }: Props) => {
   const entityCtx = useContext(EntityContext)
-  const [customEntity, setCustomEntity] = useState<DebtorEntity | undefined>(undefined)
+  const [customEntity, setCustomEntity] = useState<CreditorEntity | undefined>(undefined)
   const [activeSection, setActiveSection] = useState<"Entity" | "Accounts">("Entity")
-  const [customAccounts, setCustomAccounts] = useState<DebtorAccount[]>([])
+  const [customAccounts, setCustomAccounts] = useState<CreditorAccount[]>([])
   const [errors, setErrors] = useState<{ [key: string]: string }>({});  
 
   function handleClick() {
@@ -25,17 +25,17 @@ const DebtorModal = ({ ...props }: Props) => {
 
   useEffect(() => {
     if (props.entity !== undefined) {
-      if (entityCtx.entities.length > 0 && typeof props.selectedEntity === "number") {
-        setCustomEntity(entityCtx.entities[props.selectedEntity]?.Entity)
-        setCustomAccounts(entityCtx.entities[props.selectedEntity]?.Accounts || [])
+      if (entityCtx.creditorEntities.length > 0 && typeof props.selectedEntity === "number") {
+        setCustomEntity(entityCtx.creditorEntities[props.selectedEntity]?.CreditorEntity)
+        setCustomAccounts(entityCtx.creditorEntities[props.selectedEntity]?.CreditorAccounts || [])
       }
     }
   }, [props.entity])
 
-  const accounts = typeof props.selectedEntity === "number" ? entityCtx.entities[props.selectedEntity]?.Accounts : []
+  const accounts = typeof props.selectedEntity === "number" ? entityCtx.creditorEntities[props.selectedEntity]?.CreditorAccounts : []
   const accountDetails = accounts ? accounts.map((account: any) => account) : []
 
-  const handleAccountChange = (index: number, updatedAccount: DebtorAccount) => {
+  const handleAccountChange = (index: number, updatedAccount: CreditorAccount) => {
     const updatedAccounts = [...customAccounts]
     updatedAccounts[index] = updatedAccount
     setCustomAccounts(updatedAccounts)
@@ -45,19 +45,19 @@ const DebtorModal = ({ ...props }: Props) => {
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
     // Entity
-    if (!customEntity?.Dbtr.Nm) newErrors.Nm = "Full Name is required";
-    if (!customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt) newErrors.BirthDt = "Birth Date is required";
-    if (!customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.CityOfBirth) newErrors.CityOfBirth = "City of Birth is required";
-    if (!customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.CtryOfBirth) newErrors.CtryOfBirth = "Country of Birth is required";
-    if (!customEntity?.Dbtr.Id.PrvtId.Othr[0].Id) newErrors.Id = "ID number is required";
-    if (!customEntity?.Dbtr.CtctDtls.MobNb) {
+    if (!customEntity?.Cdtr.Nm) newErrors.Nm = "Full Name is required";
+    if (!customEntity?.Cdtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt) newErrors.BirthDt = "Birth Date is required";
+    if (!customEntity?.Cdtr.Id.PrvtId.DtAndPlcOfBirth.CityOfBirth) newErrors.CityOfBirth = "City of Birth is required";
+    if (!customEntity?.Cdtr.Id.PrvtId.DtAndPlcOfBirth.CtryOfBirth) newErrors.CtryOfBirth = "Country of Birth is required";
+    if (!customEntity?.Cdtr.Id.PrvtId.Othr[0].Id) newErrors.Id = "ID number is required";
+    if (!customEntity?.Cdtr.CtctDtls.MobNb) {
       newErrors.MobNb = "Mobile number is required";
-    } else if (!/^\+[0-9]{1,4}-[0-9()+\-]{1,30}$/.test(customEntity.Dbtr.CtctDtls.MobNb)) {
+    } else if (!/^\+[0-9]{1,4}-[0-9()+\-]{1,30}$/.test(customEntity.Cdtr.CtctDtls.MobNb)) {
       newErrors.MobNb = "Invalid mobile number format";
     }
     // Accounts
     customAccounts.forEach((account, index) => {
-      if (!account.DbtrAcct.Nm) newErrors[`accountName-${index}`] = "Account Name is required";
+      if (!account.CdtrAcct.Nm) newErrors[`accountName-${index}`] = "Account Name is required";
     });
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -73,10 +73,10 @@ const DebtorModal = ({ ...props }: Props) => {
     if (typeof props.selectedEntity === "number" && props.entity) {
       if (section === "Entity") {
         // Reset customEntity to the initial value
-        setCustomEntity(entityCtx.entities[props.selectedEntity]?.Entity);
+        setCustomEntity(entityCtx.creditorEntities[props.selectedEntity]?.CreditorEntity);
       } else if (section === "Accounts") {
         // Reset customAccounts to the initial value
-        setCustomAccounts(entityCtx.entities[props.selectedEntity]?.Accounts || []);
+        setCustomAccounts(entityCtx.creditorEntities[props.selectedEntity]?.CreditorAccounts || []);
       }
     }
     setActiveSection(section);
@@ -117,14 +117,14 @@ const DebtorModal = ({ ...props }: Props) => {
                         type="text"
                         id="modal-Nm"
                         className="w-full"
-                        value={customEntity?.Dbtr.Nm}
+                        value={customEntity?.Cdtr.Nm}
                         maxLength={140}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
                           setCustomEntity({
                           ...customEntity,
-                          Dbtr: {
-                          ...customEntity.Dbtr,
+                          Cdtr: {
+                          ...customEntity.Cdtr,
                           Nm: e.target.value,
                           },});}}}
                       />
@@ -136,21 +136,21 @@ const DebtorModal = ({ ...props }: Props) => {
                         type="date"
                         id="modal-BirthDt"
                         className="w-full"
-                        value={customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt}
+                        value={customEntity?.Cdtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt}
                         min={minDate}
                         max={maxDate}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
                           setCustomEntity({
                           ...customEntity,
-                          Dbtr: {
-                          ...customEntity?.Dbtr,
-                          ...customEntity?.Dbtr.Id,
+                          Cdtr: {
+                          ...customEntity?.Cdtr,
+                          ...customEntity?.Cdtr.Id,
                           Id: {
                           PrvtId: {
-                          ...customEntity?.Dbtr.Id.PrvtId,
+                          ...customEntity?.Cdtr.Id.PrvtId,
                           DtAndPlcOfBirth: {
-                          ...customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth,
+                          ...customEntity?.Cdtr.Id.PrvtId.DtAndPlcOfBirth,
                           BirthDt: e.target.value,
                           },},},},});}}}
                       />
@@ -162,19 +162,19 @@ const DebtorModal = ({ ...props }: Props) => {
                         type="text"
                         id="modal-CityOfBirth"
                         className="w-full"
-                        value={customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.CityOfBirth}
+                        value={customEntity?.Cdtr.Id.PrvtId.DtAndPlcOfBirth.CityOfBirth}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
                           setCustomEntity({
                           ...customEntity,
-                          Dbtr: {
-                          ...customEntity.Dbtr,
-                          ...customEntity.Dbtr.Id,
+                          Cdtr: {
+                          ...customEntity.Cdtr,
+                          ...customEntity.Cdtr.Id,
                           Id: {
                           PrvtId: {
-                          ...customEntity.Dbtr.Id.PrvtId,
+                          ...customEntity.Cdtr.Id.PrvtId,
                           DtAndPlcOfBirth: {
-                          ...customEntity.Dbtr.Id.PrvtId.DtAndPlcOfBirth,
+                          ...customEntity.Cdtr.Id.PrvtId.DtAndPlcOfBirth,
                           CityOfBirth: e.target.value,
                           },},},},});}}}
                       />
@@ -186,19 +186,19 @@ const DebtorModal = ({ ...props }: Props) => {
                         type="text"
                         id="modal-CtryOfBirth"
                         className="w-full"
-                        value={customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.CtryOfBirth}
+                        value={customEntity?.Cdtr.Id.PrvtId.DtAndPlcOfBirth.CtryOfBirth}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
                           setCustomEntity({
                           ...customEntity,
-                          Dbtr: {
-                          ...customEntity.Dbtr,
-                          ...customEntity.Dbtr.Id,
+                          Cdtr: {
+                          ...customEntity.Cdtr,
+                          ...customEntity.Cdtr.Id,
                           Id: {
                           PrvtId: {
-                          ...customEntity.Dbtr.Id.PrvtId,
+                          ...customEntity.Cdtr.Id.PrvtId,
                           DtAndPlcOfBirth: {
-                          ...customEntity.Dbtr.Id.PrvtId.DtAndPlcOfBirth,
+                          ...customEntity.Cdtr.Id.PrvtId.DtAndPlcOfBirth,
                           CtryOfBirth: e.target.value,
                           },},},},});}}}
                       />
@@ -208,21 +208,21 @@ const DebtorModal = ({ ...props }: Props) => {
                       <label htmlFor="modal-ID">ID number</label>
                       <input
                         className="w-full"
-                        value={customEntity?.Dbtr.Id.PrvtId.Othr[0].Id}
+                        value={customEntity?.Cdtr.Id.PrvtId.Othr[0].Id}
                         id="modal-ID"
                         maxLength={35}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
                           setCustomEntity({
                           ...customEntity,
-                          Dbtr: {
-                          ...customEntity.Dbtr,
-                          ...customEntity.Dbtr.Id,
+                          Cdtr: {
+                          ...customEntity.Cdtr,
+                          ...customEntity.Cdtr.Id,
                           Id: {
                           PrvtId: {
-                          ...customEntity.Dbtr.Id.PrvtId,
+                          ...customEntity.Cdtr.Id.PrvtId,
                           Othr: {
-                          ...customEntity.Dbtr.Id.PrvtId.Othr[0],
+                          ...customEntity.Cdtr.Id.PrvtId.Othr[0],
                           Id: e.target.value,
                           },},},},});}}}
                         readOnly
@@ -236,15 +236,15 @@ const DebtorModal = ({ ...props }: Props) => {
                         type="text"
                         id="modal-MobNb"
                         className="w-full"
-                        value={customEntity?.Dbtr.CtctDtls.MobNb}
+                        value={customEntity?.Cdtr.CtctDtls.MobNb}
                         maxLength={35}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
                           setCustomEntity({
                           ...customEntity,
-                          Dbtr: {
-                          ...customEntity.Dbtr,
-                          ...customEntity.Dbtr.CtctDtls,
+                          Cdtr: {
+                          ...customEntity.Cdtr,
+                          ...customEntity.Cdtr.CtctDtls,
                           CtctDtls: {
                           MobNb: e.target.value,
                           },},});}}}
@@ -258,7 +258,7 @@ const DebtorModal = ({ ...props }: Props) => {
                     onClick={async () => {
                       if (customEntity !== undefined && typeof props.selectedEntity === "number") {
                       if (validateForm()) {
-                      await entityCtx.updateEntity(customEntity, props.selectedEntity);
+                      await entityCtx.updateCreditorEntity(customEntity, props.selectedEntity);
                       handleClick();
                     }}}}
                   >Save</button>
@@ -285,13 +285,13 @@ const DebtorModal = ({ ...props }: Props) => {
                               type="text"
                               id={`modal-Account-Number-${index}`}
                               className="w-full rounded-lg bg-gray-200 p-2 shadow-inner"
-                              value={accountDetail.DbtrAcct.Nm}
+                              value={accountDetail.CdtrAcct.Nm}
                               maxLength={35}
                               onChange={(e) => {
                                 handleAccountChange(index, {
                                 ...accountDetail,
-                                DbtrAcct: {
-                                ...accountDetail.DbtrAcct,
+                                CdtrAcct: {
+                                ...accountDetail.CdtrAcct,
                                 Nm: e.target.value,
                                 },})}}
                             />
@@ -299,11 +299,11 @@ const DebtorModal = ({ ...props }: Props) => {
                           </div>
                           <div>
                             <label htmlFor={`modal-Account-ID-${index}`}>ID number</label>
-                            <input type="text" id={`modal-Account-ID-${index}`} className="w-full rounded-lg bg-gray-200 p-2 shadow-inner" value={accountDetail.DbtrAcct.Id.Othr[0]?.Id} readOnly />
+                            <input type="text" id={`modal-Account-ID-${index}`} className="w-full rounded-lg bg-gray-200 p-2 shadow-inner" value={accountDetail.CdtrAcct.Id.Othr[0]?.Id} readOnly />
                           </div>
                           <div>
                             <label htmlFor={`modal-Account-Prtry-${index}`}>Prtry</label>
-                            <input type="text" id={`modal-Account-Prtry-${index}`} className="w-full rounded-lg bg-gray-200 p-2 shadow-inner" value={accountDetail.DbtrAcct.Id.Othr[0]?.SchmeNm.Prtry} readOnly />
+                            <input type="text" id={`modal-Account-Prtry-${index}`} className="w-full rounded-lg bg-gray-200 p-2 shadow-inner" value={accountDetail.CdtrAcct.Id.Othr[0]?.SchmeNm.Prtry} readOnly />
                           </div>
                         </div>
                       </div>
@@ -315,7 +315,7 @@ const DebtorModal = ({ ...props }: Props) => {
                     onClick={async () => {
                       if (props.selectedEntity !== undefined) {
                       if (validateForm()) {
-                      await entityCtx.updateAccounts(customAccounts, props.selectedEntity)
+                      await entityCtx.updateCreditorAccounts(customAccounts, props.selectedEntity)
                       handleClick();
                     }}}}
                   >Save</button>
@@ -330,4 +330,4 @@ const DebtorModal = ({ ...props }: Props) => {
   )
 }
 
-export default DebtorModal
+export default CreditorModal
