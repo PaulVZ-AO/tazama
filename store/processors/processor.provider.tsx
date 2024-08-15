@@ -1,6 +1,7 @@
 "use client"
 import axios, { AxiosResponse } from "axios"
-import React, { ReactNode, useContext, useEffect, useReducer } from "react"
+import dotenv from "dotenv"
+import React, { ReactNode, useEffect, useReducer } from "react"
 import { io } from "socket.io-client"
 import { getNetworkMap, getTADPROCResult } from "utils/db"
 import { ACTIONS } from "./processor.actions"
@@ -13,6 +14,8 @@ import {
 } from "./processor.initialState"
 import { EDLightsManager, Rule, TadProcLightsManager, Typology } from "./processor.interface"
 import ProcessorReducer from "./processor.reducer"
+
+dotenv.config()
 
 interface Props {
   children: ReactNode
@@ -30,13 +33,14 @@ const ProcessorProvider = ({ children }: Props) => {
     tadpLights: defaultTadProcLights,
   }
   const [state, dispatch] = useReducer(ProcessorReducer, initialProcessorState)
-  const ctx = useContext(ProcessorContext)
 
-  useEffect(() => {
-    // createRules()
-    // createTypologies()
-  }, [])
+  //---> UNCOMMENT THIS USE_EFFECT IF YOU WANT THE HARD CODED DATA IN THE API SECTION<---//
+  // useEffect(() => {
+  // createRules()
+  // createTypologies()
+  // }, [])
 
+  //---> COMMENT THIS USE_EFFECT OUT IF YOU WANT THE DYNAMICALLY BUILT DATA<---//
   useEffect(() => {
     ;(async () => {
       const configData = await getNetworkMap()
@@ -50,8 +54,10 @@ const ProcessorProvider = ({ children }: Props) => {
     })()
   }, [])
 
+  const WS_URL = process.env.NEXT_PUBLIC_URL || "http://localhost:3001"
+
   useEffect(() => {
-    const socket = io("http://localhost:3001", {
+    const socket = io(WS_URL, {
       transports: ["websocket"],
     })
 
