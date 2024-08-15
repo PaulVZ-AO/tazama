@@ -1,74 +1,90 @@
-import { useContext, useEffect, useState } from "react"
-import EntityContext from "store/entities/entity.context"
+import { useContext, useEffect, useState } from "react";
+import EntityContext from "store/entities/entity.context";
+import TransactionModal from "./TransactionModal";
 
 interface DeviceProps {
-  selectedEntity: number
-  isDebtor?: boolean
+  selectedEntity: number;
+  isDebtor?: boolean;
 }
 
 export function DeviceInfo(props: DeviceProps) {
-  const entityCtx = useContext(EntityContext)
+  const entityCtx = useContext(EntityContext);
 
-  const [getPacs008, setGetPacs008] = useState<any>()
+  const [getPacs008, setGetPacs008] = useState<any>();
+  const [isTransaction, setIsTransaction] = useState<boolean>(false);
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [formValues, setFormValues] = useState({
+    amount: "",
+    description: "",
+    purpose: "",
+    latitude: "",
+    longitude: "",
+  });
 
-  const accountIndex = entityCtx.selectedDebtorEntity.debtorAccountSelectedIndex
-
-  const creditorAccountIndex = entityCtx.selectedCreditorEntity.creditorAccountSelectedIndex
-
-  const entity = entityCtx.entities[props.selectedEntity]
-
-  const entities = entityCtx.entities
-
-  const creditorEntities = entityCtx.creditorEntities
-
-  const creditorEntity = entityCtx.creditorEntities[props.selectedEntity]
-
-  // const pacs008Data = entityCtx.pacs008?.FIToFICstmrCdtTrf
-  const pacs002Data = entityCtx.pacs002.FIToFIPmtSts
-
-  const location = getPacs008?.FIToFICstmrCdtTrf?.SplmtryData.Envlp.Doc.InitgPty.Glctn
-
-  const [isTransaction, setIsTransaction] = useState<boolean>(false)
+  const accountIndex = entityCtx.selectedDebtorEntity.debtorAccountSelectedIndex;
+  const entity = entityCtx.entities[props.selectedEntity];
 
   const handleClick = async () => {
-    await entityCtx.generateTransaction()
-    setGetPacs008(entityCtx.pacs008)
-    setIsTransaction(true)
-  }
+    await entityCtx.generateTransaction();
+    setGetPacs008(entityCtx.pacs008);
+    setIsTransaction(true);
+  };
 
   useEffect(() => {
-    setIsTransaction(false)
-  }, [props.selectedEntity])
+    setIsTransaction(false);
+  }, [props.selectedEntity]);
 
-  let fillColour
+  const handleEditClick = () => {
+    setFormValues({
+      amount: getPacs008?.FIToFICstmrCdtTrf?.CdtTrfTxInf?.InstdAmt?.Amt?.Amt || "",
+      description: getPacs008?.FIToFICstmrCdtTrf?.RmtInf?.Ustrd || "",
+      purpose: getPacs008?.FIToFICstmrCdtTrf?.CdtTrfTxInf?.Purp?.Cd || "",
+      latitude: getPacs008?.FIToFICstmrCdtTrf?.SplmtryData?.Envlp?.Doc?.InitgPty?.Glctn?.Lat || "",
+      longitude: getPacs008?.FIToFICstmrCdtTrf?.SplmtryData?.Envlp?.Doc?.InitgPty?.Glctn?.Long || "",
+    });
+    setIsModalVisible(true);
+  };
 
+  const handleSave = () => {
+    // Implement save logic here
+    setIsModalVisible(false);
+  };
+
+  const handleModalChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
+    setFormValues({
+      ...formValues,
+      [field]: e.target.value,
+    });
+  };
+
+  let fillColour;
   switch (props.selectedEntity) {
-    case 0: {
-      fillColour = "text-blue-500"
-      break
-    }
-    case 1: {
-      fillColour = "text-green-500"
-      break
-    }
-    case 2: {
-      fillColour = "text-yellow-400"
-      break
-    }
-    case 3: {
-      fillColour = "text-orange-500"
-      break
-    }
-    default: {
-      fillColour = "text-blue-500"
-      break
-    }
+    case 0:
+      fillColour = "text-blue-500";
+      break;
+    case 1:
+      fillColour = "text-green-500";
+      break;
+    case 2:
+      fillColour = "text-yellow-400";
+      break;
+    case 3:
+      fillColour = "text-orange-500";
+      break;
+    default:
+      fillColour = "text-blue-500";
+      break;
   }
+
+  const creditorAccountIndex = entityCtx.selectedCreditorEntity.creditorAccountSelectedIndex
+  const creditorEntity = entityCtx.creditorEntities[props.selectedEntity]
+
+  const pacs002Data = entityCtx.pacs002.FIToFIPmtSts
 
   if (props.isDebtor) {
     return (
       <>
-        {entity !== undefined ? (
+        {entity && (
           <>
             <div className={`flex bg-gray-400 py-2 pl-2 ${fillColour}`}>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
@@ -85,23 +101,23 @@ export function DeviceInfo(props: DeviceProps) {
               <p className="truncate">ID: {entity.Entity?.Dbtr.Id.PrvtId.Othr[0].Id} </p>
               <p>Date of birth: {entity?.Entity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt}</p>
             </div>
+
             <div className="m-2 rounded-md border bg-gray-100 p-2 text-sm shadow-sm">
               <p className={`font-bold ${fillColour}`}>{entity?.Accounts[accountIndex || 0]?.DbtrAcct?.Nm} </p>
               <p className="truncate">ID: {entity?.Accounts[accountIndex || 0]?.DbtrAcct.Id.Othr[0].Id}</p>
             </div>
 
-            {isTransaction ? (
-              <div className={`m-2 rounded-md border bg-gray-100 p-2 text-sm shadow-sm`}>
+            {isTransaction && (
+              <div className="m-2 rounded-md border bg-gray-100 p-2 text-sm shadow-sm">
                 <p>
-                  Amount: {getPacs008?.FIToFICstmrCdtTrf?.CdtTrfTxInf.InstdAmt.Amt.Ccy}{" "}
-                  {getPacs008?.FIToFICstmrCdtTrf?.CdtTrfTxInf.InstdAmt.Amt.Amt}
+                  Amount: {getPacs008?.FIToFICstmrCdtTrf?.CdtTrfTxInf?.InstdAmt?.Amt?.Ccy}{" "}
+                  {getPacs008?.FIToFICstmrCdtTrf?.CdtTrfTxInf?.InstdAmt?.Amt?.Amt}
                 </p>
-                <p className="truncate">Description: {getPacs008?.FIToFICstmrCdtTrf?.RmtInf.Ustrd}</p>
-                <p>Purpose: {getPacs008?.FIToFICstmrCdtTrf?.CdtTrfTxInf.Purp.Cd} </p>
-                <p>Latitude: {location?.Lat}</p>
-                <p>Longitude: {location?.Long}</p>
-                <hr className="mt-2" />
-                <button className="m-auto mt-2 flex items-center text-blue-500">
+                <p className="truncate">Description: {getPacs008?.FIToFICstmrCdtTrf?.RmtInf?.Ustrd}</p>
+                <p>Purpose: {getPacs008?.FIToFICstmrCdtTrf?.CdtTrfTxInf?.Purp?.Cd} </p>
+                <p>Latitude: {formValues.latitude}</p>
+                <p>Longitude: {formValues.longitude}</p>
+                <button className="m-auto mt-2 flex items-center text-blue-500" onClick={handleEditClick}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -119,21 +135,33 @@ export function DeviceInfo(props: DeviceProps) {
                   edit
                 </button>
               </div>
-            ) : null}
+            )}
+
             <div className={`m-2 rounded-lg border bg-gray-300 p-2 text-sm shadow-md`}>
               <button
                 className={`m-auto flex items-center justify-center font-semibold text-black ${
-                  entities.length === 0 || creditorEntities.length === 0 ? " pointer-events-none opacity-40" : ""
+                  entityCtx.entities.length === 0 || entityCtx.creditorEntities.length === 0
+                    ? "pointer-events-none opacity-40"
+                    : ""
                 }`}
-                onClick={() => handleClick()}
+                onClick={handleClick}
               >
                 New Transaction
               </button>
             </div>
           </>
-        ) : null}
+        )}
+
+        {/* Modal */}
+        <TransactionModal
+          isVisible={isModalVisible}
+          formValues={formValues}
+          onChange={handleModalChange}
+          onSave={handleSave}
+          onCancel={() => setIsModalVisible(false)}
+        />
       </>
-    )
+    );
   } else {
     return (
       <>
