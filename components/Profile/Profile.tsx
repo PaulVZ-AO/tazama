@@ -59,7 +59,7 @@ const AccountsComponent = ({ index, setSelected, selectedEntityIndex, setSelecte
   }
 
   return (
-    <button onClick={() => {handleClick()}}>
+    <button onClick={handleClick}>
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={`size-6 ${colour}`}>
         <path d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625Z" />
         <path d="M12.971 1.816A5.23 5.23 0 0 1 14.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 0 1 3.434 1.279 9.768 9.768 0 0 0-6.963-6.963Z" />
@@ -69,11 +69,11 @@ const AccountsComponent = ({ index, setSelected, selectedEntityIndex, setSelecte
 }
 
 export const Profile = ({ ...props }: ProfileProps) => {
-  const entityCtx = useContext(EntityContext)
-  const [selectedAccountIndex, setSelectedAccountIndex] = useState(0)
+  const entityCtx = useContext(EntityContext);
+  const [selectedAccountIndex, setSelectedAccountIndex] = useState(0);
 
-  let reverse = ""
-  if (props.reverse) {reverse = "flex-row-reverse text-right"}
+  let reverse = "";
+  if (props.reverse) {reverse = "flex-row-reverse text-right";}
 
   return (
     <div className={`mb-7 rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 px-3 py-1 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)] ${props.colour} flex w-full justify-between ${reverse}`}>
@@ -82,7 +82,9 @@ export const Profile = ({ ...props }: ProfileProps) => {
         className="text-black"
         onClick={async () => {
           if (props.entity !== undefined) {
-            props.setModalVisible(true)
+            props.setSelectedEntity(props.index); // Ensure the entity is selected
+            await entityCtx.selectDebtorEntity(props.index, 0); // Select the first account for the entity (or modify as needed)
+            props.setModalVisible(true); // Open the modal
           }
         }}
         style={props.entity !== undefined ? { cursor: "pointer" } : { cursor: "default" }}
@@ -103,14 +105,14 @@ export const Profile = ({ ...props }: ProfileProps) => {
         if (account !== null && account !== undefined) {
           return (
             <AccountsComponent key={crypto.randomUUID().replaceAll("-", "")} index={index} selected={selectedAccountIndex} setSelected={setSelectedAccountIndex} selectedEntityIndex={props.index} setSelectedEntity={props.setSelectedEntity} />
-          )
+          );
         } else {
-          return null
+          return null;
         }
       })}
 
       {props?.accounts !== null && props.accounts !== undefined && props?.accounts.length < 4 && (
-        <button data-modal-target="default-modal" data-modal-toggle="default-modal" onClick={async () => {await props.addAccount()}}>
+        <button data-modal-target="default-modal" data-modal-toggle="default-modal" onClick={async () => { await props.addAccount(); }}>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="size-5">
             <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
           </svg>
@@ -120,14 +122,16 @@ export const Profile = ({ ...props }: ProfileProps) => {
       {/* D6 button */}
       <button
         onClick={async () => {
+          props.setSelectedEntity(props.index);
           if (!props.entity && entityCtx.entities.length < 4) {
-            props.setSelectedEntity(props.index)
-            await entityCtx.createEntity()
-            await entityCtx.selectDebtorEntity(props.index, 0)
-            await entityCtx.setDebtorPacs008(props.selectedEntity)
+            // Create a new entity and select it
+            await entityCtx.createEntity();
+            await entityCtx.selectDebtorEntity(props.index, 0);
+            await entityCtx.setDebtorPacs008(props.index);
           } else if (props.entity) {
-            await entityCtx.resetEntity(props.selectedEntity)
-            await entityCtx.selectDebtorEntity(props.selectedEntity, 0)
+            // Reset the selected entity
+            await entityCtx.resetEntity(props.index);
+            await entityCtx.selectDebtorEntity(props.index, 0);
           }
         }}
       >
@@ -136,5 +140,5 @@ export const Profile = ({ ...props }: ProfileProps) => {
         </svg>
       </button>
     </div>
-  )
+  );
 }

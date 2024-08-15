@@ -52,7 +52,7 @@ const CreditorModal = ({ ...props }: Props) => {
     if (!customEntity?.Cdtr.Id.PrvtId.Othr[0].Id) newErrors.Id = "ID number is required";
     if (!customEntity?.Cdtr.CtctDtls.MobNb) {
       newErrors.MobNb = "Mobile number is required";
-    } else if (!/^\+[0-9]{1,3}-[0-9()+\-]{1,30}$/.test(customEntity.Cdtr.CtctDtls.MobNb)) {
+    } else if (!/^\+[0-9]{1,4}-[0-9()+\-]{1,30}$/.test(customEntity.Cdtr.CtctDtls.MobNb)) {
       newErrors.MobNb = "Invalid mobile number format";
     }
     // Accounts
