@@ -1,15 +1,6 @@
 const { Database, aql } = require("arangojs")
 require("dotenv").config()
 
-// const getConnection = () => {
-//   // establish database connection
-//   return new Database({
-//     url: "https://8ae29224ea5c.arangodb.cloud:8529",
-//     databaseName: "travel_zbucD0qq",
-//     auth: { username: "root", password: "aR0KF6IH8O0SBH20WjiY" },
-//   });
-// };
-
 const getRulesConnection = () => {
   // establish database connection
   return new Database({
