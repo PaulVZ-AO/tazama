@@ -11,7 +11,7 @@ const app = next({ dev: process.env.NODE_ENV !== "production" })
 
 const natsUrl = process.env.NEXT_PUBLIC_CMS_NATS_HOSTING
 
-const port = 3001
+const port = process.env.PORT
 
 const handle = app.getRequestHandler()
 
@@ -39,7 +39,9 @@ app.prepare().then(() => {
     handle(req, res, parsedUrl)
   })
 
-  const io = new Server(server)
+  const io = new Server(server, {
+    transports: ["websocket", "polling"],
+  })
 
   const NATSSubscriptions = []
   io.on("connect", (socket) => console.log("CONNECT", socket.id))
@@ -73,6 +75,12 @@ app.prepare().then(() => {
           NATSSubscriptions.push(subscription)
         }
       })
+    })
+
+    socket.on("tadProc", (message) => {
+      console.log("TADPROC Request:", message)
+      // Emit message to all subscribed clients
+      io.to("tadProc").emit("tadProc", message)
     })
 
     // Connect to NATS server

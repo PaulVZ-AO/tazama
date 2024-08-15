@@ -1,18 +1,18 @@
 "use client"
-import React, { ReactNode, useEffect, useReducer, useContext } from "react"
+import axios, { AxiosResponse } from "axios"
+import React, { ReactNode, useContext, useEffect, useReducer } from "react"
 import { io } from "socket.io-client"
+import { getNetworkMap, getTADPROCResult } from "utils/db"
 import { ACTIONS } from "./processor.actions"
 import ProcessorContext from "./processor.context"
 import {
-  ruleInitialState,
   defaultEDLights,
   defaultTadProcLights,
+  ruleInitialState,
   typologiesInitialState,
 } from "./processor.initialState"
 import { EDLightsManager, Rule, TadProcLightsManager, Typology } from "./processor.interface"
 import ProcessorReducer from "./processor.reducer"
-import axios, { AxiosResponse } from "axios"
-import { getTADPROCResult } from "utils/db"
 
 interface Props {
   children: ReactNode
@@ -30,14 +30,30 @@ const ProcessorProvider = ({ children }: Props) => {
     tadpLights: defaultTadProcLights,
   }
   const [state, dispatch] = useReducer(ProcessorReducer, initialProcessorState)
+  const ctx = useContext(ProcessorContext)
 
   useEffect(() => {
-    createRules()
-    createTypologies()
+    // createRules()
+    // createTypologies()
   }, [])
 
   useEffect(() => {
-    const socket = io()
+    ;(async () => {
+      const configData = await getNetworkMap()
+      console.log("RULES - TYPOLOGY CONFIG: ", configData)
+      if (configData.rules) {
+        dispatch({ type: ACTIONS.CREATE_RULES_SUCCESS, payload: configData.rules })
+      }
+      if (configData.rules) {
+        dispatch({ type: ACTIONS.CREATE_TYPO_SUCCESS, payload: configData.typologies })
+      }
+    })()
+  }, [])
+
+  useEffect(() => {
+    const socket = io("http://localhost:3001", {
+      transports: ["websocket"],
+    })
 
     socket.on("connection", (msg) => {
       console.log("Connected to WebSocket server", msg)
@@ -54,7 +70,7 @@ const ProcessorProvider = ({ children }: Props) => {
 
     socket.on("ruleResponse", async (msg) => {
       console.log("Received Message from the RULE RESPONSE: ", msg)
-      await updateRules(msg)
+      setTimeout(async () => await updateRules(msg), 400)
     })
 
     socket.on("typoRequest", async (msg) => {
@@ -63,12 +79,23 @@ const ProcessorProvider = ({ children }: Props) => {
 
     socket.on("typoResponse", async (msg) => {
       console.log("Received Message from the TYPO RESPONSE: ", msg)
-      await updateTypologies(msg)
+      setTimeout(async () => await updateTypologies(msg), 700)
+      socket.emit("tadProc", msg)
     })
 
     socket.on("stream", async (msg) => {
       console.log("Received Message from the Stream: ", msg)
     })
+
+    socket.on("tadProc", async (msg) => {
+      console.log("Received Message from the TADPROC: ", msg)
+      if (msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId !== undefined) {
+        const results: any = await getTADPROCResult(msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId)
+        console.log(results)
+        setTimeout(async () => await updateTadpLights(results), 1000)
+      }
+    })
+
     socket.on("subscriptions", (msg) => {
       console.log(msg)
     })
@@ -125,12 +152,12 @@ const ProcessorProvider = ({ children }: Props) => {
       }
 
       dispatch({ type: ACTIONS.UPDATE_RULES_SUCCESS, payload: updatedRules })
-      if (msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId !== undefined) {
-        const results: any = await getTADPROCResult(msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId)
-        console.log(results)
-        updateTadpLights(results)
-        // setTadpLights(results)
-      }
+      // if (msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId !== undefined) {
+      //   const results: any = await getTADPROCResult(msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId)
+      //   console.log(results)
+      //   updateTadpLights(results)
+      //   // setTadpLights(results)
+      // }
     } catch (error: any) {
       dispatch({ type: ACTIONS.UPDATE_RULES_FAIL })
       console.error(error.message)
@@ -167,11 +194,11 @@ const ProcessorProvider = ({ children }: Props) => {
       }
 
       dispatch({ type: ACTIONS.UPDATE_TYPO_SUCCESS, payload: updatedTypo })
-      if (msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId !== undefined) {
-        const results: any = await getTADPROCResult(msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId)
-        console.log(results)
-        updateTadpLights(results)
-      }
+      // if (msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId !== undefined) {
+      //   const results: any = await getTADPROCResult(msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId)
+      //   console.log(results)
+      //   updateTadpLights(results)
+      // }
     } catch (error: any) {
       dispatch({ type: ACTIONS.UPDATE_TYPO_FAIL })
       console.error(error.message)

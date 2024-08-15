@@ -1,7 +1,7 @@
 const { Database, aql } = require("arangojs")
 require("dotenv").config()
 
-const getRulesConnection = () => {
+const getConfigConnection = () => {
   // establish database connection
   return new Database({
     // url: "tcp://localhost:18529",
@@ -38,7 +38,7 @@ const getCollection = async (cName, db) => {
 
 export const getRulesDescriptions = async () => {
   // make connection
-  const db = getRulesConnection()
+  const db = getConfigConnection()
   // make sure rule collection exists
   await getCollection("ruleConfiguration", db)
   // declare array to hold rules
@@ -57,7 +57,7 @@ export const getRulesDescriptions = async () => {
 
 export const getTypologyDescriptions = async () => {
   // make connection
-  const db = getRulesConnection()
+  const db = getConfigConnection()
   // make sure rule collection exists
   await getCollection("typologyConfiguration", db)
   // declare array to hold typologies
@@ -109,4 +109,49 @@ export const getTADPROCResult = async (transactionID) => {
   }
   // return the list of typologies
   return response
+}
+
+export const getNetworkMap = async () => {
+  const db = getConfigConnection()
+  await getCollection("networkConfiguration", db)
+
+  let result = []
+  const results = await db.query(aql`FOR c IN networkConfiguration RETURN c`)
+
+  for await (let config of results) {
+    result.push(config)
+  }
+
+  let typologies = []
+  let rules = []
+
+  if (result.length > 0) {
+    result[0].messages.forEach((element) => {
+      element.typologies.forEach((typology) => {
+        let newTypology = {
+          id: parseInt(typology.cfg.split("@")[0]),
+          title: typology.cfg.split("@")[0],
+          color: "n",
+          result: null,
+          linkedRules: [],
+        }
+        typology.rules.forEach((rule) => {
+          let newRule = {
+            id: parseInt(rule.id.split("@")[0]),
+            title: rule.id.split("@")[0],
+            color: "n",
+            result: null,
+          }
+          newTypology.linkedRules.push(newRule.title)
+          rules.push(newRule)
+        })
+        typologies.push(newTypology)
+      })
+    })
+  }
+
+  return {
+    rules: rules,
+    typologies: typologies,
+  }
 }
