@@ -3,30 +3,25 @@ import EntityContext from "store/entities/entity.context"
 import { DebtorAccount, DebtorEntity } from "store/entities/entity.interface"
 
 interface Props {
-  colour?: string
+  color?: string
   entity?: DebtorEntity | undefined
   selectedEntity: number | undefined
   showModal: boolean
   setModal: (value: boolean) => void
+  modalTitle?: string
 }
 
-export function Modal(props: Props) {
+const DebtorModal = ({ ...props }: Props) => {
   const entityCtx = useContext(EntityContext)
   const [customEntity, setCustomEntity] = useState<DebtorEntity | undefined>(undefined)
   const [activeSection, setActiveSection] = useState<"Entity" | "Accounts">("Entity")
   const [customAccounts, setCustomAccounts] = useState<DebtorAccount[]>([])
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
 
-  let modalProp = { modalTitle: "Update Entity" }
-
   function handleClick() {
     setCustomEntity(undefined)
     props.setModal(!props.showModal)
   }
-
-  useEffect(() => {
-    console.log(customEntity)
-  }, [customEntity])
 
   useEffect(() => {
     if (props.entity !== undefined) {
@@ -58,7 +53,7 @@ export function Modal(props: Props) {
     if (!customEntity?.Dbtr.Id.PrvtId.Othr[0].Id) newErrors.Id = "ID number is required"
     if (!customEntity?.Dbtr.CtctDtls.MobNb) {
       newErrors.MobNb = "Mobile number is required"
-    } else if (!/^\+[0-9]{1,3}-[0-9()+\-]{1,30}$/.test(customEntity.Dbtr.CtctDtls.MobNb)) {
+    } else if (!/^\+[0-9]{1,4}-[0-9()+\-]{1,30}$/.test(customEntity.Dbtr.CtctDtls.MobNb)) {
       newErrors.MobNb = "Invalid mobile number format"
     }
     // Accounts
@@ -74,6 +69,7 @@ export function Modal(props: Props) {
   const minDate = new Date(today.getFullYear() - 60, today.getMonth(), today.getDate()).toISOString().split("T")[0]
   const maxDate = new Date(today.getFullYear() - 20, today.getMonth(), today.getDate()).toISOString().split("T")[0]
 
+  // Swap between Entities and Accounts
   const handleSectionChange = (section: "Entity" | "Accounts") => {
     if (typeof props.selectedEntity === "number" && props.entity) {
       if (section === "Entity") {
@@ -102,7 +98,7 @@ export function Modal(props: Props) {
         <div className="flex min-h-full items-end justify-center p-4 sm:items-center sm:p-0">
           <div className="relative min-w-[470px] overflow-hidden rounded-lg bg-gray-200 p-5">
             <div className="flex flex-col justify-between">
-              <h2>{modalProp.modalTitle}</h2>
+              <h2>{props.modalTitle}</h2>
               <button
                 className="absolute right-5 rounded-full bg-gradient-to-r from-gray-200 to-gray-100 p-1 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"
                 onClick={handleClick}
@@ -144,7 +140,7 @@ export function Modal(props: Props) {
               <>
                 <div className="flex">
                   <div className="mx-[20px] flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={props.colour} className="size-20">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={props.color} className="size-20">
                       <path
                         fillRule="evenodd"
                         d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z"
@@ -159,7 +155,6 @@ export function Modal(props: Props) {
                         type="text"
                         id="modal-Nm"
                         className="w-full"
-                        defaultValue={props.entity?.Dbtr.Nm}
                         value={customEntity?.Dbtr.Nm}
                         maxLength={140}
                         onChange={(e) => {
@@ -182,7 +177,6 @@ export function Modal(props: Props) {
                         type="date"
                         id="modal-BirthDt"
                         className="w-full"
-                        defaultValue={props.entity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt}
                         value={customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt}
                         min={minDate}
                         max={maxDate}
@@ -215,7 +209,6 @@ export function Modal(props: Props) {
                         type="text"
                         id="modal-CityOfBirth"
                         className="w-full"
-                        defaultValue={props.entity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.CityOfBirth}
                         value={customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.CityOfBirth}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
@@ -246,7 +239,6 @@ export function Modal(props: Props) {
                         type="text"
                         id="modal-CtryOfBirth"
                         className="w-full"
-                        defaultValue={props.entity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.CtryOfBirth}
                         value={customEntity?.Dbtr.Id.PrvtId.DtAndPlcOfBirth.CtryOfBirth}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
@@ -275,7 +267,6 @@ export function Modal(props: Props) {
                       <label htmlFor="modal-ID">ID number</label>
                       <input
                         className="w-full"
-                        defaultValue={props.entity?.Dbtr.Id.PrvtId.Othr[0].Id}
                         value={customEntity?.Dbtr.Id.PrvtId.Othr[0].Id}
                         id="modal-ID"
                         maxLength={35}
@@ -289,10 +280,12 @@ export function Modal(props: Props) {
                                 Id: {
                                   PrvtId: {
                                     ...customEntity.Dbtr.Id.PrvtId,
-                                    Othr: {
-                                      ...customEntity.Dbtr.Id.PrvtId.Othr[0],
-                                      Id: e.target.value,
-                                    },
+                                    Othr: [
+                                      {
+                                        ...customEntity.Dbtr.Id.PrvtId.Othr[0],
+                                        Id: e.target.value,
+                                      },
+                                    ],
                                   },
                                 },
                               },
@@ -310,7 +303,6 @@ export function Modal(props: Props) {
                         type="text"
                         id="modal-MobNb"
                         className="w-full"
-                        defaultValue={props.entity?.Dbtr.CtctDtls.MobNb}
                         value={customEntity?.Dbtr.CtctDtls.MobNb}
                         maxLength={35}
                         onChange={(e) => {
@@ -339,7 +331,6 @@ export function Modal(props: Props) {
                     onClick={async () => {
                       if (customEntity !== undefined && typeof props.selectedEntity === "number") {
                         if (validateForm()) {
-                          console.log("HIT")
                           await entityCtx.updateEntity(customEntity, props.selectedEntity)
                           handleClick()
                         }
@@ -371,7 +362,7 @@ export function Modal(props: Props) {
                             fill="none"
                             viewBox="0 0 24 24"
                             strokeWidth={1.5}
-                            stroke={props.colour}
+                            stroke={props.color}
                             className="size-20"
                           >
                             <path
@@ -410,7 +401,6 @@ export function Modal(props: Props) {
                               type="text"
                               id={`modal-Account-ID-${index}`}
                               className="w-full rounded-lg bg-gray-200 p-2 shadow-inner"
-                              defaultValue={props.entity?.Dbtr.Id.PrvtId.Othr[0]?.Id}
                               value={accountDetail.DbtrAcct.Id.Othr[0]?.Id}
                               readOnly
                             />
@@ -421,7 +411,6 @@ export function Modal(props: Props) {
                               type="text"
                               id={`modal-Account-Prtry-${index}`}
                               className="w-full rounded-lg bg-gray-200 p-2 shadow-inner"
-                              defaultValue={props.entity?.Dbtr.Id.PrvtId.Othr[0]?.Id}
                               value={accountDetail.DbtrAcct.Id.Othr[0]?.SchmeNm.Prtry}
                               readOnly
                             />
@@ -462,3 +451,5 @@ export function Modal(props: Props) {
     </div>
   )
 }
+
+export default DebtorModal

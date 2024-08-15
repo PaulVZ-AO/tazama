@@ -4,7 +4,6 @@ import axios from "axios"
 import { useContext, useEffect, useState } from "react"
 import Image from "next/image"
 import { DebtorDevice } from "components/Device/Debtor"
-import { Modal } from "components/Modal/Modal"
 import { ProcessIndicator } from "components/ProcessIndicator/ProcessIndicator"
 import { Profile } from "components/Profile/Profile"
 import { CreditorProfile } from "components/ProfileCreditor/ProfileCreditor"
@@ -12,6 +11,8 @@ import { StatusIndicator } from "components/StatusIndicator/StatusIndicator"
 import EntityContext from "store/entities/entity.context"
 import ProcessorContext from "store/processors/processor.context"
 import { getTADPROCResult } from "utils/db"
+import DebtorModal from "components/Modal/Modal"
+import CreditorModal from "components/Modal/CreditorsModal"
 
 const Web = () => {
   // const [types, setTypes] = useState<any[] | null>(null)
@@ -20,6 +21,7 @@ const Web = () => {
   const [hoveredType, setHoveredType] = useState<any>(null)
   const [showModal, setModal] = useState(false)
   const [started, setStarted] = useState(false)
+  const [showCreditorModal, setShowCreditorModal] = useState(false)
   const entityCtx = useContext(EntityContext)
   const procCtx = useContext(ProcessorContext)
 
@@ -108,7 +110,6 @@ const Web = () => {
 
   function RuleResult() {
     if (hoveredRule === null) return null
-
     return (
       <div className="rounded-xl p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
         <h3 className="text-center uppercase">Rule Results</h3>
@@ -131,9 +132,6 @@ const Web = () => {
   }
 
   function TypeResult() {
-    // if (hoveredType == null)
-    //   return(null);
-
     return (
       <div className="rounded-xl p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
         <h3 className="text-center uppercase">Type Results</h3>
@@ -186,10 +184,6 @@ const Web = () => {
   const [selectedEntity, setSelectedEntity] = useState<number>(0)
   const [selectedCreditorEntity, setSelectedCreditorEntity] = useState<number>(0)
 
-  const handleAccountChange = async (creditorIdx: number, accountIdx: number) => {
-    await entityCtx.setCreditorAccountPacs008(creditorIdx, accountIdx)
-  }
-
   useEffect(() => {
     setSelectedEntity(entityCtx.selectedDebtorEntity.debtorSelectedIndex || 0)
   }, [entityCtx.selectedDebtorEntity.debtorSelectedIndex])
@@ -238,13 +232,14 @@ const Web = () => {
   }, [selectedEntity])
 
   useEffect(() => {
+    console.log("SELECTED ENTITY: ", selectedEntity)
+  }, [selectedEntity])
+  useEffect(() => {
     console.log("SELECTED CREDITOR ENTITY: ", selectedCreditorEntity)
   }, [selectedCreditorEntity])
-
   useEffect(() => {
     console.log("DEBTORS: ", entityCtx.entities)
   }, [entityCtx.entities])
-
   useEffect(() => {
     console.log("CREDITORS: ", entityCtx.creditorEntities)
   }, [entityCtx.creditorEntities])
@@ -259,7 +254,6 @@ const Web = () => {
         <div className="col-span-2">
           <div className="flex flex-wrap justify-center rounded-lg p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
             <div className="mb-5 text-center text-xl">Debtors</div>
-
             <Profile
               colour={!entityCtx.entities[0] ? "text-gray-300" : "text-blue-500"}
               entity={entityCtx.entities[0]?.Entity}
@@ -271,7 +265,6 @@ const Web = () => {
               addAccount={async () => {
                 await entityCtx.createEntityAccount(0)
                 await entityCtx.selectDebtorEntity(0, 0)
-                // await entityCtx.selectDebtorEntity
               }}
             />
             <Profile
@@ -357,40 +350,13 @@ const Web = () => {
               reverse={true}
               entity={entityCtx.creditorEntities[0]?.CreditorEntity}
               creditorAccounts={entityCtx.creditorEntities[0]?.CreditorAccounts}
-              setModalVisible={setModal}
-              setSelectedEntity={async (idx: number) => {
-                setSelectedCreditorEntity(0)
-                if (
-                  entityCtx.creditorEntities[0]?.CreditorAccounts.length !== -1 &&
-                  entityCtx.creditorEntities[0]?.CreditorAccounts.length !== undefined
-                ) {
-                  // let idx = 0
-                  // if (entityCtx.creditorEntities[0]?.CreditorAccounts.length !== -1) {
-                  //   // if (entityCtx.entities[0]?.Accounts.length !== -1) {
-                  //   // idx = entityCtx.entities[0]?.Accounts.length - 1
-                  //   idx = entityCtx.creditorEntities[0]?.CreditorAccounts.length - 1
-                  // }
-
-                  await entityCtx.setCreditorAccountPacs008(0, idx)
-                }
-              }}
+              setModalVisible={setShowCreditorModal}
+              setSelectedEntity={() => setSelectedCreditorEntity(0)}
               index={0}
               selectedEntity={selectedCreditorEntity}
               addAccount={async () => {
                 await entityCtx.createCreditorEntityAccount(0)
-                // if (entityCtx.entities[0]?.Accounts.length !== -1 && entityCtx.entities[0]?.Accounts !== undefined) {
-                if (
-                  entityCtx.creditorEntities[0]?.CreditorAccounts.length !== -1 &&
-                  entityCtx.creditorEntities[0]?.CreditorAccounts.length !== undefined
-                ) {
-                  let idx = 0
-                  if (entityCtx.creditorEntities[0]?.CreditorAccounts.length !== -1) {
-                    // if (entityCtx.entities[0]?.Accounts.length !== -1) {
-                    // idx = entityCtx.entities[0]?.Accounts.length - 1
-                    idx = entityCtx.creditorEntities[0]?.CreditorAccounts.length - 1
-                  }
-                  await entityCtx.setCreditorAccountPacs008(0, idx)
-                }
+                await entityCtx.selectCreditorEntity(0, 0)
               }}
             />
             <CreditorProfile
@@ -398,40 +364,13 @@ const Web = () => {
               reverse={true}
               entity={entityCtx.creditorEntities[1]?.CreditorEntity}
               creditorAccounts={entityCtx.creditorEntities[1]?.CreditorAccounts}
-              setModalVisible={setModal}
+              setModalVisible={setShowCreditorModal}
               index={1}
-              setSelectedEntity={async (idx: number) => {
-                setSelectedCreditorEntity(1)
-                if (
-                  entityCtx.creditorEntities[1]?.CreditorAccounts.length !== -1 &&
-                  entityCtx.creditorEntities[1]?.CreditorAccounts.length !== undefined
-                ) {
-                  // let idx = 0
-                  // if (entityCtx.creditorEntities[1]?.CreditorAccounts.length !== -1) {
-                  // if (entityCtx.entities[1]?.Accounts.length !== -1) {
-                  // idx = entityCtx.entities[1]?.Accounts.length - 1
-                  // idx = entityCtx.creditorEntities[1]?.CreditorAccounts.length - 1
-                  // }
-                  // await entityCtx.selectCreditorEntity(1, idx)
-                  await entityCtx.setCreditorAccountPacs008(1, idx)
-                }
-              }}
-              // setSelectedEntity={() => setSelectedCreditorEntity(1)}
+              setSelectedEntity={() => setSelectedCreditorEntity(1)}
               selectedEntity={selectedCreditorEntity}
               addAccount={async () => {
                 await entityCtx.createCreditorEntityAccount(1)
-                if (
-                  entityCtx.creditorEntities[1]?.CreditorAccounts.length !== -1 &&
-                  entityCtx.creditorEntities[1]?.CreditorAccounts.length !== undefined
-                ) {
-                  let idx = 0
-                  if (entityCtx.creditorEntities[1]?.CreditorAccounts.length !== -1) {
-                    // if (entityCtx.entities[0]?.Accounts.length !== -1) {
-                    // idx = entityCtx.entities[0]?.Accounts.length - 1
-                    idx = entityCtx.creditorEntities[1]?.CreditorAccounts.length - 1
-                  }
-                  await entityCtx.setCreditorAccountPacs008(1, idx)
-                }
+                await entityCtx.selectCreditorEntity(1, 0)
               }}
             />
             <CreditorProfile
@@ -439,24 +378,13 @@ const Web = () => {
               reverse={true}
               entity={entityCtx.creditorEntities[2]?.CreditorEntity}
               creditorAccounts={entityCtx.creditorEntities[2]?.CreditorAccounts}
-              setModalVisible={setModal}
+              setModalVisible={setShowCreditorModal}
               setSelectedEntity={() => setSelectedCreditorEntity(2)}
               index={2}
               selectedEntity={selectedCreditorEntity}
               addAccount={async () => {
                 await entityCtx.createCreditorEntityAccount(2)
-                if (
-                  entityCtx.creditorEntities[2]?.CreditorAccounts.length !== -1 &&
-                  entityCtx.creditorEntities[2]?.CreditorAccounts.length !== undefined
-                ) {
-                  let idx = 0
-                  if (entityCtx.creditorEntities[2]?.CreditorAccounts.length !== -1) {
-                    // if (entityCtx.entities[0]?.Accounts.length !== -1) {
-                    // idx = entityCtx.entities[0]?.Accounts.length - 1
-                    idx = entityCtx.creditorEntities[2]?.CreditorAccounts.length - 1
-                  }
-                  await entityCtx.setCreditorAccountPacs008(2, idx)
-                }
+                await entityCtx.selectCreditorEntity(2, 0)
               }}
             />
             <CreditorProfile
@@ -464,24 +392,13 @@ const Web = () => {
               reverse={true}
               entity={entityCtx.creditorEntities[3]?.CreditorEntity}
               creditorAccounts={entityCtx.creditorEntities[3]?.CreditorAccounts}
-              setModalVisible={setModal}
+              setModalVisible={setShowCreditorModal}
               setSelectedEntity={() => setSelectedCreditorEntity(3)}
               index={3}
               selectedEntity={selectedCreditorEntity}
               addAccount={async () => {
                 await entityCtx.createCreditorEntityAccount(3)
-                if (
-                  entityCtx.creditorEntities[3]?.CreditorAccounts.length !== -1 &&
-                  entityCtx.creditorEntities[3]?.CreditorAccounts.length !== undefined
-                ) {
-                  let idx = 0
-                  if (entityCtx.creditorEntities[3]?.CreditorAccounts.length !== -1) {
-                    // if (entityCtx.entities[0]?.Accounts.length !== -1) {
-                    // idx = entityCtx.entities[0]?.Accounts.length - 1
-                    idx = entityCtx.creditorEntities[3]?.CreditorAccounts.length - 1
-                  }
-                  await entityCtx.setCreditorAccountPacs008(3, idx)
-                }
+                await entityCtx.selectCreditorEntity(3, 0)
               }}
             />
           </div>
@@ -547,7 +464,6 @@ const Web = () => {
           <h2 className="mb-5 rounded-t-lg bg-gradient-to-r from-gray-100 to-gray-200 py-5 text-center uppercase shadow-lg">
             Typologies
           </h2>
-
           <div className="grid grid-cols-12">
             <div className="col-span-6">
               <div className="grid grid-cols-3 px-5">
@@ -597,8 +513,8 @@ const Web = () => {
       )}
 
       {showModal && (
-        <Modal
-          colour={
+        <DebtorModal
+          color={
             selectedEntity === 0
               ? "rgba(68, 114, 196, 1)"
               : selectedEntity === 1
@@ -611,6 +527,26 @@ const Web = () => {
           setModal={setModal}
           entity={entityCtx.entities[selectedEntity]?.Entity}
           selectedEntity={selectedEntity}
+          modalTitle="Update Debtor Entity"
+        />
+      )}
+
+      {showCreditorModal && (
+        <CreditorModal
+          color={
+            selectedCreditorEntity === 0
+              ? "rgba(68, 114, 196, 1)"
+              : selectedCreditorEntity === 1
+              ? "rgba(112, 173, 71, 1)"
+              : selectedCreditorEntity === 2
+              ? "rgba(255, 192, 0, 1)"
+              : "rgba(237, 125, 49, 1)"
+          }
+          showModal={showCreditorModal}
+          setModal={setShowCreditorModal}
+          entity={entityCtx.creditorEntities[selectedCreditorEntity]?.CreditorEntity}
+          selectedEntity={selectedCreditorEntity}
+          modalTitle="Update Creditor Entity"
         />
       )}
     </div>

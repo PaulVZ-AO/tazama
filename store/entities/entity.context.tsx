@@ -24,6 +24,8 @@ interface Context {
   createAccountLoading: boolean
   updateAccountsLoading: boolean
   createCreditorAccountLoading: boolean
+  updateCreditorAccountsLoading: boolean
+
   resetEntityLoading: boolean
   resetCreditorEntityLoading: boolean
   creditorEntities: Array<CdtrEntity>
@@ -45,6 +47,7 @@ interface Context {
   createCreditorEntity: () => void
   updateCreditorEntity: (entity: CreditorEntity, entityIndex: number) => void
   createCreditorEntityAccount: (entityIndex: number) => void
+  updateCreditorAccounts: (creditorAccounts: any, entityIndex: number) => void
   setDebtorPacs008: (entityIndex: number) => void
   setDebtorAccountPacs008: (entityIndex: number, accountIndex: number) => void
   setCreditorPacs008: (entityIndex: number) => void
@@ -63,6 +66,7 @@ const EntityContext = createContext<Context>({
   createAccountLoading: false,
   updateAccountsLoading: false,
   createCreditorAccountLoading: false,
+  updateCreditorAccountsLoading: false,
   resetEntityLoading: false,
   resetCreditorEntityLoading: false,
   creditorEntities: [],
@@ -84,6 +88,7 @@ const EntityContext = createContext<Context>({
   createCreditorEntity: () => {},
   updateCreditorEntity: () => {},
   createCreditorEntityAccount: () => {},
+  updateCreditorAccounts: () => {},
   setDebtorPacs008: () => {},
   setDebtorAccountPacs008: () => {},
   setCreditorPacs008: () => {},
