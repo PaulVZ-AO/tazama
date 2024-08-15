@@ -1,4 +1,5 @@
 const { Database, aql } = require("arangojs")
+require("dotenv").config()
 
 // const getConnection = () => {
 //   // establish database connection
@@ -12,18 +13,19 @@ const { Database, aql } = require("arangojs")
 const getRulesConnection = () => {
   // establish database connection
   return new Database({
-    url: "tcp://localhost:18529",
+    // url: "tcp://localhost:18529",
+    url: process.env.NEXT_PUBLIC_ARANGO_DB_HOSTING,
     databaseName: "configuration",
-    auth: { username: "root", password: "" },
+    auth: { username: process.env.NEXT_PUBLIC_DB_USER, password: process.env.NEXT_PUBLIC_DB_PASSWORD },
   })
 }
 
 const getTADPROCConnection = () => {
   // establish database connection
   return new Database({
-    url: "tcp://localhost:18529",
+    url: process.env.NEXT_PUBLIC_ARANGO_DB_HOSTING,
     databaseName: "evaluationResults",
-    auth: { username: "root", password: "" },
+    auth: { username: process.env.NEXT_PUBLIC_DB_USER, password: process.env.NEXT_PUBLIC_DB_PASSWORD },
   })
 }
 

@@ -25,8 +25,8 @@ const ProcessorProvider = ({ children }: Props) => {
     edLightsLoading: false,
     typologiesLoading: false,
     typologies: typologiesInitialState,
-    edLights: defaultEDLights,
     rules: ruleInitialState,
+    edLights: defaultEDLights,
     tadpLights: defaultTadProcLights,
   }
   const [state, dispatch] = useReducer(ProcessorReducer, initialProcessorState)
@@ -79,7 +79,7 @@ const ProcessorProvider = ({ children }: Props) => {
     return () => {
       socket.disconnect()
     }
-  }, [state.rules])
+  }, [state.rules, state.typologies])
 
   const createRules = async () => {
     try {
