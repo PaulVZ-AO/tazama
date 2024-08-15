@@ -115,8 +115,8 @@ export function DeviceInfo(props: DeviceProps) {
                 </p>
                 <p className="truncate">Description: {getPacs008?.FIToFICstmrCdtTrf?.RmtInf?.Ustrd}</p>
                 <p>Purpose: {getPacs008?.FIToFICstmrCdtTrf?.CdtTrfTxInf?.Purp?.Cd} </p>
-                <p>Latitude: {formValues.latitude}</p>
-                <p>Longitude: {formValues.longitude}</p>
+                <p>Latitude: {getPacs008?.FIToFICstmrCdtTrf?.SplmtryData?.Envlp?.Doc?.InitgPty?.Glctn?.Lat}</p>
+                <p>Longitude: {getPacs008?.FIToFICstmrCdtTrf?.SplmtryData?.Envlp?.Doc?.InitgPty?.Glctn?.Long}</p>
                 <button className="m-auto mt-2 flex items-center text-blue-500" onClick={handleEditClick}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

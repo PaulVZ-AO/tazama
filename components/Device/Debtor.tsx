@@ -1,10 +1,10 @@
 import axios from "axios"
+import dotenv from "dotenv"
 import Image from "next/image"
 import { useContext } from "react"
 import { TimeComponent } from "components/timeComponent/TimeComponent"
 import EntityContext from "store/entities/entity.context"
 import { DeviceInfo } from "./DeviceInfo"
-import dotenv from "dotenv"
 
 dotenv.config()
 
@@ -152,7 +152,7 @@ export function DebtorDevice(props: DebtorProps) {
       <div className="absolute inset-x-0 mx-auto break-words" style={{ width: "222px", top: "15px" }}>
         <TimeComponent />
 
-        <DeviceInfo selectedDebtorEntity={props.selectedEntity} isDebtor={props.isDebtor} />
+        <DeviceInfo selectedEntity={props.selectedEntity} isDebtor={props.isDebtor} />
       </div>
 
       {props.isDebtor ? (
