@@ -68,6 +68,7 @@ const CreditorModal = ({ ...props }: Props) => {
   const minDate = new Date(today.getFullYear() - 60, today.getMonth(), today.getDate()).toISOString().split('T')[0];
   const maxDate = new Date(today.getFullYear() - 20, today.getMonth(), today.getDate()).toISOString().split('T')[0];
 
+  // Swap between Entities and Accounts
   const handleSectionChange = (section: "Entity" | "Accounts") => {
     if (typeof props.selectedEntity === "number" && props.entity) {
       if (section === "Entity") {
