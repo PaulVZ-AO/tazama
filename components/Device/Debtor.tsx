@@ -4,6 +4,9 @@ import { useContext } from "react"
 import { TimeComponent } from "components/timeComponent/TimeComponent"
 import EntityContext from "store/entities/entity.context"
 import { DeviceInfo } from "./DeviceInfo"
+import dotenv from "dotenv"
+
+dotenv.config()
 
 interface EDLights {
   pacs008: boolean
@@ -40,13 +43,13 @@ export function DebtorDevice(props: DebtorProps) {
 
   const creditorEntity = entityCtx.creditorEntities
 
-  const postPacs002Test = async () => {
+  const tmsUrl = process.env.NEXT_PUBLIC_TMS_SERVER_URL
+
+  const postPacs002 = async () => {
     try {
-      const response = await axios.post(
-        "http://localhost:5001/v1/evaluate/iso20022/pacs.002.001.12",
-        entityCtx.pacs002,
-        { headers: { "Content-Type": "application/json" } }
-      )
+      const response = await axios.post(`${tmsUrl}/v1/evaluate/iso20022/pacs.002.001.12`, entityCtx.pacs002, {
+        headers: { "Content-Type": "application/json" },
+      })
       if (response.status === 200) {
         let data: EDLights = {
           pacs008: true,
@@ -92,14 +95,12 @@ export function DebtorDevice(props: DebtorProps) {
     }
   }
 
-  const postPacs008Test = async () => {
+  const postPacs008 = async () => {
     try {
       props.setStarted(true)
-      const response = await axios.post(
-        "http://localhost:5001/v1/evaluate/iso20022/pacs.008.001.10",
-        entityCtx.pacs008,
-        { headers: { "Content-Type": "application/json" } }
-      )
+      const response = await axios.post(`${tmsUrl}/v1/evaluate/iso20022/pacs.008.001.10`, entityCtx.pacs008, {
+        headers: { "Content-Type": "application/json" },
+      })
 
       if (response.status === 200) {
         if (response.status === 200) {
@@ -114,7 +115,7 @@ export function DebtorDevice(props: DebtorProps) {
           props.setLights(newData)
         }
         setTimeout(async () => {
-          await postPacs002Test()
+          await postPacs002()
         }, 1000)
       }
       console.log("Test POST PACS008 response: ", response.data)
@@ -175,7 +176,7 @@ export function DebtorDevice(props: DebtorProps) {
                 })
                 props.resetLights(true)
                 setTimeout(async () => {
-                  await postPacs008Test()
+                  await postPacs008()
                 }, 500)
               }}
             >
