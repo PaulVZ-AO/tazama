@@ -574,7 +574,7 @@ const EntityProvider = ({ children }: Props) => {
       }
 
       dispatch({ type: ACTIONS.UPDATE_CREDITOR_ACCOUNTS_SUCCESS, payload: [...accountsList] })
-      localStorage.setItem("DEBTOR_ENTITIES", JSON.stringify(accountsList))
+      localStorage.setItem("CREDITOR_ENTITIES", JSON.stringify(accountsList))
     } catch (error) {
       dispatch({ type: ACTIONS.UPDATE_CREDITOR_ACCOUNTS_FAIL })
     }

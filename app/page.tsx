@@ -3,13 +3,13 @@
 import axios from "axios"
 import { useContext, useEffect, useState } from "react"
 import { DebtorDevice } from "components/Device/Debtor"
-import { Modal } from "components/Modal/Modal"
 import { ProcessIndicator } from "components/ProcessIndicator/ProcessIndicator"
 import { Profile } from "components/Profile/Profile"
 import { CreditorProfile } from "components/ProfileCreditor/ProfileCreditor"
 import { StatusIndicator } from "components/StatusIndicator/StatusIndicator"
 import EntityContext from "store/entities/entity.context"
-import { CreditorModal } from "components/Modal/CreditorsModal"
+import DebtorModal from "components/Modal/Modal"
+import CreditorModal from "components/Modal/CreditorsModal"
 
 const Web = () => {
   const [hoveredRule, setHoveredRule] = useState<any>(null)
@@ -305,23 +305,24 @@ const Web = () => {
       </div>
 
       {showModal && (
-        <Modal
-          colour={selectedEntity === 0 ? "rgba(68, 114, 196, 1)" : selectedEntity === 1 ? "rgba(112, 173, 71, 1)" : selectedEntity === 2 ? "rgba(255, 192, 0, 1)" : "rgba(237, 125, 49, 1)"}
+        <DebtorModal
+          color={selectedEntity === 0 ? "rgba(68, 114, 196, 1)" : selectedEntity === 1 ? "rgba(112, 173, 71, 1)" : selectedEntity === 2 ? "rgba(255, 192, 0, 1)" : "rgba(237, 125, 49, 1)"}
           showModal={showModal}
           setModal={setModal}
           entity={entityCtx.entities[selectedEntity]?.Entity}
           selectedEntity={selectedEntity}
+          modalTitle="Update Debtor Entity"
         />
       )}
 
-
       {showCreditorModal && (
         <CreditorModal
-          colour={selectedCreditorEntity === 0 ? "rgba(68, 114, 196, 1)" : selectedCreditorEntity === 1 ? "rgba(112, 173, 71, 1)" : selectedCreditorEntity === 2 ? "rgba(255, 192, 0, 1)" : "rgba(237, 125, 49, 1)"}
+          color={selectedCreditorEntity === 0 ? "rgba(68, 114, 196, 1)" : selectedCreditorEntity === 1 ? "rgba(112, 173, 71, 1)" : selectedCreditorEntity === 2 ? "rgba(255, 192, 0, 1)" : "rgba(237, 125, 49, 1)"}
           showModal={showCreditorModal}
           setModal={setShowCreditorModal}
           entity={entityCtx.creditorEntities[selectedCreditorEntity]?.CreditorEntity}
-          selectedCreditorEntity={selectedCreditorEntity}
+          selectedEntity={selectedCreditorEntity}
+          modalTitle="Update Creditor Entity"
         />
       )}
     </div>
