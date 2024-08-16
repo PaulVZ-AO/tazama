@@ -49,8 +49,33 @@ export const getRulesDescriptions = async () => {
   for await (let rule of results) {
     result.push(rule)
   }
+
+  const ruleConfig = []
+
+  if (result.length > 0) {
+    result.forEach((rule) => {
+      let newRule = {
+        id: rule.id,
+        title: rule.id.split("@")[0],
+        description: rule.desc,
+        bands: [],
+      }
+
+      rule.config.bands.forEach((band) => {
+        let newBand = {
+          subRuleRef: band.subRuleRef,
+          lowerLimit: band.lowerLimit ? band.lowerLimit : null,
+          upperLimit: band.upperLimit ? band.upperLimit : null,
+          reason: band.reason,
+        }
+        newRule.bands.push(newBand)
+      })
+      ruleConfig.push(newRule)
+      // console.log(newRule)
+    })
+  }
   // log results
-  console.log(result)
+  console.log("RULE DESCR: ", ruleConfig)
   // return the list of rules
   return result
 }
@@ -69,7 +94,7 @@ export const getTypologyDescriptions = async () => {
     result.push(typology)
   }
   // log results
-  console.log(result)
+  console.log("TYPO DESCR: ", result)
   // return the list of typologies
   return result
 }

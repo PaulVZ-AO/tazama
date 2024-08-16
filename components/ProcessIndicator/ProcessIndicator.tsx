@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { StatusIndicator } from "../StatusIndicator/StatusIndicator"
 
 interface Props {
   started: boolean
+  stop?: boolean
 }
-export function ProcessIndicator({ started }: Props) {
+export function ProcessIndicator({ started, stop }: Props) {
   const [progress, setProgress] = useState<number | null>(null)
 
   useEffect(() => {
@@ -26,7 +27,7 @@ export function ProcessIndicator({ started }: Props) {
       setProgress(null)
     }
   }, [progress, started])
-  return (
+  return !stop ? (
     <>
       <StatusIndicator colour={progress === 0 ? "g" : "n"} />
       <StatusIndicator colour={progress === 1 ? "g" : "n"} />
@@ -36,6 +37,17 @@ export function ProcessIndicator({ started }: Props) {
       <StatusIndicator colour={progress === 5 ? "g" : "n"} />
       <StatusIndicator colour={progress === 6 ? "g" : "n"} />
       <StatusIndicator colour={progress === 7 ? "g" : "n"} />
+    </>
+  ) : (
+    <>
+      <StatusIndicator colour={"r"} />
+      <StatusIndicator colour={"r"} />
+      <StatusIndicator colour={"r"} />
+      <StatusIndicator colour={"r"} />
+      <StatusIndicator colour={"r"} />
+      <StatusIndicator colour={"r"} />
+      <StatusIndicator colour={"r"} />
+      <StatusIndicator colour={"r"} />
     </>
   )
 }

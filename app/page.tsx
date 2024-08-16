@@ -324,7 +324,7 @@ const Web = () => {
               />
             </div>
             <div className="col-span-4 flex items-center justify-between px-5">
-              <ProcessIndicator started={started} />
+              <ProcessIndicator started={started} stop={procCtx.tadpLights.TADPROC.stop} />
             </div>
             <div className="col-span-4">
               <DebtorDevice

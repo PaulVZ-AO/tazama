@@ -28,3 +28,17 @@ export interface EDLightsManager {
     color: "r" | "g" | "y" | "n"
   }
 }
+
+interface RuleBand {
+  subRuleRef: string
+  lowerLimit: number | null
+  upperLimit: number | null
+  reason: string
+}
+
+export interface RuleConfig {
+  id: string
+  title: string
+  description: string
+  bands: RuleBand[]
+}
