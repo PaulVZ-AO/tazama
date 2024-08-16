@@ -302,6 +302,22 @@ const EntityReducer = (state: any, action: any) => {
         ...state,
         pacs002Loading: false,
       }
+
+    case ACTIONS.SET_RULE_LIGHTS_LOADING:
+      return {
+        ...state,
+        ruleLights: null,
+      }
+    case ACTIONS.SET_RULE_LIGHTS_SUCCESS:
+      return {
+        ...state,
+        ruleLights: action.payload,
+      }
+    case ACTIONS.SET_RULE_LIGHTS_FAIL:
+      return {
+        ...state,
+        ruleLights: null,
+      }
   }
 }
 

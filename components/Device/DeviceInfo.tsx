@@ -1,38 +1,38 @@
-import { useContext, useEffect, useState } from "react";
-import EntityContext from "store/entities/entity.context";
-import TransactionModal from "./TransactionModal";
+import { useContext, useEffect, useState } from "react"
+import EntityContext from "store/entities/entity.context"
+import TransactionModal from "./TransactionModal"
 
 interface DeviceProps {
-  selectedEntity: number;
-  isDebtor?: boolean;
+  selectedEntity: number
+  isDebtor?: boolean
 }
 
 export function DeviceInfo(props: DeviceProps) {
-  const entityCtx = useContext(EntityContext);
+  const entityCtx = useContext(EntityContext)
 
-  const [getPacs008, setGetPacs008] = useState<any>();
-  const [isTransaction, setIsTransaction] = useState<boolean>(false);
-  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [getPacs008, setGetPacs008] = useState<any>()
+  const [isTransaction, setIsTransaction] = useState<boolean>(false)
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
   const [formValues, setFormValues] = useState({
     amount: "",
     description: "",
     purpose: "",
     latitude: "",
     longitude: "",
-  });
+  })
 
-  const accountIndex = entityCtx.selectedDebtorEntity.debtorAccountSelectedIndex;
-  const entity = entityCtx.entities[props.selectedEntity];
+  const accountIndex = entityCtx.selectedDebtorEntity.debtorAccountSelectedIndex
+  const entity = entityCtx.entities[props.selectedEntity]
 
   const handleClick = async () => {
-    await entityCtx.generateTransaction();
-    setGetPacs008(entityCtx.pacs008);
-    setIsTransaction(true);
-  };
+    await entityCtx.generateTransaction()
+    setGetPacs008(entityCtx.pacs008)
+    setIsTransaction(true)
+  }
 
   useEffect(() => {
-    setIsTransaction(false);
-  }, [props.selectedEntity]);
+    setIsTransaction(false)
+  }, [props.selectedEntity])
 
   const handleEditClick = () => {
     setFormValues({
@@ -41,39 +41,39 @@ export function DeviceInfo(props: DeviceProps) {
       purpose: getPacs008?.FIToFICstmrCdtTrf?.CdtTrfTxInf?.Purp?.Cd || "",
       latitude: getPacs008?.FIToFICstmrCdtTrf?.SplmtryData?.Envlp?.Doc?.InitgPty?.Glctn?.Lat || "",
       longitude: getPacs008?.FIToFICstmrCdtTrf?.SplmtryData?.Envlp?.Doc?.InitgPty?.Glctn?.Long || "",
-    });
-    setIsModalVisible(true);
-  };
+    })
+    setIsModalVisible(true)
+  }
 
   const handleSave = () => {
     // Implement save logic here
-    setIsModalVisible(false);
-  };
+    setIsModalVisible(false)
+  }
 
   const handleModalChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
     setFormValues({
       ...formValues,
       [field]: e.target.value,
-    });
-  };
+    })
+  }
 
-  let fillColour;
+  let fillColour
   switch (props.selectedEntity) {
     case 0:
-      fillColour = "text-blue-500";
-      break;
+      fillColour = "text-blue-500"
+      break
     case 1:
-      fillColour = "text-green-500";
-      break;
+      fillColour = "text-green-500"
+      break
     case 2:
-      fillColour = "text-yellow-400";
-      break;
+      fillColour = "text-yellow-400"
+      break
     case 3:
-      fillColour = "text-orange-500";
-      break;
+      fillColour = "text-orange-500"
+      break
     default:
-      fillColour = "text-blue-500";
-      break;
+      fillColour = "text-blue-500"
+      break
   }
 
   const creditorAccountIndex = entityCtx.selectedCreditorEntity.creditorAccountSelectedIndex
@@ -115,8 +115,8 @@ export function DeviceInfo(props: DeviceProps) {
                 </p>
                 <p className="truncate">Description: {getPacs008?.FIToFICstmrCdtTrf?.RmtInf?.Ustrd}</p>
                 <p>Purpose: {getPacs008?.FIToFICstmrCdtTrf?.CdtTrfTxInf?.Purp?.Cd} </p>
-                <p>Latitude: {formValues.latitude}</p>
-                <p>Longitude: {formValues.longitude}</p>
+                <p>Latitude: {getPacs008?.FIToFICstmrCdtTrf?.SplmtryData?.Envlp?.Doc?.InitgPty?.Glctn?.Lat}</p>
+                <p>Longitude: {getPacs008?.FIToFICstmrCdtTrf?.SplmtryData?.Envlp?.Doc?.InitgPty?.Glctn?.Long}</p>
                 <button className="m-auto mt-2 flex items-center text-blue-500" onClick={handleEditClick}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -161,7 +161,7 @@ export function DeviceInfo(props: DeviceProps) {
           onCancel={() => setIsModalVisible(false)}
         />
       </>
-    );
+    )
   } else {
     return (
       <>
