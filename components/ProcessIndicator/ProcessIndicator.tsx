@@ -13,7 +13,7 @@ export function ProcessIndicator({ started, stop }: Props) {
       setProgress(0)
     }
     if (started) {
-      const len = 7
+      const len = 8
       const timer = setInterval(() => {
         if (progress! < len) {
           setProgress((prevProgress) => prevProgress! + 1)
@@ -37,9 +37,11 @@ export function ProcessIndicator({ started, stop }: Props) {
       <StatusIndicator colour={progress === 5 ? "g" : "n"} />
       <StatusIndicator colour={progress === 6 ? "g" : "n"} />
       <StatusIndicator colour={progress === 7 ? "g" : "n"} />
+      <StatusIndicator colour={progress === 8 ? "g" : "n"} />
     </>
   ) : (
     <>
+      <StatusIndicator colour={"r"} />
       <StatusIndicator colour={"r"} />
       <StatusIndicator colour={"r"} />
       <StatusIndicator colour={"r"} />

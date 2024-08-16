@@ -70,26 +70,26 @@ const ProcessorProvider = ({ children }: Props) => {
       console.log("Received Message from the welcome: ", msg)
       socket.emit("confirmation", msg)
     })
-    socket.on("ruleRequest", async (msg) => {
+    socket.on("ruleRequest", (msg) => {
       console.log("Received Message from the RULE REQUEST: ", msg)
     })
 
-    socket.on("ruleResponse", async (msg) => {
+    socket.on("ruleResponse", (msg) => {
       console.log("Received Message from the RULE RESPONSE: ", msg)
       setTimeout(async () => await updateRules(msg), 400)
     })
 
-    socket.on("typoRequest", async (msg) => {
+    socket.on("typoRequest", (msg) => {
       console.log("Received Message from the TYPO REQUEST: ", msg)
     })
 
-    socket.on("typoResponse", async (msg) => {
+    socket.on("typoResponse", (msg) => {
       console.log("Received Message from the TYPO RESPONSE: ", msg)
       setTimeout(async () => await updateTypologies(msg), 700)
       socket.emit("tadProc", msg)
     })
 
-    socket.on("stream", async (msg) => {
+    socket.on("stream", (msg) => {
       console.log("Received Message from the Stream: ", msg)
     })
 
