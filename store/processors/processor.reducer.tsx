@@ -1,5 +1,5 @@
 import { ACTIONS } from "./processor.actions"
-import { defaultTadProcLights, defaultEDLights } from "./processor.initialState"
+import { defaultEDLights, defaultTadProcLights } from "./processor.initialState"
 
 const ProcessorReducer = (state: any, action: any) => {
   switch (action.type) {
@@ -97,18 +97,21 @@ const ProcessorReducer = (state: any, action: any) => {
       return {
         ...state,
         edLightsLoading: true,
+        edError: "",
       }
     case ACTIONS.UPDATE_ED_SUCCESS:
       return {
         ...state,
         edLightsLoading: false,
         edLights: action.payload,
+        edError: "",
       }
     case ACTIONS.UPDATE_ED_FAIL:
       return {
         ...state,
         edLightsLoading: false,
         edLights: defaultEDLights,
+        edError: action.payload,
       }
 
     case ACTIONS.RESET_ALL_LIGHTS:

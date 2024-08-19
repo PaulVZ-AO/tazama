@@ -160,15 +160,60 @@ export const getNetworkMap = async () => {
           result: null,
           linkedRules: [],
         }
-        typology.rules.forEach((rule) => {
+        typology.rules.forEach(async (rule) => {
           let newRule = {
             id: parseInt(rule.id.split("@")[0]),
             title: rule.id.split("@")[0],
+            rule: rule.id,
+            ruleDescription: "Derived account age - creditor",
             color: "n",
             result: null,
+            linkedTypologies: [],
+            ruleBands: [],
           }
-          newTypology.linkedRules.push(newRule.title)
-          rules.push(newRule)
+          if (!newRule.linkedTypologies.includes(typology.cfg.split("@")[0])) {
+            newRule.linkedTypologies.push(typology.cfg.split("@")[0])
+          }
+          const db = getConfigConnection()
+          // make sure rule collection exists
+          await getCollection("ruleConfiguration", db)
+          // declare array to hold rules
+          let result = []
+          // query for rules
+          const results = await db.query(aql`FOR c IN ruleConfiguration FILTER c.id == ${rule.id} RETURN c`)
+          // loop through array cursor and push results in array
+          for await (let rule of results) {
+            result.push(rule)
+            newRule.ruleDescription = rule.desc
+            console.log("RULE ID: ", rule.id)
+            rule.config.bands.forEach((band) => {
+              let newBand = {
+                subRuleRef: band.subRuleRef,
+                lowerLimit: band.lowerLimit ? band.lowerLimit : null,
+                upperLimit: band.upperLimit ? band.upperLimit : null,
+                reason: band.reason,
+              }
+              newRule.ruleBands.push(newBand)
+            })
+          }
+
+          if (result.length > 0) {
+            // result.forEach((rule) => {
+            //   newRule.ruleDescription = rule.desc
+            //   rule.config.bands.forEach((band) => {
+            //     let newBand = {
+            //       subRuleRef: band.subRuleRef,
+            //       lowerLimit: band.lowerLimit ? band.lowerLimit : null,
+            //       upperLimit: band.upperLimit ? band.upperLimit : null,
+            //       reason: band.reason,
+            //     }
+            //     newRule.bands.push(newBand)
+            //   })
+            // })
+
+            newTypology.linkedRules.push(newRule.title)
+            rules.push(newRule)
+          }
         })
         typologies.push(newTypology)
       })

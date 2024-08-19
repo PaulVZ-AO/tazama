@@ -17,5 +17,6 @@ export const defaultEDLights: EDLightsManager = {
     pacs008: false,
     pacs002: false,
     color: "n",
+    error: "",
   },
 }

@@ -26,6 +26,7 @@ const ProcessorProvider = ({ children }: Props) => {
     rulesLoading: false,
     tadprocLoading: false,
     edLightsLoading: false,
+    edError: "",
     typologiesLoading: false,
     typologies: typologiesInitialState,
     rules: ruleInitialState,
@@ -48,7 +49,7 @@ const ProcessorProvider = ({ children }: Props) => {
       if (configData.rules) {
         dispatch({ type: ACTIONS.CREATE_RULES_SUCCESS, payload: configData.rules })
       }
-      if (configData.rules) {
+      if (configData.typologies) {
         dispatch({ type: ACTIONS.CREATE_TYPO_SUCCESS, payload: configData.typologies })
       }
     })()
@@ -225,7 +226,7 @@ const ProcessorProvider = ({ children }: Props) => {
       dispatch({ type: ACTIONS.UPDATE_ED_LOADING })
       dispatch({ type: ACTIONS.UPDATE_ED_SUCCESS, payload: data })
     } catch (error) {
-      dispatch({ type: ACTIONS.UPDATE_ED_FAIL })
+      dispatch({ type: ACTIONS.UPDATE_ED_FAIL, payload: data })
     }
   }
 

@@ -109,7 +109,7 @@ app.prepare().then(() => {
     const pubRule901 = nc.subscribe("pub-rule-901@1.0.0", { queue: "MONITORING_RULE_PUBLISHER" })
     const subRule901 = nc.subscribe("sub-rule-901@1.0.0", { queue: "MONITORING_RULE_SUBSCRIBER" })
     const type001 = nc.subscribe("typology-999@1.0.0", { queue: "MONITORING_TYPOLOGY" })
-    const cms = nc.subscribe("cms", { queue: "MONITORING_CMS" })
+    const cms = nc.subscribe("CMS", { queue: "MONITORING_CMS" })
 
     // subscriptions.push(connected)
     // subscriptions.push(all)

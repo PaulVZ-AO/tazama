@@ -1,5 +1,5 @@
 import { createContext } from "react"
-import { ruleInitialState, defaultTadProcLights, defaultEDLights } from "./processor.initialState"
+import { defaultEDLights, defaultTadProcLights, ruleInitialState } from "./processor.initialState"
 import { EDLightsManager, Rule, TadProcLightsManager, Typology } from "./processor.interface"
 
 interface Context {

@@ -1,9 +1,11 @@
 "use client"
 
 import axios from "axios"
-import { useContext, useEffect, useState } from "react"
 import Image from "next/image"
+import { useContext, useEffect, useState } from "react"
 import { DebtorDevice } from "components/Device/Debtor"
+import CreditorModal from "components/Modal/CreditorsModal"
+import DebtorModal from "components/Modal/Modal"
 import { ProcessIndicator } from "components/ProcessIndicator/ProcessIndicator"
 import { Profile } from "components/Profile/Profile"
 import { CreditorProfile } from "components/ProfileCreditor/ProfileCreditor"
@@ -11,13 +13,12 @@ import { StatusIndicator } from "components/StatusIndicator/StatusIndicator"
 import EntityContext from "store/entities/entity.context"
 import ProcessorContext from "store/processors/processor.context"
 import { getTADPROCResult } from "utils/db"
-import DebtorModal from "components/Modal/Modal"
-import CreditorModal from "components/Modal/CreditorsModal"
 
 const Web = () => {
   // const [types, setTypes] = useState<any[] | null>(null)
   const [descriptions, setDescriptions] = useState<any[] | null>(null)
   const [hoveredRule, setHoveredRule] = useState<any>(null)
+  const [selectedRule, setSelectedRule] = useState<any>(null)
   const [hoveredType, setHoveredType] = useState<any>(null)
   const [showModal, setModal] = useState(false)
   const [started, setStarted] = useState(false)
@@ -33,6 +34,16 @@ const Web = () => {
   const handleRuleMouseLeave = () => {
     setHoveredRule(null)
     setHoveredType(null) // fallback if stats is stuck
+  }
+
+  const handleRuleClick = (type: any) => {
+    setHoveredType(null) // fallback if stats is stuck
+    setSelectedRule(type)
+  }
+
+  const handleRuleClickClose = () => {
+    setHoveredType(null) // fallback if stats is stuck
+    setSelectedRule(null)
   }
 
   const handleTypeMouseEnter = (type: any) => {
@@ -103,28 +114,48 @@ const Web = () => {
     )
   }
 
-  const getRuleDescriptions = (result: string) => {
-    const description: any = descriptions!.find((item) => item.subRuleRef === result)
+  const getRuleDescriptions = (result: string, rule_id: number) => {
+    const desc: any = procCtx.rules.find((rule) => rule.id === rule_id)
+    console.log("getRuleDescriptions", result, rule_id)
+
+    console.log("HIT")
+    const description = desc.ruleBands.find((item: any) => item.subRuleRef === result)
+    console.log("description: ", description.reason)
     return description.reason
+
+    // const description: any = descriptions!.find((item) => item.subRuleRef === result)
   }
 
+  useEffect(() => {
+    console.log(selectedRule)
+  }, [selectedRule])
+
   function RuleResult() {
-    if (hoveredRule === null) return null
+    if (hoveredRule === null && selectedRule === null) return null
     return (
       <div className="rounded-xl p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
         <h3 className="text-center uppercase">Rule Results</h3>
 
-        <div className="p-5">
-          <div className="mb-2 p-2 text-center">
-            {hoveredRule?.title} {/* {hoveredRule.title} {hoveredRule && hoveredRule.r ? hoveredRule.r : ""}= */}
-            {hoveredRule ? (hoveredRule.color === "g" ? "= False" : "= True") : ""}
+        <div className="flex flex-col p-1">
+          <div className="mb-2 flex w-full flex-col items-center justify-center text-center">
+            {/* {hoveredRule?.title} {hoveredRule.title} {hoveredRule && hoveredRule.r ? hoveredRule.r : ""}= */}
+            <p className="align-center m-2 flex w-full justify-center border-2 border-black px-5 py-2 text-center">
+              {selectedRule ? selectedRule.rule : hoveredRule?.rule}
+            </p>
+            <p className="align-center m-1 flex w-full justify-center border-2 border-black px-5 py-2 text-center text-xs">
+              {selectedRule ? selectedRule.ruleDescription : hoveredRule?.ruleDescription}
+            </p>
+            {/* {hoveredRule ? (hoveredRule.color === "g" ? "= False" : "= True") : ""} */}
           </div>
           <hr className="mb-2 border-black" />
-          <div className="mb-2 p-2 text-center">
+          <div className="align-center mb-2 grid w-full grid-cols-4 justify-center gap-4 text-center">
             {/* Creditor account is less than 1 day old. */}
-            {hoveredRule && hoveredRule.color !== "g" && hoveredRule.result
-              ? getRuleDescriptions(hoveredRule.result)
-              : ""}
+            <p className="align-center col-span-1 flex h-8 w-full flex-row justify-center border-2 border-black px-4 py-2 text-center text-xs">
+              {selectedRule ? selectedRule.result : hoveredRule.result}
+            </p>
+            <p className="align-center col-span-3 flex size-full flex-row justify-center border-2 border-black px-4 py-2 text-center text-xs">
+              {selectedRule?.result ? getRuleDescriptions(selectedRule.result, selectedRule.id) : ""}
+            </p>
           </div>
         </div>
       </div>
@@ -412,8 +443,11 @@ const Web = () => {
             Event director
           </h2>
 
-          <div className="flex min-h-80 items-center justify-center">
+          <div className="flex min-h-80 flex-col items-center justify-center">
             <StatusIndicator large={true} colour={procCtx.edLights.ED.color} />
+            <div className="relative flex w-40 items-center justify-center text-center">
+              <p className="absolute top-2 flex w-full items-center justify-center">{procCtx.edLights.ED.error}</p>
+            </div>
           </div>
         </div>
 
@@ -436,8 +470,10 @@ const Web = () => {
                         handleRuleMouseEnter(rule)
                         console.log(rule)
                       }}
+                      onMouseLeave={() => handleRuleMouseLeave()}
                       onClick={() => {
-                        handleRuleMouseLeave()
+                        handleRuleClick(rule)
+
                         console.log(rule)
                       }}
                     >
@@ -451,7 +487,7 @@ const Web = () => {
             <div
               className="col-span-6 px-5"
               onClick={() => {
-                handleRuleMouseLeave()
+                handleRuleClickClose()
               }}
             >
               <RuleResult />
@@ -498,11 +534,12 @@ const Web = () => {
           src="/stop.png"
           width="250"
           height="250"
-          className="absolute inset-x-0 inset-y-0 mx-auto my-auto"
+          className="absolute inset-0 m-auto"
           style={{
             position: "absolute",
-            top: -355,
-            right: `${window.innerWidth / 2}`,
+            // top: -355,
+            top: window.innerHeight / 100 - 250,
+            left: window.innerWidth / 10 - 175,
             zIndex: 1,
             maxWidth: "250px",
             minWidth: "250px",

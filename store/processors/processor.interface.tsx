@@ -1,8 +1,19 @@
+interface RuleBand {
+  subRuleRef: string
+  lowerLimit: number | null
+  upperLimit: number | null
+  reason: string
+}
+
 export interface Rule {
   id: number
   title: string
+  rule: string
+  ruleDescription: string
   color: "r" | "g" | "y" | "n"
   result: any
+  linkedTypologies: string[]
+  ruleBands: RuleBand[]
 }
 
 export interface Typology {
@@ -10,6 +21,7 @@ export interface Typology {
   title: string
   color: "r" | "g" | "y" | "n"
   result: any
+  linkedRules: string[]
 }
 
 export interface TadProcLightsManager {
@@ -26,14 +38,8 @@ export interface EDLightsManager {
     pacs008: boolean
     pacs002: boolean
     color: "r" | "g" | "y" | "n"
+    error: string
   }
-}
-
-interface RuleBand {
-  subRuleRef: string
-  lowerLimit: number | null
-  upperLimit: number | null
-  reason: string
 }
 
 export interface RuleConfig {
