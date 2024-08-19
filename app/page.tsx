@@ -140,21 +140,26 @@ const Web = () => {
           <div className="mb-2 flex w-full flex-col items-center justify-center text-center">
             {/* {hoveredRule?.title} {hoveredRule.title} {hoveredRule && hoveredRule.r ? hoveredRule.r : ""}= */}
             <p className="align-center m-2 flex w-full justify-center border-2 border-black px-5 py-2 text-center">
-              {selectedRule ? selectedRule.rule : hoveredRule?.rule}
+              {hoveredRule ? hoveredRule?.rule : selectedRule && selectedRule.rule}
             </p>
             <p className="align-center m-1 flex w-full justify-center border-2 border-black px-5 py-2 text-center text-xs">
               {selectedRule ? selectedRule.ruleDescription : hoveredRule?.ruleDescription}
             </p>
-            {/* {hoveredRule ? (hoveredRule.color === "g" ? "= False" : "= True") : ""} */}
           </div>
           <hr className="mb-2 border-black" />
           <div className="align-center mb-2 grid w-full grid-cols-4 justify-center gap-4 text-center">
             {/* Creditor account is less than 1 day old. */}
             <p className="align-center col-span-1 flex h-8 w-full flex-row justify-center border-2 border-black px-4 py-2 text-center text-xs">
-              {selectedRule ? selectedRule.result : hoveredRule.result}
+              {hoveredRule ? hoveredRule.result : selectedRule && selectedRule.result}
             </p>
             <p className="align-center col-span-3 flex size-full flex-row justify-center border-2 border-black px-4 py-2 text-center text-xs">
-              {selectedRule?.result ? getRuleDescriptions(selectedRule.result, selectedRule.id) : ""}
+              {hoveredRule
+                ? hoveredRule.result
+                  ? getRuleDescriptions(hoveredRule.result, hoveredRule.id)
+                  : ""
+                : selectedRule && selectedRule?.result
+                ? getRuleDescriptions(selectedRule.result, selectedRule.id)
+                : ""}
             </p>
           </div>
         </div>
