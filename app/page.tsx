@@ -10,6 +10,7 @@ import { Profile } from "components/Profile/Profile"
 import { CreditorProfile } from "components/ProfileCreditor/ProfileCreditor"
 import { StatusIndicator } from "components/StatusIndicator/StatusIndicator"
 import EntityContext from "store/entities/entity.context"
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
 
 const Web = () => {
   const [hoveredRule, setHoveredRule] = useState<any>(null)
@@ -17,47 +18,66 @@ const Web = () => {
   // const [nats, setNats] = useState<NatsConnection>()
   const [showModal, setModal] = useState(false)
   const entityCtx = useContext(EntityContext)
+  const [debtorEntities, setDebtorEntities] = useState<any>(entityCtx.entities)
 
-  // useEffect(() => {
-  //   const sc: Codec<string> = StringCodec()
-  //   ;(async () => {
-  //     const nc = await connect({
-  //       // servers: ["wss://demo.nats.io:8443"],
-  //       servers: ["wss://nats:4222"],
-  //     })
-  //     setNats(nc)
-  //     console.log("connected to NATS")
-  //     // const sub = nc.subscribe("echo")
-  //     const pacs008Sub = nc.subscribe("sub-rule-901@1.0.0")
+  const reorder = (list: any, startIndex: number, endIndex: number) => {
+    const result: any = Array.from(list)
+    const [removed] = result.splice(startIndex, 1)
+    result.splice(endIndex, 0, removed)
+    console.log(result, "<===")
+    return result
+  }
 
-  //     const connected = nc.subscribe("connection")
+  const onDragEnd = async (result: { destination: any; source: any; draggableId: any }) => {
+    const { destination, source, draggableId } = result
 
-  //     const handle = (msg: any) => {
-  //       console.log(`Received a request: ${sc.decode(msg.data)}`)
-  //       msg.respond(msg.data)
-  //     }
+    // No destination (dropped outside of droppable)
+    if (!destination) return
 
-  //     // Wait to receive messages from the subscription and handle them
-  //     // asynchronously..
-  //     ;(async () => {
-  //       for await (const msg of connected) handle(msg)
-  //     })()
-  //     ;(async () => {
-  //       for await (const msg of pacs008Sub) handle(msg)
-  //     })()
-  //     // Now we can send a couple of requests to that subject. Note how we
-  //     // are encoding the string data on request and decoding the reply
-  //     // message data.
+    // If dropped in the same place, do nothing
+    if (destination.droppableId === source.droppableId && destination.index === source.index) {
+      return
+    }
 
-  //     let connection = await nc.request("connection", sc.encode("Demo App Connected"))
-  //     console.log(`Received a reply: ${sc.decode(connection.data)}`)
-  //   })()
+    if (source.droppableId === "debtorProfiles" && destination.droppableId === "creditorProfiles") {
+      // Clone entity from Debtor to Creditor
+      const clonedEntity = { ...entityCtx.entities[source.index] }
+      console.log(clonedEntity, "GGGGG")
+      if (entityCtx.entities.length < 4) {
+        entityCtx.cloneEntity(clonedEntity?.Entity, clonedEntity?.Accounts)
+        entityCtx.selectCreditorEntity(destination.index, 0)
+      }
+      return
+    }
 
-  //   return () => {
-  //     nats?.drain()
-  //     console.log("closed NATS connection")
-  //   }
-  // }, [])
+    if (source.droppableId === "creditorProfiles" && destination.droppableId === "debtorProfiles") {
+      // Clone entity from Debtor to Creditor
+      const clonedCreditorEntity = { ...entityCtx.creditorEntities[source.index] }
+      console.log(source, "GGGGG")
+      if (entityCtx.creditorEntities.length < 4) {
+        entityCtx.cloneCreditorEntity(clonedCreditorEntity?.CreditorEntity, clonedCreditorEntity?.CreditorAccounts)
+        entityCtx.selectDebtorEntity(destination.index, 0)
+      }
+      console.log(destination.index, source.index, "<-----")
+      return
+    }
+
+    if (destination.droppableId === source.droppableId) {
+      if (destination.droppableId === "debtorProfiles") {
+        const reorderedEntities = reorder(entityCtx.entities, source.index, destination.index)
+        console.log(reorderedEntities)
+        setDebtorEntities(reorderedEntities)
+        // setSelectedEntity(destination.index)
+        // await entityCtx.selectDebtorEntity(destination.index, 0)
+      }
+      return
+    }
+
+    // Handle the reordering or moving of items between droppables
+    // (implement logic based on your data structure)
+    console.log("Dropped from", source.droppableId, "to", destination.droppableId)
+    console.log("------>>> ", source, " <<------", destination)
+  }
 
   const handleRuleMouseEnter = (type: any) => {
     setHoveredType(null) // fallback if stats is stuck
@@ -223,6 +243,10 @@ const Web = () => {
   }
 
   useEffect(() => {
+    setDebtorEntities(entityCtx.entities)
+  }, [entityCtx.entities])
+
+  useEffect(() => {
     setSelectedEntity(entityCtx.selectedDebtorEntity.debtorSelectedIndex || 0)
   }, [entityCtx.selectedDebtorEntity.debtorSelectedIndex])
 
@@ -274,314 +298,408 @@ const Web = () => {
   if (loading) return <p>Loading...</p>
   if (error) return <p>Error: {error}</p>
 
+  const iconColour = (index: number) => {
+    let fillColour
+
+    switch (index) {
+      case 0: {
+        return (fillColour = "text-blue-500")
+        break
+      }
+      case 1: {
+        return (fillColour = "text-green-500")
+        break
+      }
+      case 2: {
+        return (fillColour = "text-yellow-400")
+        break
+      }
+      case 3: {
+        return (fillColour = "text-orange-500")
+        break
+      }
+      default: {
+        return (fillColour = "text-blue-500")
+        break
+      }
+    }
+  }
+
+  const DraggablePlaceHolder = () => {
+    return (
+      <div
+        className={` mb-7 flex w-full justify-between rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 px-3 py-1 text-gray-300 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]`}
+      >
+        <button>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
+            <path
+              fillRule="evenodd"
+              d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </button>
+      </div>
+    )
+  }
+
   return (
     <div className="bg-slate-300/25 px-5 pt-10">
-      <div className="grid grid-cols-12 gap-5">
-        {/* Debtors */}
-        <div className="col-span-2">
-          <div className="flex flex-wrap justify-center rounded-lg p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
-            <div className="mb-5 text-center text-xl">Debtors</div>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div className="grid grid-cols-12 gap-5">
+          {/* Debtors */}
+          <div className="col-span-2">
+            <div className="flex flex-wrap justify-center rounded-lg p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
+              <div className="mb-5 text-center text-xl">Debtors</div>
+              <Droppable droppableId="debtorProfiles">
+                {(provided, snapshot) => (
+                  <div ref={provided.innerRef} {...provided.droppableProps} className="space-y-2">
+                    <>
+                      <Draggable key={`debtor-0`} draggableId={`debtor-0`} index={0}>
+                        {(provided: any, snapshot) => (
+                          <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                            <Profile
+                              colour={!entityCtx.entities[0] ? "text-gray-300" : iconColour(0)}
+                              entity={entityCtx.entities[0]?.Entity}
+                              accounts={entityCtx.entities[0]?.Accounts}
+                              index={0}
+                              setModalVisible={setModal}
+                              setSelectedEntity={() => setSelectedEntity(0)}
+                              selectedEntity={selectedEntity}
+                              addAccount={async () => {
+                                await entityCtx.createEntityAccount(0)
+                                await entityCtx.selectDebtorEntity(0, 0)
+                              }}
+                            />
+                          </div>
+                        )}
+                      </Draggable>
 
-            <Profile
-              colour={!entityCtx.entities[0] ? "text-gray-300" : "text-blue-500"}
-              entity={entityCtx.entities[0]?.Entity}
-              accounts={entityCtx.entities[0]?.Accounts}
-              index={0}
-              setModalVisible={setModal}
-              setSelectedEntity={() => setSelectedEntity(0)}
-              selectedEntity={selectedEntity}
-              addAccount={async () => {
-                await entityCtx.createEntityAccount(0)
-                await entityCtx.selectDebtorEntity(0, 0)
-                // await entityCtx.selectDebtorEntity
-              }}
-            />
-            <Profile
-              colour={!entityCtx.entities[1] ? "text-gray-300" : "text-green-500"}
-              entity={entityCtx.entities[1]?.Entity}
-              accounts={entityCtx.entities[1]?.Accounts}
-              index={1}
-              setModalVisible={setModal}
-              setSelectedEntity={() => setSelectedEntity(1)}
-              selectedEntity={selectedEntity}
-              addAccount={async () => {
-                await entityCtx.createEntityAccount(1)
-                await entityCtx.selectDebtorEntity(1, 0)
-              }}
-            />
-            <Profile
-              colour={!entityCtx.entities[2] ? "text-gray-300" : "text-yellow-400"}
-              entity={entityCtx.entities[2]?.Entity}
-              accounts={entityCtx.entities[2]?.Accounts}
-              index={2}
-              setModalVisible={setModal}
-              setSelectedEntity={() => setSelectedEntity(2)}
-              selectedEntity={selectedEntity}
-              addAccount={async () => {
-                await entityCtx.createEntityAccount(2)
-                await entityCtx.selectDebtorEntity(2, 0)
-              }}
-            />
-            <Profile
-              colour={!entityCtx.entities[3] ? "text-gray-300" : "text-orange-500"}
-              entity={entityCtx.entities[3]?.Entity}
-              accounts={entityCtx.entities[3]?.Accounts}
-              index={3}
-              setModalVisible={setModal}
-              setSelectedEntity={() => setSelectedEntity(3)}
-              selectedEntity={selectedEntity}
-              addAccount={async () => {
-                await entityCtx.createEntityAccount(3)
-                await entityCtx.selectDebtorEntity(3, 0)
-              }}
-            />
-          </div>
-        </div>
+                      <Draggable key={`debtor-1`} draggableId={`debtor-1`} index={1}>
+                        {(provided: any, snapshot) => (
+                          <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                            <Profile
+                              colour={!entityCtx.entities[1] ? "text-gray-300" : iconColour(1)}
+                              entity={entityCtx.entities[1]?.Entity}
+                              accounts={entityCtx.entities[1]?.Accounts}
+                              index={1}
+                              setModalVisible={setModal}
+                              setSelectedEntity={() => setSelectedEntity(1)}
+                              selectedEntity={selectedEntity}
+                              addAccount={async () => {
+                                await entityCtx.createEntityAccount(1)
+                                await entityCtx.selectDebtorEntity(1, 0)
+                              }}
+                            />
+                          </div>
+                        )}
+                      </Draggable>
 
-        {/* Device transactions */}
-        <div className="col-span-8">
-          <div className="grid grid-cols-12 gap-1">
-            <div className="col-span-4">
-              <DebtorDevice selectedEntity={selectedEntity} isDebtor={true} />
+                      {/* Repeat for other slots as needed */}
+                      <Draggable key={`debtor-2`} draggableId={`debtor-2`} index={2}>
+                        {(provided: any) => (
+                          <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                            <Profile
+                              colour={!entityCtx.entities[2] ? "text-gray-300" : iconColour(2)}
+                              entity={entityCtx.entities[2]?.Entity}
+                              accounts={entityCtx.entities[2]?.Accounts}
+                              index={2}
+                              setModalVisible={setModal}
+                              setSelectedEntity={() => setSelectedEntity(2)}
+                              selectedEntity={selectedEntity}
+                              addAccount={async () => {
+                                await entityCtx.createEntityAccount(2)
+                                await entityCtx.selectDebtorEntity(2, 0)
+                              }}
+                            />
+                          </div>
+                        )}
+                      </Draggable>
+
+                      <Draggable key={`debtor-3`} draggableId={`debtor-3`} index={3}>
+                        {(provided: any) => (
+                          <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                            <Profile
+                              colour={!entityCtx.entities[3] ? "text-gray-300" : iconColour(3)}
+                              entity={entityCtx.entities[3]?.Entity}
+                              accounts={entityCtx.entities[3]?.Accounts}
+                              index={3}
+                              setModalVisible={setModal}
+                              setSelectedEntity={() => setSelectedEntity(3)}
+                              selectedEntity={selectedEntity}
+                              addAccount={async () => {
+                                await entityCtx.createEntityAccount(3)
+                                await entityCtx.selectDebtorEntity(3, 0)
+                              }}
+                            />
+                          </div>
+                        )}
+                      </Draggable>
+                    </>
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
             </div>
-            <div className="col-span-4 flex items-center justify-between px-5">
-              <ProcessIndicator />
-            </div>
-            <div className="col-span-4">
-              <DebtorDevice selectedEntity={selectedCreditorEntity} isDebtor={false} />
-              {/* <Image src="/device.svg" height="200" width="200" className="text-center" alt="" priority={true} /> */}
-            </div>
           </div>
-        </div>
 
-        {/* Creditors */}
-        <div className="col-span-2">
-          <div className="flex flex-wrap justify-center rounded-lg p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
-            <div className="mb-5 text-center text-xl">Creditors</div>
-            <CreditorProfile
-              colour={!entityCtx.creditorEntities[0] ? "text-gray-300" : "text-blue-500"}
-              reverse={true}
-              entity={entityCtx.creditorEntities[0]?.CreditorEntity}
-              creditorAccounts={entityCtx.creditorEntities[0]?.CreditorAccounts}
-              setModalVisible={setModal}
-              setSelectedEntity={async (idx: number) => {
-                setSelectedCreditorEntity(0)
-                if (
-                  entityCtx.creditorEntities[0]?.CreditorAccounts.length !== -1 &&
-                  entityCtx.creditorEntities[0]?.CreditorAccounts.length !== undefined
-                ) {
-                  // let idx = 0
-                  // if (entityCtx.creditorEntities[0]?.CreditorAccounts.length !== -1) {
-                  //   // if (entityCtx.entities[0]?.Accounts.length !== -1) {
-                  //   // idx = entityCtx.entities[0]?.Accounts.length - 1
-                  //   idx = entityCtx.creditorEntities[0]?.CreditorAccounts.length - 1
-                  // }
-
-                  await entityCtx.setCreditorAccountPacs008(0, idx)
-                }
-              }}
-              index={0}
-              selectedEntity={selectedCreditorEntity}
-              addAccount={async () => {
-                await entityCtx.createCreditorEntityAccount(0)
-                // if (entityCtx.entities[0]?.Accounts.length !== -1 && entityCtx.entities[0]?.Accounts !== undefined) {
-                if (
-                  entityCtx.creditorEntities[0]?.CreditorAccounts.length !== -1 &&
-                  entityCtx.creditorEntities[0]?.CreditorAccounts.length !== undefined
-                ) {
-                  let idx = 0
-                  if (entityCtx.creditorEntities[0]?.CreditorAccounts.length !== -1) {
-                    // if (entityCtx.entities[0]?.Accounts.length !== -1) {
-                    // idx = entityCtx.entities[0]?.Accounts.length - 1
-                    idx = entityCtx.creditorEntities[0]?.CreditorAccounts.length - 1
-                  }
-                  await entityCtx.setCreditorAccountPacs008(0, idx)
-                }
-              }}
-            />
-            <CreditorProfile
-              colour={!entityCtx.creditorEntities[1] ? "text-gray-300" : "text-green-500"}
-              reverse={true}
-              entity={entityCtx.creditorEntities[1]?.CreditorEntity}
-              creditorAccounts={entityCtx.creditorEntities[1]?.CreditorAccounts}
-              setModalVisible={setModal}
-              index={1}
-              setSelectedEntity={async (idx: number) => {
-                setSelectedCreditorEntity(1)
-                if (
-                  entityCtx.creditorEntities[1]?.CreditorAccounts.length !== -1 &&
-                  entityCtx.creditorEntities[1]?.CreditorAccounts.length !== undefined
-                ) {
-                  // let idx = 0
-                  // if (entityCtx.creditorEntities[1]?.CreditorAccounts.length !== -1) {
-                  // if (entityCtx.entities[1]?.Accounts.length !== -1) {
-                  // idx = entityCtx.entities[1]?.Accounts.length - 1
-                  // idx = entityCtx.creditorEntities[1]?.CreditorAccounts.length - 1
-                  // }
-                  // await entityCtx.selectCreditorEntity(1, idx)
-                  await entityCtx.setCreditorAccountPacs008(1, idx)
-                }
-              }}
-              // setSelectedEntity={() => setSelectedCreditorEntity(1)}
-              selectedEntity={selectedCreditorEntity}
-              addAccount={async () => {
-                await entityCtx.createCreditorEntityAccount(1)
-                if (
-                  entityCtx.creditorEntities[1]?.CreditorAccounts.length !== -1 &&
-                  entityCtx.creditorEntities[1]?.CreditorAccounts.length !== undefined
-                ) {
-                  let idx = 0
-                  if (entityCtx.creditorEntities[1]?.CreditorAccounts.length !== -1) {
-                    // if (entityCtx.entities[0]?.Accounts.length !== -1) {
-                    // idx = entityCtx.entities[0]?.Accounts.length - 1
-                    idx = entityCtx.creditorEntities[1]?.CreditorAccounts.length - 1
-                  }
-                  await entityCtx.setCreditorAccountPacs008(1, idx)
-                }
-              }}
-            />
-            <CreditorProfile
-              colour={!entityCtx.creditorEntities[2] ? "text-gray-300" : "text-yellow-400"}
-              reverse={true}
-              entity={entityCtx.creditorEntities[2]?.CreditorEntity}
-              creditorAccounts={entityCtx.creditorEntities[2]?.CreditorAccounts}
-              setModalVisible={setModal}
-              setSelectedEntity={() => setSelectedCreditorEntity(2)}
-              index={2}
-              selectedEntity={selectedCreditorEntity}
-              addAccount={async () => {
-                await entityCtx.createCreditorEntityAccount(2)
-                if (
-                  entityCtx.creditorEntities[2]?.CreditorAccounts.length !== -1 &&
-                  entityCtx.creditorEntities[2]?.CreditorAccounts.length !== undefined
-                ) {
-                  let idx = 0
-                  if (entityCtx.creditorEntities[2]?.CreditorAccounts.length !== -1) {
-                    // if (entityCtx.entities[0]?.Accounts.length !== -1) {
-                    // idx = entityCtx.entities[0]?.Accounts.length - 1
-                    idx = entityCtx.creditorEntities[2]?.CreditorAccounts.length - 1
-                  }
-                  await entityCtx.setCreditorAccountPacs008(2, idx)
-                }
-              }}
-            />
-            <CreditorProfile
-              colour={!entityCtx.creditorEntities[3] ? "text-gray-300" : "text-orange-500"}
-              reverse={true}
-              entity={entityCtx.creditorEntities[3]?.CreditorEntity}
-              creditorAccounts={entityCtx.creditorEntities[3]?.CreditorAccounts}
-              setModalVisible={setModal}
-              setSelectedEntity={() => setSelectedCreditorEntity(3)}
-              index={3}
-              selectedEntity={selectedCreditorEntity}
-              addAccount={async () => {
-                await entityCtx.createCreditorEntityAccount(3)
-                if (
-                  entityCtx.creditorEntities[3]?.CreditorAccounts.length !== -1 &&
-                  entityCtx.creditorEntities[3]?.CreditorAccounts.length !== undefined
-                ) {
-                  let idx = 0
-                  if (entityCtx.creditorEntities[3]?.CreditorAccounts.length !== -1) {
-                    // if (entityCtx.entities[0]?.Accounts.length !== -1) {
-                    // idx = entityCtx.entities[0]?.Accounts.length - 1
-                    idx = entityCtx.creditorEntities[3]?.CreditorAccounts.length - 1
-                  }
-                  await entityCtx.setCreditorAccountPacs008(3, idx)
-                }
-              }}
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-12 gap-5 pt-10">
-        {/* CRSP */}
-        <div className="col-span-2 rounded-md shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
-          <h2 className="mb-5 rounded-t-lg bg-gradient-to-r from-gray-100 to-gray-200 py-5 text-center uppercase shadow-lg">
-            Event director
-          </h2>
-
-          <div className="flex min-h-80 items-center justify-center">
-            <StatusIndicator large={true} />
-          </div>
-        </div>
-
-        {/* Rules */}
-        <div className="col-span-4 rounded-lg shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
-          <h2 className="mb-5 rounded-t-lg bg-gradient-to-r from-gray-100 to-gray-200 py-5 text-center uppercase shadow-lg">
-            Rules
-          </h2>
-          <div className="grid grid-cols-12">
-            <div className="col-span-6">
-              <div className="grid grid-cols-3 px-5">
-                {rules &&
-                  rules?.map((rule: any) => (
-                    <div className={`mb-1 flex rounded-md px-2 hover:bg-gray-200 hover:shadow`} key={`r-${rule.id}`}>
-                      <StatusIndicator /> &nbsp;
-                      {rule.title}
-                    </div>
-                  ))}
+          {/* Device transactions */}
+          <div className="col-span-8">
+            <div className="grid grid-cols-12 gap-1">
+              <div className="col-span-4">
+                <DebtorDevice selectedEntity={selectedEntity} isDebtor={true} />
+                <p>{selectedEntity}</p>
+              </div>
+              <div className="col-span-4 flex items-center justify-between px-5">
+                <ProcessIndicator />
+              </div>
+              <div className="col-span-4">
+                <DebtorDevice selectedEntity={selectedCreditorEntity} isDebtor={false} />
+                {/* <Image src="/device.svg" height="200" width="200" className="text-center" alt="" priority={true} /> */}
               </div>
             </div>
-            <div className="col-span-6 px-5">
-              <RuleResult />
+          </div>
+
+          {/* Creditors */}
+          <div className="col-span-2">
+            <div className="flex flex-wrap justify-center rounded-lg p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
+              <div className="mb-5 text-center text-xl">Creditors</div>
+              <Droppable droppableId="creditorProfiles">
+                {(provided: any) => (
+                  <div ref={provided.innerRef} {...provided.droppableProps} className="space-y-2">
+                    <>
+                      <Draggable key={`creditor-0`} draggableId={`creditor-0`} index={0}>
+                        {(provided: any) => (
+                          <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                            <CreditorProfile
+                              colour={!entityCtx.creditorEntities[0] ? "text-gray-300" : "text-blue-500"}
+                              reverse={true}
+                              entity={entityCtx.creditorEntities[0]?.CreditorEntity}
+                              creditorAccounts={entityCtx.creditorEntities[0]?.CreditorAccounts}
+                              setModalVisible={setModal}
+                              setSelectedEntity={async (idx: number) => {
+                                setSelectedCreditorEntity(0)
+                                if (
+                                  entityCtx.creditorEntities[0]?.CreditorAccounts.length !== -1 &&
+                                  entityCtx.creditorEntities[0]?.CreditorAccounts.length !== undefined
+                                ) {
+                                  await entityCtx.setCreditorAccountPacs008(0, idx)
+                                }
+                              }}
+                              index={0}
+                              selectedEntity={selectedCreditorEntity}
+                              addAccount={async () => {
+                                await entityCtx.createCreditorEntityAccount(0)
+                                if (
+                                  entityCtx.creditorEntities[0]?.CreditorAccounts.length !== -1 &&
+                                  entityCtx.creditorEntities[0]?.CreditorAccounts.length !== undefined
+                                ) {
+                                  let idx = 0
+                                  if (entityCtx.creditorEntities[0]?.CreditorAccounts.length !== -1) {
+                                    idx = entityCtx.creditorEntities[0]?.CreditorAccounts.length - 1
+                                  }
+                                  await entityCtx.setCreditorAccountPacs008(0, idx)
+                                }
+                              }}
+                            />
+                          </div>
+                        )}
+                      </Draggable>
+                      <Draggable key={`creditor-1`} draggableId={`creditor-1`} index={1}>
+                        {(provided: any) => (
+                          <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                            <CreditorProfile
+                              colour={!entityCtx.creditorEntities[1] ? "text-gray-300" : "text-green-500"}
+                              reverse={true}
+                              entity={entityCtx.creditorEntities[1]?.CreditorEntity}
+                              creditorAccounts={entityCtx.creditorEntities[1]?.CreditorAccounts}
+                              setModalVisible={setModal}
+                              index={1}
+                              setSelectedEntity={async (idx: number) => {
+                                setSelectedCreditorEntity(1)
+                                if (
+                                  entityCtx.creditorEntities[1]?.CreditorAccounts.length !== -1 &&
+                                  entityCtx.creditorEntities[1]?.CreditorAccounts.length !== undefined
+                                ) {
+                                  await entityCtx.setCreditorAccountPacs008(1, idx)
+                                }
+                              }}
+                              selectedEntity={selectedCreditorEntity}
+                              addAccount={async () => {
+                                await entityCtx.createCreditorEntityAccount(1)
+                                if (
+                                  entityCtx.creditorEntities[1]?.CreditorAccounts.length !== -1 &&
+                                  entityCtx.creditorEntities[1]?.CreditorAccounts.length !== undefined
+                                ) {
+                                  let idx = 0
+                                  if (entityCtx.creditorEntities[1]?.CreditorAccounts.length !== -1) {
+                                    idx = entityCtx.creditorEntities[1]?.CreditorAccounts.length - 1
+                                  }
+                                  await entityCtx.setCreditorAccountPacs008(1, idx)
+                                }
+                              }}
+                            />
+                          </div>
+                        )}
+                      </Draggable>
+
+                      <Draggable key={`creditor-2`} draggableId={`creditor-2`} index={2}>
+                        {(provided: any) => (
+                          <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                            <CreditorProfile
+                              colour={!entityCtx.creditorEntities[2] ? "text-gray-300" : "text-yellow-400"}
+                              reverse={true}
+                              entity={entityCtx.creditorEntities[2]?.CreditorEntity}
+                              creditorAccounts={entityCtx.creditorEntities[2]?.CreditorAccounts}
+                              setModalVisible={setModal}
+                              setSelectedEntity={() => setSelectedCreditorEntity(2)}
+                              index={2}
+                              selectedEntity={selectedCreditorEntity}
+                              addAccount={async () => {
+                                await entityCtx.createCreditorEntityAccount(2)
+                                if (
+                                  entityCtx.creditorEntities[2]?.CreditorAccounts.length !== -1 &&
+                                  entityCtx.creditorEntities[2]?.CreditorAccounts.length !== undefined
+                                ) {
+                                  let idx = 0
+                                  if (entityCtx.creditorEntities[2]?.CreditorAccounts.length !== -1) {
+                                    idx = entityCtx.creditorEntities[2]?.CreditorAccounts.length - 1
+                                  }
+                                  await entityCtx.setCreditorAccountPacs008(2, idx)
+                                }
+                              }}
+                            />
+                          </div>
+                        )}
+                      </Draggable>
+
+                      <Draggable key={`creditor-3`} draggableId={`creditor-3`} index={3}>
+                        {(provided: any) => (
+                          <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                            <CreditorProfile
+                              colour={!entityCtx.creditorEntities[3] ? "text-gray-300" : "text-orange-500"}
+                              reverse={true}
+                              entity={entityCtx.creditorEntities[3]?.CreditorEntity}
+                              creditorAccounts={entityCtx.creditorEntities[3]?.CreditorAccounts}
+                              setModalVisible={setModal}
+                              setSelectedEntity={() => setSelectedCreditorEntity(3)}
+                              index={3}
+                              selectedEntity={selectedCreditorEntity}
+                              addAccount={async () => {
+                                await entityCtx.createCreditorEntityAccount(3)
+                                if (
+                                  entityCtx.creditorEntities[3]?.CreditorAccounts.length !== -1 &&
+                                  entityCtx.creditorEntities[3]?.CreditorAccounts.length !== undefined
+                                ) {
+                                  let idx = 0
+                                  if (entityCtx.creditorEntities[3]?.CreditorAccounts.length !== -1) {
+                                    idx = entityCtx.creditorEntities[3]?.CreditorAccounts.length - 1
+                                  }
+                                  await entityCtx.setCreditorAccountPacs008(3, idx)
+                                }
+                              }}
+                            />
+                          </div>
+                        )}
+                      </Draggable>
+                    </>
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
             </div>
           </div>
         </div>
 
-        {/* Typologies */}
-        <div className="col-span-4 rounded-lg shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
-          <h2 className="mb-5 rounded-t-lg bg-gradient-to-r from-gray-100 to-gray-200 py-5 text-center uppercase shadow-lg">
-            Typologies
-          </h2>
+        <div className="grid grid-cols-12 gap-5 pt-10">
+          {/* CRSP */}
+          <div className="col-span-2 rounded-md shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
+            <h2 className="mb-5 rounded-t-lg bg-gradient-to-r from-gray-100 to-gray-200 py-5 text-center uppercase shadow-lg">
+              Event director
+            </h2>
 
-          <div className="grid grid-cols-12">
-            <div className="col-span-6">
-              <div className="grid grid-cols-3 px-5">
-                {types &&
-                  types.map((type: any) => (
-                    <div className={`mb-1 flex rounded-md px-2 hover:bg-gray-200 hover:shadow`} key={`r-${type.id}`}>
-                      <StatusIndicator /> &nbsp;
-                      {type.title}
-                    </div>
-                  ))}
+            <div className="flex min-h-80 items-center justify-center">
+              <StatusIndicator large={true} />
+            </div>
+          </div>
+
+          {/* Rules */}
+          <div className="col-span-4 rounded-lg shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
+            <h2 className="mb-5 rounded-t-lg bg-gradient-to-r from-gray-100 to-gray-200 py-5 text-center uppercase shadow-lg">
+              Rules
+            </h2>
+            <div className="grid grid-cols-12">
+              <div className="col-span-6">
+                <div className="grid grid-cols-3 px-5">
+                  {rules &&
+                    rules?.map((rule: any) => (
+                      <div className={`mb-1 flex rounded-md px-2 hover:bg-gray-200 hover:shadow`} key={`r-${rule.id}`}>
+                        <StatusIndicator /> &nbsp;
+                        {rule.title}
+                      </div>
+                    ))}
+                </div>
+              </div>
+              <div className="col-span-6 px-5">
+                <RuleResult />
               </div>
             </div>
-            <div className="col-span-6 px-5">
-              <TypeResult />
+          </div>
+
+          {/* Typologies */}
+          <div className="col-span-4 rounded-lg shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
+            <h2 className="mb-5 rounded-t-lg bg-gradient-to-r from-gray-100 to-gray-200 py-5 text-center uppercase shadow-lg">
+              Typologies
+            </h2>
+
+            <div className="grid grid-cols-12">
+              <div className="col-span-6">
+                <div className="grid grid-cols-3 px-5">
+                  {types &&
+                    types.map((type: any) => (
+                      <div className={`mb-1 flex rounded-md px-2 hover:bg-gray-200 hover:shadow`} key={`r-${type.id}`}>
+                        <StatusIndicator /> &nbsp;
+                        {type.title}
+                      </div>
+                    ))}
+                </div>
+              </div>
+              <div className="col-span-6 px-5">
+                <TypeResult />
+              </div>
+            </div>
+          </div>
+
+          {/* Tadproc */}
+          <div className="col-span-2 rounded-lg shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
+            <h2 className="mb-5 rounded-t-lg bg-gradient-to-r from-gray-100 to-gray-200 py-5 text-center uppercase shadow-lg">
+              Tadproc
+            </h2>
+
+            <div className="flex min-h-80 items-center justify-center">
+              <StatusIndicator large={true} />
             </div>
           </div>
         </div>
 
-        {/* Tadproc */}
-        <div className="col-span-2 rounded-lg shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
-          <h2 className="mb-5 rounded-t-lg bg-gradient-to-r from-gray-100 to-gray-200 py-5 text-center uppercase shadow-lg">
-            Tadproc
-          </h2>
-
-          <div className="flex min-h-80 items-center justify-center">
-            <StatusIndicator large={true} />
-          </div>
-        </div>
-      </div>
-
-      {showModal && (
-        <Modal
-          colour={
-            selectedEntity === 0
-              ? "rgba(68, 114, 196, 1)"
-              : selectedEntity === 1
-              ? "rgba(112, 173, 71, 1)"
-              : selectedEntity === 2
-              ? "rgba(255, 192, 0, 1)"
-              : "rgba(237, 125, 49, 1)"
-          }
-          showModal={showModal}
-          setModal={setModal}
-          entity={entityCtx.entities[selectedEntity]?.Entity}
-          selectedEntity={selectedEntity}
-        />
-      )}
+        {showModal && (
+          <Modal
+            colour={
+              selectedEntity === 0
+                ? "rgba(68, 114, 196, 1)"
+                : selectedEntity === 1
+                ? "rgba(112, 173, 71, 1)"
+                : selectedEntity === 2
+                ? "rgba(255, 192, 0, 1)"
+                : "rgba(237, 125, 49, 1)"
+            }
+            showModal={showModal}
+            setModal={setModal}
+            entity={entityCtx.entities[selectedEntity]?.Entity}
+            selectedEntity={selectedEntity}
+          />
+        )}
+      </DragDropContext>
     </div>
   )
 }
