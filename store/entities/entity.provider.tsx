@@ -8,6 +8,7 @@ import {
   pacs002InitialState,
   pacs008InitialState,
   uiConfigInitialState,
+  rulesLightsInitialState,
 } from "./entity.initialState"
 import {
   CdtrEntity,
@@ -53,6 +54,7 @@ const EntityProvider = ({ children }: Props) => {
     pacs008: pacs008InitialState,
     pacs002: pacs002InitialState,
     uiConfig: uiConfigInitialState,
+    ruleLights: rulesLightsInitialState,
   }
   const [state, dispatch] = useReducer(EntityReducer, initialEntityState)
 
@@ -115,6 +117,22 @@ const EntityProvider = ({ children }: Props) => {
 
   const reset = async () => {
     localStorage.clear()
+  }
+
+  const setRuleLights = async (rules: any[]) => {
+    try {
+      dispatch({ type: ACTIONS.SET_RULE_LIGHTS_LOADING })
+      const array: any[] = []
+      rules.forEach((rule: any) => {
+        let newRule = { id: rule.id, color: "n", title: rule.title, result: null }
+        console.log("CREATING RULE: ", newRule.title)
+        array.push(newRule)
+      })
+      dispatch({ type: ACTIONS.SET_RULE_LIGHTS_SUCCESS, payload: array })
+      return state.ruleLights
+    } catch (err) {
+      dispatch({ type: ACTIONS.SET_RULE_LIGHTS_FAIL })
+    }
   }
 
   const handleDebtorEntityChange = async (debtorIndex: number | undefined, accountIndex: number | undefined) => {
@@ -549,6 +567,37 @@ const EntityProvider = ({ children }: Props) => {
     }
   }
 
+  const updateCreditorAccounts = async (updatedCreditorAccounts: Array<CreditorAccount>, entityIndex: number) => {
+    try {
+      dispatch({ type: ACTIONS.UPDATE_CREDITOR_ACCOUNTS_LOADING })
+
+      const currentCdtrAccounts = state.creditorEntities[entityIndex]?.CreditorAccounts || []
+
+      const mergedCdtrAccounts = currentCdtrAccounts.map((cdtrAccount: any) => {
+        return (
+          updatedCreditorAccounts.find(
+            (updatedCreditorAccount) => updatedCreditorAccount.CdtrAcct.Id.Othr[0].Id === cdtrAccount.CdtrAcct.Id.Othr[0].Id
+          ) || cdtrAccount
+        )
+      })
+
+      let updatedCdtrEntity: CdtrEntity = {
+        CreditorEntity: state.creditorEntities[entityIndex]?.CreditorEntity,
+        CreditorAccounts: mergedCdtrAccounts,
+      }
+
+      let accountsList: Array<CdtrEntity> = state.creditorEntities
+      if (accountsList[entityIndex]?.CreditorEntity && typeof entityIndex === "number") {
+        accountsList.splice(entityIndex, 1, updatedCdtrEntity)
+      }
+
+      dispatch({ type: ACTIONS.UPDATE_CREDITOR_ACCOUNTS_SUCCESS, payload: [...accountsList] })
+      localStorage.setItem("CREDITOR_ENTITIES", JSON.stringify(accountsList))
+    } catch (error) {
+      dispatch({ type: ACTIONS.UPDATE_CREDITOR_ACCOUNTS_FAIL })
+    }
+  }
+
   const setDebtorPacs008 = async (entityIndex: number) => {
     try {
       dispatch({ type: ACTIONS.SET_DEBTOR_PACS008_LOADING })
@@ -681,6 +730,8 @@ const EntityProvider = ({ children }: Props) => {
       dispatch({ type: ACTIONS.GENERATE_TRANSACTION_PACS008_LOADING })
       const setPacs008: PACS008 = state.pacs008
 
+      setPacs008.FIToFICstmrCdtTrf.GrpHdr.MsgId = crypto.randomUUID().replaceAll("-", "")
+      setPacs008.FIToFICstmrCdtTrf.GrpHdr.CreDtTm = new Date().toISOString()
       // Set Random Details
       setPacs008.FIToFICstmrCdtTrf.RmtInf.Ustrd = crypto.randomUUID().replaceAll("-", "")
       setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt = RandomNumbers()
@@ -688,8 +739,11 @@ const EntityProvider = ({ children }: Props) => {
         setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt
       setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.InstrId = crypto.randomUUID().replaceAll("-", "")
       setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.EndToEndId = crypto.randomUUID().replaceAll("-", "")
+
+      await buildPacs002()
+
       dispatch({ type: ACTIONS.GENERATE_TRANSACTION_PACS008_SUCCESS, payload: setPacs008 })
-      console.log("PACS008: ", setPacs008)
+      console.log("PACS008 NEW GENERATED: ", setPacs008)
       localStorage.setItem("PACS008", JSON.stringify(state.pacs008))
     } catch (error) {
       dispatch({ type: ACTIONS.GENERATE_TRANSACTION_PACS008_FAIL })
@@ -747,6 +801,7 @@ const EntityProvider = ({ children }: Props) => {
         createAccountLoading: state.createAccountLoading,
         updateAccountsLoading: state.updateAccountsLoading,
         createCreditorAccountLoading: state.createCreditorAccountLoading,
+        updateCreditorAccountsLoading: state.updateCreditorAccountsLoading,
         resetEntityLoading: state.resetEntityLoading,
         resetCreditorEntityLoading: state.resetCreditorEntityLoading,
         pacs008Loading: state.pacs008Loading,
@@ -758,6 +813,7 @@ const EntityProvider = ({ children }: Props) => {
         selectedDebtorEntity: state.selectedDebtorEntity,
         selectedCreditorEntity: state.selectedCreditorEntity,
         uiConfig: state.uiConfig,
+        ruleLights: state.ruleLights,
         selectDebtorEntity,
         selectCreditorEntity,
         createEntity,
@@ -767,12 +823,14 @@ const EntityProvider = ({ children }: Props) => {
         createCreditorEntity,
         updateCreditorEntity,
         createCreditorEntityAccount,
+        updateCreditorAccounts,
         setDebtorPacs008,
         setDebtorAccountPacs008,
         setCreditorPacs008,
         setCreditorAccountPacs008,
         generateTransaction,
         buildPacs002,
+        setRuleLights,
         reset,
         resetEntity,
         resetCreditorEntity,

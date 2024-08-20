@@ -1,13 +1,39 @@
 import axios from "axios"
+import dotenv from "dotenv"
 import Image from "next/image"
 import { useContext } from "react"
 import { TimeComponent } from "components/timeComponent/TimeComponent"
 import EntityContext from "store/entities/entity.context"
 import { DeviceInfo } from "./DeviceInfo"
 
+dotenv.config()
+
+interface EDLights {
+  pacs008: boolean
+  pacs002: boolean
+  color: "r" | "g" | "y" | "n"
+}
+interface LightsManager {
+  ED: EDLights
+}
+
+interface TadProcLightsManager {
+  TADPROC: {
+    result: any
+    color: "r" | "g" | "y" | "n"
+    stop: boolean
+    status: string
+  }
+}
+
 interface DebtorProps {
   selectedEntity: number
   isDebtor?: boolean
+  lights: LightsManager
+  setLights: (data: LightsManager) => void
+  resetAllLights: () => void
+  resetLights: (data: boolean) => void
+  setStarted: (data: boolean) => void
 }
 
 export function DebtorDevice(props: DebtorProps) {
@@ -17,40 +43,113 @@ export function DebtorDevice(props: DebtorProps) {
 
   const creditorEntity = entityCtx.creditorEntities
 
-  const postPacs002Test = async () => {
+  const tmsUrl = process.env.NEXT_PUBLIC_TMS_SERVER_URL
+
+  const postPacs002 = async () => {
     try {
-      const response = await axios.post(
-        "http://localhost:5500/v1/evaluate/iso20022/pacs.002.001.12",
-        entityCtx.pacs002,
-        { headers: { "Content-Type": "application/json" } }
-      )
+      const response = await axios.post(`${tmsUrl}/v1/evaluate/iso20022/pacs.002.001.12`, entityCtx.pacs002, {
+        headers: { "Content-Type": "application/json" },
+      })
+      if (response.status === 200) {
+        let data: EDLights = {
+          pacs008: true,
+          pacs002: true,
+          color: "g",
+        }
+        let newData: any = {
+          ED: data,
+        }
+        props.setLights(newData)
+        setTimeout(async () => {
+          props.setStarted(false)
+        }, 1000)
+      } else {
+        let data: EDLights = {
+          pacs008: true,
+          pacs002: false,
+          color: "r",
+        }
+        let newData: LightsManager = {
+          ED: data,
+        }
+        props.setLights(newData)
+        setTimeout(async () => {
+          props.setStarted(false)
+        }, 1000)
+      }
       console.log("Test POST PACS002 response: ", response.data)
     } catch (error) {
       console.log(error)
+      let data: EDLights = {
+        pacs008: true,
+        pacs002: false,
+        color: "r",
+      }
+      let newData: LightsManager = {
+        ED: data,
+      }
+      props.setLights(newData)
+      setTimeout(async () => {
+        props.setStarted(false)
+      }, 1000)
     }
   }
 
-  const postPacs008Test = async () => {
+  const postPacs008 = async () => {
     try {
-      const response = await axios.post(
-        "http://localhost:5500/v1/evaluate/iso20022/pacs.008.001.10",
-        entityCtx.pacs008,
-        { headers: { "Content-Type": "application/json" } }
-      )
+      props.setStarted(true)
+      const response = await axios.post(`${tmsUrl}/v1/evaluate/iso20022/pacs.008.001.10`, entityCtx.pacs008, {
+        headers: { "Content-Type": "application/json" },
+      })
 
       if (response.status === 200) {
-        await postPacs002Test()
+        if (response.status === 200) {
+          let data: EDLights = {
+            pacs008: true,
+            pacs002: false,
+            color: "y", // orange
+          }
+          let newData: LightsManager = {
+            ED: data,
+          }
+          props.setLights(newData)
+        }
+        setTimeout(async () => {
+          await postPacs002()
+        }, 1000)
       }
       console.log("Test POST PACS008 response: ", response.data)
-    } catch (error) {
-      console.log(error)
+    } catch (error: any) {
+      const errMsg: any = JSON.parse(error.response.data.split("\n").slice(1).join("\n"))
+      console.log(JSON.parse(error.response.data.split("\n").slice(1).join("\n")))
+      let data: any = {
+        pacs008: props.lights.ED.pacs008,
+        pacs002: false,
+        color: "r",
+      }
+      let newData: LightsManager = {
+        ED: data,
+      }
+      props.setLights(newData)
+      setTimeout(async () => {
+        props.setStarted(false)
+      }, 1000)
+      // alert(`Error sending PACS008 request. ${JSON.stringify(errMsg.errorMessage)}`)
     }
   }
   return (
     <div className="relative col-span-4" style={{ height: "505px" }}>
-      <Image src="/device.svg" width="250" height="505" className="absolute inset-x-0 mx-auto" style={{ maxWidth: "250px", minWidth: "250px" }} alt="device info" priority={true} />
+      <Image
+        src="/device.svg"
+        width="250"
+        height="505"
+        className="absolute inset-x-0 mx-auto"
+        style={{ maxWidth: "250px", minWidth: "250px" }}
+        alt="device info"
+        priority={true}
+      />
 
-      <div className="absolute break-words inset-x-0 mx-auto" style={{ width: "222px", top: "15px" }}>
+      <div className="absolute inset-x-0 mx-auto break-words" style={{ width: "222px", top: "15px" }}>
         <TimeComponent />
 
         <DeviceInfo selectedEntity={props.selectedEntity} isDebtor={props.isDebtor} />
@@ -67,7 +166,18 @@ export function DebtorDevice(props: DebtorProps) {
             <button
               className="w-full rounded-lg border border-white p-1"
               onClick={async () => {
-                await postPacs008Test()
+                props.resetAllLights()
+                props.setLights({
+                  ED: {
+                    pacs008: false,
+                    pacs002: false,
+                    color: "n",
+                  },
+                })
+                props.resetLights(true)
+                setTimeout(async () => {
+                  await postPacs008()
+                }, 500)
               }}
             >
               Send

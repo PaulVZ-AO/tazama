@@ -1,63 +1,29 @@
 "use client"
 
 import axios from "axios"
-// import { Codec, connect, NatsConnection, StringCodec } from "nats.ws"
 import { useContext, useEffect, useState } from "react"
+import Image from "next/image"
 import { DebtorDevice } from "components/Device/Debtor"
-import { Modal } from "components/Modal/Modal"
 import { ProcessIndicator } from "components/ProcessIndicator/ProcessIndicator"
 import { Profile } from "components/Profile/Profile"
 import { CreditorProfile } from "components/ProfileCreditor/ProfileCreditor"
 import { StatusIndicator } from "components/StatusIndicator/StatusIndicator"
 import EntityContext from "store/entities/entity.context"
+import ProcessorContext from "store/processors/processor.context"
+import { getTADPROCResult } from "utils/db"
+import DebtorModal from "components/Modal/Modal"
+import CreditorModal from "components/Modal/CreditorsModal"
 
 const Web = () => {
+  // const [types, setTypes] = useState<any[] | null>(null)
+  const [descriptions, setDescriptions] = useState<any[] | null>(null)
   const [hoveredRule, setHoveredRule] = useState<any>(null)
   const [hoveredType, setHoveredType] = useState<any>(null)
-  // const [nats, setNats] = useState<NatsConnection>()
   const [showModal, setModal] = useState(false)
+  const [started, setStarted] = useState(false)
+  const [showCreditorModal, setShowCreditorModal] = useState(false)
   const entityCtx = useContext(EntityContext)
-
-  // useEffect(() => {
-  //   const sc: Codec<string> = StringCodec()
-  //   ;(async () => {
-  //     const nc = await connect({
-  //       // servers: ["wss://demo.nats.io:8443"],
-  //       servers: ["wss://nats:4222"],
-  //     })
-  //     setNats(nc)
-  //     console.log("connected to NATS")
-  //     // const sub = nc.subscribe("echo")
-  //     const pacs008Sub = nc.subscribe("sub-rule-901@1.0.0")
-
-  //     const connected = nc.subscribe("connection")
-
-  //     const handle = (msg: any) => {
-  //       console.log(`Received a request: ${sc.decode(msg.data)}`)
-  //       msg.respond(msg.data)
-  //     }
-
-  //     // Wait to receive messages from the subscription and handle them
-  //     // asynchronously..
-  //     ;(async () => {
-  //       for await (const msg of connected) handle(msg)
-  //     })()
-  //     ;(async () => {
-  //       for await (const msg of pacs008Sub) handle(msg)
-  //     })()
-  //     // Now we can send a couple of requests to that subject. Note how we
-  //     // are encoding the string data on request and decoding the reply
-  //     // message data.
-
-  //     let connection = await nc.request("connection", sc.encode("Demo App Connected"))
-  //     console.log(`Received a reply: ${sc.decode(connection.data)}`)
-  //   })()
-
-  //   return () => {
-  //     nats?.drain()
-  //     console.log("closed NATS connection")
-  //   }
-  // }, [])
+  const procCtx = useContext(ProcessorContext)
 
   const handleRuleMouseEnter = (type: any) => {
     setHoveredType(null) // fallback if stats is stuck
@@ -102,7 +68,7 @@ const Web = () => {
         onMouseEnter={() => handleRuleMouseEnter(props.rule)}
         onMouseLeave={handleRuleMouseLeave}
       >
-        <StatusIndicator colour={props.rule.s} /> &nbsp;
+        <StatusIndicator colour={props.rule.s} rule={props.rule} /> &nbsp;
         {props.rule.v}
       </li>
     )
@@ -131,29 +97,34 @@ const Web = () => {
         onMouseEnter={() => handleTypeMouseEnter(props.rule)}
         onMouseLeave={handleTypeMouseLeave}
       >
-        <StatusIndicator colour={props.rule.s} /> &nbsp;
+        <StatusIndicator colour={props.rule.s} rule={props.rule} /> &nbsp;
         {props.rule.v}
       </li>
     )
   }
 
-  function RuleResult() {
-    // if (hoveredRule == null)
-    // return(null);
+  const getRuleDescriptions = (result: string) => {
+    const description: any = descriptions!.find((item) => item.subRuleRef === result)
+    return description.reason
+  }
 
+  function RuleResult() {
+    if (hoveredRule === null) return null
     return (
       <div className="rounded-xl p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
         <h3 className="text-center uppercase">Rule Results</h3>
 
         <div className="p-5">
           <div className="mb-2 p-2 text-center">
-            001 {hoveredRule && hoveredRule.r ? hoveredRule.r : ""}=
-            {hoveredRule ? (hoveredRule.s === "g" ? "true" : "false") : ""} False
+            {hoveredRule?.title} {/* {hoveredRule.title} {hoveredRule && hoveredRule.r ? hoveredRule.r : ""}= */}
+            {hoveredRule ? (hoveredRule.color === "g" ? "= False" : "= True") : ""}
           </div>
           <hr className="mb-2 border-black" />
           <div className="mb-2 p-2 text-center">
-            Creditor account is less than 1 day old.
-            {hoveredRule && hoveredRule.s !== "g" && hoveredRule.d ? hoveredRule.d : ""}
+            {/* Creditor account is less than 1 day old. */}
+            {hoveredRule && hoveredRule.color !== "g" && hoveredRule.result
+              ? getRuleDescriptions(hoveredRule.result)
+              : ""}
           </div>
         </div>
       </div>
@@ -161,9 +132,6 @@ const Web = () => {
   }
 
   function TypeResult() {
-    // if (hoveredType == null)
-    //   return(null);
-
     return (
       <div className="rounded-xl p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
         <h3 className="text-center uppercase">Type Results</h3>
@@ -211,16 +179,10 @@ const Web = () => {
     )
   }
 
-  const [rules, setRules] = useState<any[] | null>(null)
-  const [types, setTypes] = useState<any[] | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState(null)
   const [selectedEntity, setSelectedEntity] = useState<number>(0)
   const [selectedCreditorEntity, setSelectedCreditorEntity] = useState<number>(0)
-
-  const handleAccountChange = async (creditorIdx: number, accountIdx: number) => {
-    await entityCtx.setCreditorAccountPacs008(creditorIdx, accountIdx)
-  }
 
   useEffect(() => {
     setSelectedEntity(entityCtx.selectedDebtorEntity.debtorSelectedIndex || 0)
@@ -232,9 +194,10 @@ const Web = () => {
 
   useEffect(() => {
     axios
-      .get("api/rules")
+      .get("api/configs")
       .then((response) => {
-        setRules(response.data.rules.rule)
+        console.log(response)
+        setDescriptions(response.data.rules[0].config.bands)
         setLoading(false)
       })
       .catch((error) => {
@@ -243,30 +206,40 @@ const Web = () => {
       })
   }, [])
 
+  const fetchResult = async (transactionID: string) => {
+    const result = await getTADPROCResult(transactionID)
+    return result
+  }
+
   useEffect(() => {
-    axios
-      .get("api/typologies")
-      .then((response) => {
-        setTypes(response.data.types.type)
-        setLoading(false)
-      })
-      .catch((error) => {
-        setError(error)
-        setLoading(false)
-      })
-  }, [])
+    console.log("RULE DESCRIPTIONS: ", descriptions)
+  }, [descriptions])
+
+  // useEffect(() => {
+  //   axios
+  //     .get("api/typologies")
+  //     .then((response) => {
+  //       setTypes(response.data.types.type)
+  //       setLoading(false)
+  //     })
+  //     .catch((error) => {
+  //       setError(error)
+  //       setLoading(false)
+  //     })
+  // }, [])
   useEffect(() => {
     console.log("SELECTED ENTITY: ", selectedEntity)
   }, [selectedEntity])
 
   useEffect(() => {
+    console.log("SELECTED ENTITY: ", selectedEntity)
+  }, [selectedEntity])
+  useEffect(() => {
     console.log("SELECTED CREDITOR ENTITY: ", selectedCreditorEntity)
   }, [selectedCreditorEntity])
-
   useEffect(() => {
     console.log("DEBTORS: ", entityCtx.entities)
   }, [entityCtx.entities])
-
   useEffect(() => {
     console.log("CREDITORS: ", entityCtx.creditorEntities)
   }, [entityCtx.creditorEntities])
@@ -281,7 +254,6 @@ const Web = () => {
         <div className="col-span-2">
           <div className="flex flex-wrap justify-center rounded-lg p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
             <div className="mb-5 text-center text-xl">Debtors</div>
-
             <Profile
               colour={!entityCtx.entities[0] ? "text-gray-300" : "text-blue-500"}
               entity={entityCtx.entities[0]?.Entity}
@@ -293,7 +265,6 @@ const Web = () => {
               addAccount={async () => {
                 await entityCtx.createEntityAccount(0)
                 await entityCtx.selectDebtorEntity(0, 0)
-                // await entityCtx.selectDebtorEntity
               }}
             />
             <Profile
@@ -342,13 +313,29 @@ const Web = () => {
         <div className="col-span-8">
           <div className="grid grid-cols-12 gap-1">
             <div className="col-span-4">
-              <DebtorDevice selectedEntity={selectedEntity} isDebtor={true} />
+              <DebtorDevice
+                selectedEntity={selectedEntity}
+                isDebtor={true}
+                lights={procCtx.edLights}
+                setLights={procCtx.updateEDLights}
+                resetLights={procCtx.resetAllLights}
+                setStarted={setStarted}
+                resetAllLights={() => procCtx.resetAllLights()}
+              />
             </div>
             <div className="col-span-4 flex items-center justify-between px-5">
-              <ProcessIndicator />
+              <ProcessIndicator started={started} stop={procCtx.tadpLights.TADPROC.stop} />
             </div>
             <div className="col-span-4">
-              <DebtorDevice selectedEntity={selectedCreditorEntity} isDebtor={false} />
+              <DebtorDevice
+                selectedEntity={selectedCreditorEntity}
+                isDebtor={false}
+                lights={procCtx.edLights}
+                setLights={procCtx.updateEDLights}
+                resetLights={procCtx.resetAllLights}
+                setStarted={setStarted}
+                resetAllLights={() => procCtx.resetAllLights()}
+              />
               {/* <Image src="/device.svg" height="200" width="200" className="text-center" alt="" priority={true} /> */}
             </div>
           </div>
@@ -363,40 +350,13 @@ const Web = () => {
               reverse={true}
               entity={entityCtx.creditorEntities[0]?.CreditorEntity}
               creditorAccounts={entityCtx.creditorEntities[0]?.CreditorAccounts}
-              setModalVisible={setModal}
-              setSelectedEntity={async (idx: number) => {
-                setSelectedCreditorEntity(0)
-                if (
-                  entityCtx.creditorEntities[0]?.CreditorAccounts.length !== -1 &&
-                  entityCtx.creditorEntities[0]?.CreditorAccounts.length !== undefined
-                ) {
-                  // let idx = 0
-                  // if (entityCtx.creditorEntities[0]?.CreditorAccounts.length !== -1) {
-                  //   // if (entityCtx.entities[0]?.Accounts.length !== -1) {
-                  //   // idx = entityCtx.entities[0]?.Accounts.length - 1
-                  //   idx = entityCtx.creditorEntities[0]?.CreditorAccounts.length - 1
-                  // }
-
-                  await entityCtx.setCreditorAccountPacs008(0, idx)
-                }
-              }}
+              setModalVisible={setShowCreditorModal}
+              setSelectedEntity={() => setSelectedCreditorEntity(0)}
               index={0}
               selectedEntity={selectedCreditorEntity}
               addAccount={async () => {
                 await entityCtx.createCreditorEntityAccount(0)
-                // if (entityCtx.entities[0]?.Accounts.length !== -1 && entityCtx.entities[0]?.Accounts !== undefined) {
-                if (
-                  entityCtx.creditorEntities[0]?.CreditorAccounts.length !== -1 &&
-                  entityCtx.creditorEntities[0]?.CreditorAccounts.length !== undefined
-                ) {
-                  let idx = 0
-                  if (entityCtx.creditorEntities[0]?.CreditorAccounts.length !== -1) {
-                    // if (entityCtx.entities[0]?.Accounts.length !== -1) {
-                    // idx = entityCtx.entities[0]?.Accounts.length - 1
-                    idx = entityCtx.creditorEntities[0]?.CreditorAccounts.length - 1
-                  }
-                  await entityCtx.setCreditorAccountPacs008(0, idx)
-                }
+                await entityCtx.selectCreditorEntity(0, 0)
               }}
             />
             <CreditorProfile
@@ -404,40 +364,13 @@ const Web = () => {
               reverse={true}
               entity={entityCtx.creditorEntities[1]?.CreditorEntity}
               creditorAccounts={entityCtx.creditorEntities[1]?.CreditorAccounts}
-              setModalVisible={setModal}
+              setModalVisible={setShowCreditorModal}
               index={1}
-              setSelectedEntity={async (idx: number) => {
-                setSelectedCreditorEntity(1)
-                if (
-                  entityCtx.creditorEntities[1]?.CreditorAccounts.length !== -1 &&
-                  entityCtx.creditorEntities[1]?.CreditorAccounts.length !== undefined
-                ) {
-                  // let idx = 0
-                  // if (entityCtx.creditorEntities[1]?.CreditorAccounts.length !== -1) {
-                  // if (entityCtx.entities[1]?.Accounts.length !== -1) {
-                  // idx = entityCtx.entities[1]?.Accounts.length - 1
-                  // idx = entityCtx.creditorEntities[1]?.CreditorAccounts.length - 1
-                  // }
-                  // await entityCtx.selectCreditorEntity(1, idx)
-                  await entityCtx.setCreditorAccountPacs008(1, idx)
-                }
-              }}
-              // setSelectedEntity={() => setSelectedCreditorEntity(1)}
+              setSelectedEntity={() => setSelectedCreditorEntity(1)}
               selectedEntity={selectedCreditorEntity}
               addAccount={async () => {
                 await entityCtx.createCreditorEntityAccount(1)
-                if (
-                  entityCtx.creditorEntities[1]?.CreditorAccounts.length !== -1 &&
-                  entityCtx.creditorEntities[1]?.CreditorAccounts.length !== undefined
-                ) {
-                  let idx = 0
-                  if (entityCtx.creditorEntities[1]?.CreditorAccounts.length !== -1) {
-                    // if (entityCtx.entities[0]?.Accounts.length !== -1) {
-                    // idx = entityCtx.entities[0]?.Accounts.length - 1
-                    idx = entityCtx.creditorEntities[1]?.CreditorAccounts.length - 1
-                  }
-                  await entityCtx.setCreditorAccountPacs008(1, idx)
-                }
+                await entityCtx.selectCreditorEntity(1, 0)
               }}
             />
             <CreditorProfile
@@ -445,24 +378,13 @@ const Web = () => {
               reverse={true}
               entity={entityCtx.creditorEntities[2]?.CreditorEntity}
               creditorAccounts={entityCtx.creditorEntities[2]?.CreditorAccounts}
-              setModalVisible={setModal}
+              setModalVisible={setShowCreditorModal}
               setSelectedEntity={() => setSelectedCreditorEntity(2)}
               index={2}
               selectedEntity={selectedCreditorEntity}
               addAccount={async () => {
                 await entityCtx.createCreditorEntityAccount(2)
-                if (
-                  entityCtx.creditorEntities[2]?.CreditorAccounts.length !== -1 &&
-                  entityCtx.creditorEntities[2]?.CreditorAccounts.length !== undefined
-                ) {
-                  let idx = 0
-                  if (entityCtx.creditorEntities[2]?.CreditorAccounts.length !== -1) {
-                    // if (entityCtx.entities[0]?.Accounts.length !== -1) {
-                    // idx = entityCtx.entities[0]?.Accounts.length - 1
-                    idx = entityCtx.creditorEntities[2]?.CreditorAccounts.length - 1
-                  }
-                  await entityCtx.setCreditorAccountPacs008(2, idx)
-                }
+                await entityCtx.selectCreditorEntity(2, 0)
               }}
             />
             <CreditorProfile
@@ -470,24 +392,13 @@ const Web = () => {
               reverse={true}
               entity={entityCtx.creditorEntities[3]?.CreditorEntity}
               creditorAccounts={entityCtx.creditorEntities[3]?.CreditorAccounts}
-              setModalVisible={setModal}
+              setModalVisible={setShowCreditorModal}
               setSelectedEntity={() => setSelectedCreditorEntity(3)}
               index={3}
               selectedEntity={selectedCreditorEntity}
               addAccount={async () => {
                 await entityCtx.createCreditorEntityAccount(3)
-                if (
-                  entityCtx.creditorEntities[3]?.CreditorAccounts.length !== -1 &&
-                  entityCtx.creditorEntities[3]?.CreditorAccounts.length !== undefined
-                ) {
-                  let idx = 0
-                  if (entityCtx.creditorEntities[3]?.CreditorAccounts.length !== -1) {
-                    // if (entityCtx.entities[0]?.Accounts.length !== -1) {
-                    // idx = entityCtx.entities[0]?.Accounts.length - 1
-                    idx = entityCtx.creditorEntities[3]?.CreditorAccounts.length - 1
-                  }
-                  await entityCtx.setCreditorAccountPacs008(3, idx)
-                }
+                await entityCtx.selectCreditorEntity(3, 0)
               }}
             />
           </div>
@@ -502,7 +413,7 @@ const Web = () => {
           </h2>
 
           <div className="flex min-h-80 items-center justify-center">
-            <StatusIndicator large={true} />
+            <StatusIndicator large={true} colour={procCtx.edLights.ED.color} />
           </div>
         </div>
 
@@ -514,16 +425,35 @@ const Web = () => {
           <div className="grid grid-cols-12">
             <div className="col-span-6">
               <div className="grid grid-cols-3 px-5">
-                {rules &&
-                  rules?.map((rule: any) => (
-                    <div className={`mb-1 flex rounded-md px-2 hover:bg-gray-200 hover:shadow`} key={`r-${rule.id}`}>
-                      <StatusIndicator /> &nbsp;
+                {procCtx.rulesLoading ? (
+                  <p className="mb-5 w-80 rounded-t-lg py-5 text-center">Loading</p>
+                ) : (
+                  procCtx.rules?.map((rule: any) => (
+                    <div
+                      className={`mb-1 flex rounded-md px-2 hover:bg-gray-200 hover:shadow`}
+                      key={`r-${rule.id}`}
+                      onMouseEnter={() => {
+                        handleRuleMouseEnter(rule)
+                        console.log(rule)
+                      }}
+                      onClick={() => {
+                        handleRuleMouseLeave()
+                        console.log(rule)
+                      }}
+                    >
+                      <StatusIndicator colour={rule.color} /> &nbsp;
                       {rule.title}
                     </div>
-                  ))}
+                  ))
+                )}
               </div>
             </div>
-            <div className="col-span-6 px-5">
+            <div
+              className="col-span-6 px-5"
+              onClick={() => {
+                handleRuleMouseLeave()
+              }}
+            >
               <RuleResult />
             </div>
           </div>
@@ -534,14 +464,13 @@ const Web = () => {
           <h2 className="mb-5 rounded-t-lg bg-gradient-to-r from-gray-100 to-gray-200 py-5 text-center uppercase shadow-lg">
             Typologies
           </h2>
-
           <div className="grid grid-cols-12">
             <div className="col-span-6">
               <div className="grid grid-cols-3 px-5">
-                {types &&
-                  types.map((type: any) => (
+                {procCtx.typologies &&
+                  procCtx.typologies.map((type: any) => (
                     <div className={`mb-1 flex rounded-md px-2 hover:bg-gray-200 hover:shadow`} key={`r-${type.id}`}>
-                      <StatusIndicator /> &nbsp;
+                      <StatusIndicator colour={type.color} /> &nbsp;
                       {type.title}
                     </div>
                   ))}
@@ -560,14 +489,32 @@ const Web = () => {
           </h2>
 
           <div className="flex min-h-80 items-center justify-center">
-            <StatusIndicator large={true} />
+            <StatusIndicator large={true} colour={procCtx.tadpLights.TADPROC.color} />
           </div>
         </div>
       </div>
+      {procCtx.tadpLights.TADPROC.stop && (
+        <Image
+          src="/stop.png"
+          width="250"
+          height="250"
+          className="absolute inset-x-0 inset-y-0 mx-auto my-auto"
+          style={{
+            position: "absolute",
+            top: -355,
+            right: `${window.innerWidth / 2}`,
+            zIndex: 1,
+            maxWidth: "250px",
+            minWidth: "250px",
+          }}
+          alt="stop"
+          priority={true}
+        />
+      )}
 
       {showModal && (
-        <Modal
-          colour={
+        <DebtorModal
+          color={
             selectedEntity === 0
               ? "rgba(68, 114, 196, 1)"
               : selectedEntity === 1
@@ -580,6 +527,26 @@ const Web = () => {
           setModal={setModal}
           entity={entityCtx.entities[selectedEntity]?.Entity}
           selectedEntity={selectedEntity}
+          modalTitle="Update Debtor Entity"
+        />
+      )}
+
+      {showCreditorModal && (
+        <CreditorModal
+          color={
+            selectedCreditorEntity === 0
+              ? "rgba(68, 114, 196, 1)"
+              : selectedCreditorEntity === 1
+              ? "rgba(112, 173, 71, 1)"
+              : selectedCreditorEntity === 2
+              ? "rgba(255, 192, 0, 1)"
+              : "rgba(237, 125, 49, 1)"
+          }
+          showModal={showCreditorModal}
+          setModal={setShowCreditorModal}
+          entity={entityCtx.creditorEntities[selectedCreditorEntity]?.CreditorEntity}
+          selectedEntity={selectedCreditorEntity}
+          modalTitle="Update Creditor Entity"
         />
       )}
     </div>
