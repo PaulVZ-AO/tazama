@@ -751,6 +751,40 @@ const EntityProvider = ({ children }: Props) => {
     }
   }
 
+  const updateTransaction = async (updates: Partial<PACS008>) => {
+    try {
+      dispatch({ type: ACTIONS.UPDATE_TRANSACTION_LOADING });
+  
+      // Clone the current pacs008 state to avoid direct mutation
+      const updatedPacs008: PACS008 = { ...state.pacs008 };
+  
+      // Update the Group Header information
+      updatedPacs008.FIToFICstmrCdtTrf.GrpHdr.MsgId = crypto.randomUUID().replaceAll("-", "");
+      updatedPacs008.FIToFICstmrCdtTrf.GrpHdr.CreDtTm = new Date().toISOString();
+  
+      // Apply provided updates, or fall back to random/default values
+      updatedPacs008.FIToFICstmrCdtTrf.RmtInf.Ustrd = updates.FIToFICstmrCdtTrf?.RmtInf?.Ustrd || crypto.randomUUID().replaceAll("-", "");
+      updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt = updates.FIToFICstmrCdtTrf?.CdtTrfTxInf?.IntrBkSttlmAmt?.Amt?.Amt || RandomNumbers();
+      updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.InstdAmt.Amt.Amt = updates.FIToFICstmrCdtTrf?.CdtTrfTxInf?.InstdAmt?.Amt?.Amt || updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt;
+      updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.InstrId = updates.FIToFICstmrCdtTrf?.CdtTrfTxInf?.PmtId?.InstrId || crypto.randomUUID().replaceAll("-", "");
+      updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.EndToEndId = updates.FIToFICstmrCdtTrf?.CdtTrfTxInf?.PmtId?.EndToEndId || crypto.randomUUID().replaceAll("-", "");
+  
+      // Build the PACS002 message, if needed
+      await buildPacs002();
+  
+      // Dispatch the success action with the updated transaction
+      dispatch({ type: ACTIONS.UPDATE_TRANSACTION_SUCCESS, payload: updatedPacs008 });
+  
+      // Update localStorage with the new transaction data
+      localStorage.setItem("PACS008", JSON.stringify(updatedPacs008));
+  
+      console.log("PACS008 UPDATED: ", updatedPacs008);
+    } catch (error) {
+      dispatch({ type: ACTIONS.UPDATE_TRANSACTION_FAIL });
+      console.log("ERROR UPDATING TRANSACTION PACS008: ", error);
+    }
+  };
+  
   const resetEntity = async (entityIndex: number) => {
     try {
       dispatch({ type: ACTIONS.RESET_ENTITY_LOADING })
@@ -829,6 +863,7 @@ const EntityProvider = ({ children }: Props) => {
         setCreditorPacs008,
         setCreditorAccountPacs008,
         generateTransaction,
+        updateTransaction,
         buildPacs002,
         setRuleLights,
         reset,
