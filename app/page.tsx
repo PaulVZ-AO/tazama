@@ -228,19 +228,19 @@ const Web = () => {
     setSelectedCreditorEntity(entityCtx.selectedCreditorEntity.creditorSelectedIndex || 0)
   }, [entityCtx.selectedCreditorEntity.creditorSelectedIndex])
 
-  useEffect(() => {
-    axios
-      .get("api/configs")
-      .then((response) => {
-        console.log(response)
-        setDescriptions(response.data.rules[0].config.bands)
-        setLoading(false)
-      })
-      .catch((error) => {
-        setError(error)
-        setLoading(false)
-      })
-  }, [])
+  // useEffect(() => {
+  //   axios
+  //     .get("api/configs")
+  //     .then((response) => {
+  //       console.log(response)
+  //       setDescriptions(response.data.rules[0].config.bands)
+  //       setLoading(false)
+  //     })
+  //     .catch((error) => {
+  //       setError(error)
+  //       setLoading(false)
+  //     })
+  // }, [])
 
   const fetchResult = async (transactionID: string) => {
     const result = await getTADPROCResult(transactionID)
@@ -249,6 +249,7 @@ const Web = () => {
 
   useEffect(() => {
     console.log("RULE DESCRIPTIONS: ", descriptions)
+    setLoading(false)
   }, [descriptions])
 
   // useEffect(() => {
@@ -467,6 +468,7 @@ const Web = () => {
                 {procCtx.rulesLoading ? (
                   <p className="mb-5 w-80 rounded-t-lg py-5 text-center">Loading</p>
                 ) : (
+                  procCtx.rules.length > 1 &&
                   procCtx.rules?.map((rule: any) => (
                     <div
                       className={`mb-1 flex rounded-md px-2 hover:bg-gray-200 hover:shadow`}

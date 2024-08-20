@@ -47,13 +47,29 @@ const ProcessorProvider = ({ children }: Props) => {
       const configData = await getNetworkMap()
       console.log("RULES - TYPOLOGY CONFIG: ", configData)
       if (configData.rules) {
-        dispatch({ type: ACTIONS.CREATE_RULES_SUCCESS, payload: configData.rules })
+        console.log("NEW RULES: ", configData.rules)
+
+        const rules: any = []
+
+        await configData.rules.forEach(async (rule) => {
+          if (!rules.includes(rule)) {
+            await rules.push(rule)
+          }
+        })
+
+        console.log("RULES LEN: ", configData.rules.length, rules.length)
+
+        dispatch({ type: ACTIONS.CREATE_RULES_SUCCESS, payload: rules })
       }
       if (configData.typologies) {
         dispatch({ type: ACTIONS.CREATE_TYPO_SUCCESS, payload: configData.typologies })
       }
     })()
   }, [])
+
+  useEffect(() => {
+    console.log(state.rules, state.typologies)
+  }, [state.rules, state.typologies])
 
   const WS_URL = process.env.NEXT_PUBLIC_URL || "http://localhost:3001"
 

@@ -7,8 +7,8 @@ import {
   debtorInitialState,
   pacs002InitialState,
   pacs008InitialState,
-  uiConfigInitialState,
   rulesLightsInitialState,
+  uiConfigInitialState,
 } from "./entity.initialState"
 import {
   CdtrEntity,
@@ -26,13 +26,13 @@ import {
 } from "./entity.interface"
 import EntityReducer from "./entity.reducer"
 import {
+  createAnCreditorEntity,
+  createAnEntity,
   GenerateBirthDate,
   RandomCellNumber,
   RandomName,
   RandomNumbers,
   RandomSurname,
-  createAnEntity,
-  createAnCreditorEntity,
 } from "./entity.utils"
 
 interface Props {
@@ -576,7 +576,8 @@ const EntityProvider = ({ children }: Props) => {
       const mergedCdtrAccounts = currentCdtrAccounts.map((cdtrAccount: any) => {
         return (
           updatedCreditorAccounts.find(
-            (updatedCreditorAccount) => updatedCreditorAccount.CdtrAcct.Id.Othr[0].Id === cdtrAccount.CdtrAcct.Id.Othr[0].Id
+            (updatedCreditorAccount) =>
+              updatedCreditorAccount.CdtrAcct.Id.Othr[0].Id === cdtrAccount.CdtrAcct.Id.Othr[0].Id
           ) || cdtrAccount
         )
       })

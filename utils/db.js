@@ -70,6 +70,7 @@ export const getRulesDescriptions = async () => {
         }
         newRule.bands.push(newBand)
       })
+
       ruleConfig.push(newRule)
       // console.log(newRule)
     })
@@ -139,6 +140,7 @@ export const getTADPROCResult = async (transactionID) => {
 export const getNetworkMap = async () => {
   const db = getConfigConnection()
   await getCollection("networkConfiguration", db)
+  await getCollection("ruleConfiguration", db)
 
   let result = []
   const results = await db.query(aql`FOR c IN networkConfiguration RETURN c`)
@@ -147,8 +149,8 @@ export const getNetworkMap = async () => {
     result.push(config)
   }
 
-  let typologies = []
-  let rules = []
+  const typologiesRes = []
+  const rulesRes = []
 
   if (result.length > 0) {
     result[0].messages.forEach((element) => {
@@ -165,63 +167,151 @@ export const getNetworkMap = async () => {
             id: parseInt(rule.id.split("@")[0]),
             title: rule.id.split("@")[0],
             rule: rule.id,
-            ruleDescription: "Derived account age - creditor",
+            ruleDescription: "",
             color: "n",
             result: null,
             linkedTypologies: [],
             ruleBands: [],
           }
-          if (!newRule.linkedTypologies.includes(typology.cfg.split("@")[0])) {
-            newRule.linkedTypologies.push(typology.cfg.split("@")[0])
-          }
-          const db = getConfigConnection()
+          rulesRes.push(newRule)
+
+          rulesRes.map(async (r) => {
+            if (r.id === rule.id) {
+              r.linkedTypologies.push(typology.cfg.split("@")[0])
+            }
+          })
+          // if (rulesRes.includes(newRule.id)) {
+          //   console.log("Rule Exists", newRule)
+          // }
+
+          // if (!newRule.linkedTypologies.includes(typology.cfg.split("@")[0])) {
+          //   newRule.linkedTypologies.push(typology.cfg.split("@")[0])
+          // }
+
           // make sure rule collection exists
-          await getCollection("ruleConfiguration", db)
+
           // declare array to hold rules
-          let result = []
-          // query for rules
-          const results = await db.query(aql`FOR c IN ruleConfiguration FILTER c.id == ${rule.id} RETURN c`)
-          // loop through array cursor and push results in array
-          for await (let rule of results) {
-            result.push(rule)
-            newRule.ruleDescription = rule.desc
-            console.log("RULE ID: ", rule.id)
-            rule.config.bands.forEach((band) => {
-              let newBand = {
-                subRuleRef: band.subRuleRef,
-                lowerLimit: band.lowerLimit ? band.lowerLimit : null,
-                upperLimit: band.upperLimit ? band.upperLimit : null,
-                reason: band.reason,
-              }
-              newRule.ruleBands.push(newBand)
-            })
-          }
+          //   let result = []
+          //   // query for rules
+          //   const results = await db.query(aql`FOR c IN ruleConfiguration FILTER c.id == ${rule.id} RETURN c`)
+          //   // loop through array cursor and push results in array
+          //   for await (let rule of results) {
+          //     result.push(rule)
 
-          if (result.length > 0) {
-            // result.forEach((rule) => {
-            //   newRule.ruleDescription = rule.desc
-            //   rule.config.bands.forEach((band) => {
-            //     let newBand = {
-            //       subRuleRef: band.subRuleRef,
-            //       lowerLimit: band.lowerLimit ? band.lowerLimit : null,
-            //       upperLimit: band.upperLimit ? band.upperLimit : null,
-            //       reason: band.reason,
-            //     }
-            //     newRule.bands.push(newBand)
-            //   })
-            // })
+          //     if (result.length > 0) {
+          //       // result.forEach((rule) => {
+          //       //   newRule.ruleDescription = rule.desc
+          //       //   rule.config.bands.forEach((band) => {
+          //       //     let newBand = {
+          //       //       subRuleRef: band.subRuleRef,
+          //       //       lowerLimit: band.lowerLimit ? band.lowerLimit : null,
+          //       //       upperLimit: band.upperLimit ? band.upperLimit : null,
+          //       //       reason: band.reason,
+          //       //     }
+          //       //     newRule.bands.push(newBand)
+          //       //   })
+          //       // })
+          //       newRule.ruleDescription = result[0].desc
+          //       console.log("RULE ID: ", result[0].id)
+          //       if (result[0].config.hasOwnProperty("bands")) {
+          //         console.log("BANDS EXIST")
+          //         result[0].config.bands.forEach((band) => {
+          //           let newBand = {
+          //             subRuleRef: band.subRuleRef,
+          //             lowerLimit: band.lowerLimit ? band.lowerLimit : null,
+          //             upperLimit: band.upperLimit ? band.upperLimit : null,
+          //             reason: band.reason,
+          //           }
+          //           newRule.ruleBands.push(newBand)
+          //         })
+          //       } else if (result[0].config.hasOwnProperty("cases")) {
+          //         console.log("CASES EXIST")
+          //         result[0].config.cases.forEach((item) => {
+          //           let newBand = {
+          //             subRuleRef: item.subRuleRef,
+          //             lowerLimit: item.lowerLimit ? item.lowerLimit : null,
+          //             upperLimit: item.upperLimit ? item.upperLimit : null,
+          //             reason: item.reason,
+          //           }
+          //           newRule.ruleBands.push(newBand)
+          //         })
+          //       }
+          //       rulesRes.push(newRule)
+          //     }
 
-            newTypology.linkedRules.push(newRule.title)
-            rules.push(newRule)
-          }
+          newTypology.linkedRules.push(newRule.title)
+          //     // if (!rules.includes(newRule)) {
+          //     //   console.log("Adding rule " + newRule)
+          //     //   rules.push(newRule)
+          //     // }
+          //   }
         })
-        typologies.push(newTypology)
+        typologiesRes.push(newTypology)
       })
     })
   }
+  const finalRules = []
+  for (let i = 0; i < rulesRes.length; i++) {
+    let rule = rulesRes[i]
+    let found = false
+    for (let j = 0; j < finalRules.length; j++) {
+      if (finalRules[j].id === rule.id) {
+        found = true
+        break
+      }
+    }
+    if (!found) {
+      finalRules.push(rule)
+    }
+  }
+
+  finalRules.forEach(async (rule) => {
+    await getCollection("ruleConfiguration", db)
+
+    let result = []
+    // query for rules
+    const results = await db.query(aql`FOR c IN ruleConfiguration FILTER c.id == ${rule.rule} RETURN c`)
+    // loop through array cursor and push results in array
+    for await (let r of results) {
+      result.push(r)
+
+      if (result.length > 0) {
+        rule.ruleDescription = result[0].desc
+        console.log("RULE ID: ", result[0].id)
+        if (result[0].config.hasOwnProperty("bands")) {
+          console.log("BANDS EXIST")
+          result[0].config.bands.forEach((band) => {
+            let newBand = {
+              subRuleRef: band.subRuleRef,
+              lowerLimit: band.lowerLimit ? band.lowerLimit : null,
+              upperLimit: band.upperLimit ? band.upperLimit : null,
+              reason: band.reason,
+            }
+            rule.ruleBands.push(newBand)
+          })
+        } else if (result[0].config.hasOwnProperty("cases")) {
+          console.log("CASES EXIST")
+          result[0].config.cases.forEach((item) => {
+            let newBand = {
+              subRuleRef: item.subRuleRef,
+              lowerLimit: item.lowerLimit ? item.lowerLimit : null,
+              upperLimit: item.upperLimit ? item.upperLimit : null,
+              reason: item.reason,
+            }
+            rule.ruleBands.push(newBand)
+          })
+        }
+        typologiesRes.forEach((typology) => {
+          if (typology.linkedRules.includes(rule.title)) {
+            rule.linkedTypologies.push(typology.title)
+          }
+        })
+      }
+    }
+  })
 
   return {
-    rules: rules,
-    typologies: typologies,
+    rules: finalRules,
+    typologies: typologiesRes,
   }
 }
