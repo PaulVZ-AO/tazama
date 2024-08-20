@@ -704,22 +704,18 @@ const EntityProvider = ({ children }: Props) => {
       const newEntity = cloneDebtorToCreditor(entity)
       const newAccount = cloneDebtorAccountToCreditorAccount(account)
 
-      console.log(newEntity, "<----", newAccount, "--->")
 
       const payload: CdtrEntity = {
         CreditorEntity: newEntity,
         CreditorAccounts: [newAccount],
       }
-      const exists =
-        state.creditorEntities.find(
-          (element: CdtrEntity) => element.CreditorEntity.Cdtr.Nm === payload.CreditorEntity.Cdtr.Nm
-        ) !== undefined
 
       let entitiesList: Array<CdtrEntity> = state.creditorEntities
 
-      if (!exists) {
+      if (state.creditorEntities.length < 4){
         entitiesList.push(payload)
       }
+
 
       dispatch({ type: ACTIONS.CLONE_ENTITY_SUCCESS, payload: [...entitiesList] })
       localStorage.setItem("CREDITOR_ENTITIES", JSON.stringify(state.creditorEntities))
@@ -735,21 +731,16 @@ const EntityProvider = ({ children }: Props) => {
       const newEntity = cloneCreditorToDebtor(entity)
       const newAccount = cloneCreditorAccountToDebtorAccount(account)
 
-      console.log(newEntity, "<----", newAccount, "--->")
-
       const payload: Entity = {
         Entity: newEntity,
         Accounts: [newAccount],
       }
-      const exists =
-        state.entities.find((element: Entity) => element.Entity.Dbtr.Nm === payload.Entity.Dbtr.Nm) !== undefined
 
-      console.log(state.entities.includes(payload.Entity.Dbtr.Nm))
-      let entitiesList: Array<Entity> = state.entities
+        let entitiesList: Array<Entity> = state.entities
 
-      if (!exists) {
-        entitiesList.push(payload)
-      }
+        if (state.entities.length < 4){
+          entitiesList.push(payload)
+        }
 
       dispatch({ type: ACTIONS.CLONE_CREDITOR_ENTITY_SUCCESS, payload: [...entitiesList] })
       localStorage.setItem("DEBTOR_ENTITIES", JSON.stringify(state.entities))

@@ -11,6 +11,7 @@ import { CreditorProfile } from "components/ProfileCreditor/ProfileCreditor"
 import { StatusIndicator } from "components/StatusIndicator/StatusIndicator"
 import EntityContext from "store/entities/entity.context"
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
+import { CdtrEntity, Entity } from "store/entities/entity.interface"
 
 const Web = () => {
   const [hoveredRule, setHoveredRule] = useState<any>(null)
@@ -18,66 +19,10 @@ const Web = () => {
   // const [nats, setNats] = useState<NatsConnection>()
   const [showModal, setModal] = useState(false)
   const entityCtx = useContext(EntityContext)
-  const [debtorEntities, setDebtorEntities] = useState<any>(entityCtx.entities)
 
-  const reorder = (list: any, startIndex: number, endIndex: number) => {
-    const result: any = Array.from(list)
-    const [removed] = result.splice(startIndex, 1)
-    result.splice(endIndex, 0, removed)
-    console.log(result, "<===")
-    return result
-  }
 
-  const onDragEnd = async (result: { destination: any; source: any; draggableId: any }) => {
-    const { destination, source, draggableId } = result
 
-    // No destination (dropped outside of droppable)
-    if (!destination) return
 
-    // If dropped in the same place, do nothing
-    if (destination.droppableId === source.droppableId && destination.index === source.index) {
-      return
-    }
-
-    if (source.droppableId === "debtorProfiles" && destination.droppableId === "creditorProfiles") {
-      // Clone entity from Debtor to Creditor
-      const clonedEntity = { ...entityCtx.entities[source.index] }
-      console.log(clonedEntity, "GGGGG")
-      if (entityCtx.entities.length < 4) {
-        entityCtx.cloneEntity(clonedEntity?.Entity, clonedEntity?.Accounts)
-        entityCtx.selectCreditorEntity(destination.index, 0)
-      }
-      return
-    }
-
-    if (source.droppableId === "creditorProfiles" && destination.droppableId === "debtorProfiles") {
-      // Clone entity from Debtor to Creditor
-      const clonedCreditorEntity = { ...entityCtx.creditorEntities[source.index] }
-      console.log(source, "GGGGG")
-      if (entityCtx.creditorEntities.length < 4) {
-        entityCtx.cloneCreditorEntity(clonedCreditorEntity?.CreditorEntity, clonedCreditorEntity?.CreditorAccounts)
-        entityCtx.selectDebtorEntity(destination.index, 0)
-      }
-      console.log(destination.index, source.index, "<-----")
-      return
-    }
-
-    if (destination.droppableId === source.droppableId) {
-      if (destination.droppableId === "debtorProfiles") {
-        const reorderedEntities = reorder(entityCtx.entities, source.index, destination.index)
-        console.log(reorderedEntities)
-        setDebtorEntities(reorderedEntities)
-        // setSelectedEntity(destination.index)
-        // await entityCtx.selectDebtorEntity(destination.index, 0)
-      }
-      return
-    }
-
-    // Handle the reordering or moving of items between droppables
-    // (implement logic based on your data structure)
-    console.log("Dropped from", source.droppableId, "to", destination.droppableId)
-    console.log("------>>> ", source, " <<------", destination)
-  }
 
   const handleRuleMouseEnter = (type: any) => {
     setHoveredType(null) // fallback if stats is stuck
@@ -242,9 +187,7 @@ const Web = () => {
     await entityCtx.setCreditorAccountPacs008(creditorIdx, accountIdx)
   }
 
-  useEffect(() => {
-    setDebtorEntities(entityCtx.entities)
-  }, [entityCtx.entities])
+
 
   useEffect(() => {
     setSelectedEntity(entityCtx.selectedDebtorEntity.debtorSelectedIndex || 0)
@@ -298,7 +241,53 @@ const Web = () => {
   if (loading) return <p>Loading...</p>
   if (error) return <p>Error: {error}</p>
 
+  const onDragEnd = async (result: { destination: any; source: any; draggableId: any }) => {
+    const { destination, source, draggableId } = result
+
+    // No destination (dropped outside of droppable)
+    if (!destination) return
+
+    // If dropped in the same place, do nothing
+    if (destination.droppableId === source.droppableId && destination.index === source.index) {
+      return
+    }
+
+    if (source.droppableId === "debtorProfiles" && destination.droppableId === "creditorProfiles") {
+      // Clone entity from Debtor to Creditor
+      const clonedEntity = { ...entityCtx.entities[source.index] }
+      const exists = entityCtx.creditorEntities.some((element: CdtrEntity) => element.CreditorEntity.Cdtr.Nm === clonedEntity?.Entity?.Dbtr?.Nm);
+      console.log(exists)
+      if (!exists) {
+        entityCtx.cloneEntity(clonedEntity?.Entity, clonedEntity?.Accounts)
+        entityCtx.selectCreditorEntity(destination.index, 0)
+      } else if (exists) {
+        const index = entityCtx.creditorEntities.findIndex((value: CdtrEntity) => value.CreditorEntity.Cdtr.Nm === clonedEntity?.Entity?.Dbtr?.Nm)
+        entityCtx.selectCreditorEntity(index, 0)
+      }
+      return
+    }
+
+    if (source.droppableId === "creditorProfiles" && destination.droppableId === "debtorProfiles") {
+      // Clone entity from Creditor to Debtor
+      const clonedCreditorEntity = { ...entityCtx.creditorEntities[source.index] }
+
+      const exists =
+      entityCtx.entities.find((element: Entity) => element.Entity.Dbtr.Nm === clonedCreditorEntity?.CreditorEntity?.Cdtr?.Nm) !== undefined
+      if (!exists) {
+        entityCtx.cloneCreditorEntity(clonedCreditorEntity?.CreditorEntity, clonedCreditorEntity?.CreditorAccounts)
+        entityCtx.selectDebtorEntity(destination.index, 0)
+      } else if (exists) {
+        const index = entityCtx.entities.findIndex((value: Entity) => value.Entity.Dbtr.Nm === clonedCreditorEntity?.CreditorEntity?.Cdtr?.Nm)
+        entityCtx.selectDebtorEntity(index, 0)
+      }
+      return
+    }
+
+    console.log("Dropped from", source.droppableId, "to", destination.droppableId)
+  }
+
   const iconColour = (index: number) => {
+
     let fillColour
 
     switch (index) {
@@ -325,23 +314,6 @@ const Web = () => {
     }
   }
 
-  const DraggablePlaceHolder = () => {
-    return (
-      <div
-        className={` mb-7 flex w-full justify-between rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 px-3 py-1 text-gray-300 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]`}
-      >
-        <button>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
-            <path
-              fillRule="evenodd"
-              d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </button>
-      </div>
-    )
-  }
 
   return (
     <div className="bg-slate-300/25 px-5 pt-10">
@@ -352,11 +324,11 @@ const Web = () => {
             <div className="flex flex-wrap justify-center rounded-lg p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
               <div className="mb-5 text-center text-xl">Debtors</div>
               <Droppable droppableId="debtorProfiles">
-                {(provided, snapshot) => (
+                {(provided) => (
                   <div ref={provided.innerRef} {...provided.droppableProps} className="space-y-2">
                     <>
                       <Draggable key={`debtor-0`} draggableId={`debtor-0`} index={0}>
-                        {(provided: any, snapshot) => (
+                        {(provided) => (
                           <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                             <Profile
                               colour={!entityCtx.entities[0] ? "text-gray-300" : iconColour(0)}
