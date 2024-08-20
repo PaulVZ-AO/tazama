@@ -736,7 +736,7 @@ const EntityProvider = ({ children }: Props) => {
       setPacs008.FIToFICstmrCdtTrf.RmtInf.Ustrd = crypto.randomUUID().replaceAll("-", "")
       setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt = RandomNumbers()
       setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.InstdAmt.Amt.Amt =
-        setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt
+      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt
       setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.InstrId = crypto.randomUUID().replaceAll("-", "")
       setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.EndToEndId = crypto.randomUUID().replaceAll("-", "")
 
@@ -755,27 +755,24 @@ const EntityProvider = ({ children }: Props) => {
     try {
       dispatch({ type: ACTIONS.UPDATE_TRANSACTION_LOADING });
   
-      // Clone the current pacs008 state to avoid direct mutation
       const updatedPacs008: PACS008 = { ...state.pacs008 };
   
-      // Update the Group Header information
       updatedPacs008.FIToFICstmrCdtTrf.GrpHdr.MsgId = crypto.randomUUID().replaceAll("-", "");
       updatedPacs008.FIToFICstmrCdtTrf.GrpHdr.CreDtTm = new Date().toISOString();
   
-      // Apply provided updates, or fall back to random/default values
       updatedPacs008.FIToFICstmrCdtTrf.RmtInf.Ustrd = updates.FIToFICstmrCdtTrf?.RmtInf?.Ustrd || crypto.randomUUID().replaceAll("-", "");
       updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt = updates.FIToFICstmrCdtTrf?.CdtTrfTxInf?.IntrBkSttlmAmt?.Amt?.Amt || RandomNumbers();
       updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.InstdAmt.Amt.Amt = updates.FIToFICstmrCdtTrf?.CdtTrfTxInf?.InstdAmt?.Amt?.Amt || updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt;
       updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.InstrId = updates.FIToFICstmrCdtTrf?.CdtTrfTxInf?.PmtId?.InstrId || crypto.randomUUID().replaceAll("-", "");
       updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.EndToEndId = updates.FIToFICstmrCdtTrf?.CdtTrfTxInf?.PmtId?.EndToEndId || crypto.randomUUID().replaceAll("-", "");
+      updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.Purp.Cd = updates.FIToFICstmrCdtTrf?.CdtTrfTxInf?.Purp?.Cd || "";
+      updatedPacs008.FIToFICstmrCdtTrf.SplmtryData.Envlp.Doc.InitgPty.Glctn.Lat = updates.FIToFICstmrCdtTrf?.SplmtryData?.Envlp?.Doc?.InitgPty?.Glctn?.Lat || "";
+      updatedPacs008.FIToFICstmrCdtTrf.SplmtryData.Envlp.Doc.InitgPty.Glctn.Long = updates.FIToFICstmrCdtTrf?.SplmtryData?.Envlp?.Doc?.InitgPty?.Glctn?.Long || "";
   
-      // Build the PACS002 message, if needed
       await buildPacs002();
   
-      // Dispatch the success action with the updated transaction
       dispatch({ type: ACTIONS.UPDATE_TRANSACTION_SUCCESS, payload: updatedPacs008 });
   
-      // Update localStorage with the new transaction data
       localStorage.setItem("PACS008", JSON.stringify(updatedPacs008));
   
       console.log("PACS008 UPDATED: ", updatedPacs008);
