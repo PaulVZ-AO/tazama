@@ -128,6 +128,25 @@ const EntityReducer = (state: any, action: any) => {
         entities: [],
       }
 
+    case ACTIONS.UPDATE_CREDITOR_ACCOUNTS_LOADING:
+      return {
+        ...state,
+        updateCreditorAccountsLoading: true,
+        creditorEntities: [],
+      }
+    case ACTIONS.UPDATE_CREDITOR_ACCOUNTS_SUCCESS:
+      return {
+        ...state,
+        updateCreditorAccountsLoading: false,
+        creditorEntities: action.payload,
+      }
+    case ACTIONS.UPDATE_CREDITOR_ACCOUNTS_FAIL:
+      return {
+        ...state,
+        updateCreditorAccountsLoading: false,
+        creditorEntities: [],
+      }
+
     case ACTIONS.CREATE_CREDITOR_ENTITY_LOADING:
       return {
         ...state,
@@ -282,6 +301,22 @@ const EntityReducer = (state: any, action: any) => {
       return {
         ...state,
         pacs002Loading: false,
+      }
+
+    case ACTIONS.SET_RULE_LIGHTS_LOADING:
+      return {
+        ...state,
+        ruleLights: null,
+      }
+    case ACTIONS.SET_RULE_LIGHTS_SUCCESS:
+      return {
+        ...state,
+        ruleLights: action.payload,
+      }
+    case ACTIONS.SET_RULE_LIGHTS_FAIL:
+      return {
+        ...state,
+        ruleLights: null,
       }
 
     case ACTIONS.CLONE_ENTITY_LOADING:

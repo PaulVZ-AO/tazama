@@ -24,6 +24,8 @@ interface Context {
   createAccountLoading: boolean
   updateAccountsLoading: boolean
   createCreditorAccountLoading: boolean
+  updateCreditorAccountsLoading: boolean
+
   resetEntityLoading: boolean
   resetCreditorEntityLoading: boolean
   cloneEntityLoading: boolean
@@ -37,6 +39,7 @@ interface Context {
   selectedDebtorEntity: SelectedDebtor
   selectedCreditorEntity: SelectedCreditor
   uiConfig: UIConfiguration
+  ruleLights: Array<any>
   selectDebtorEntity: (index: number, accountIndex: number) => void
   selectCreditorEntity: (index: number, accountIndex: number) => void
   createEntity: () => void
@@ -46,12 +49,14 @@ interface Context {
   createCreditorEntity: () => void
   updateCreditorEntity: (entity: CreditorEntity, entityIndex: number) => void
   createCreditorEntityAccount: (entityIndex: number) => void
+  updateCreditorAccounts: (creditorAccounts: any, entityIndex: number) => void
   setDebtorPacs008: (entityIndex: number) => void
   setDebtorAccountPacs008: (entityIndex: number, accountIndex: number) => void
   setCreditorPacs008: (entityIndex: number) => void
   setCreditorAccountPacs008: (entityIndex: number, accountIndex: number) => void
   generateTransaction: () => void
   buildPacs002: () => void
+  setRuleLights: (lights: Array<any>) => void
   reset: () => void
   resetEntity: ( entityIndex: number) => void,
   resetCreditorEntity: ( entityIndex: number) => void,
@@ -65,6 +70,7 @@ const EntityContext = createContext<Context>({
   createAccountLoading: false,
   updateAccountsLoading: false,
   createCreditorAccountLoading: false,
+  updateCreditorAccountsLoading: false,
   resetEntityLoading: false,
   resetCreditorEntityLoading: false,
   cloneEntityLoading: false,
@@ -78,6 +84,7 @@ const EntityContext = createContext<Context>({
   selectedDebtorEntity: debtorInitialState,
   selectedCreditorEntity: creditorInitialState,
   uiConfig: uiConfigInitialState,
+  ruleLights: [],
   selectDebtorEntity: () => {},
   selectCreditorEntity: () => {},
   createEntity: () => {},
@@ -87,12 +94,14 @@ const EntityContext = createContext<Context>({
   createCreditorEntity: () => {},
   updateCreditorEntity: () => {},
   createCreditorEntityAccount: () => {},
+  updateCreditorAccounts: () => {},
   setDebtorPacs008: () => {},
   setDebtorAccountPacs008: () => {},
   setCreditorPacs008: () => {},
   setCreditorAccountPacs008: () => {},
   generateTransaction: () => {},
   buildPacs002: () => {},
+  setRuleLights: () => {},
   reset: () => {},
   resetEntity: () => {},
   resetCreditorEntity: () => {},
