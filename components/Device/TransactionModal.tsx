@@ -34,6 +34,7 @@ const TransactionModal = ({ ...props }: Props) => {
 
             <div className="text-left [&>div>input]:rounded-lg [&>div>input]:bg-gray-200 [&>div>input]:p-2 [&>div>input]:shadow-inner [&>div]:mb-2 [&>div]:px-5">
               <div className="mt-5">
+                <label>Test commit label</label>
                 <label htmlFor="modal-Nm">Amount</label>
                 <input type="text" className="w-full" value={props.formValues.amount} onChange={(e) => props.onChange(e, "amount")} />
               </div>
