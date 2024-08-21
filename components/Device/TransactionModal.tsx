@@ -18,6 +18,7 @@ interface Props {
 const TransactionModal = ({ ...props }: Props) => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
+  // Clear errors
   const clearErrors = () => {setErrors({});};
 
   if (!props.isVisible) return null;
