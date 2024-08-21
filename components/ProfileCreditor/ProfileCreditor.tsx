@@ -84,7 +84,6 @@ export const CreditorProfile = ({ ...props }: ProfileProps) => {
     setShowModal(false)
   };
 
-
   return (
     <>
       <div className={`mb-7 rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 px-3 py-1 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)] ${props.colour} flex w-full justify-between ${reverse}`}>
@@ -150,8 +149,6 @@ export const CreditorProfile = ({ ...props }: ProfileProps) => {
             <path fillRule="evenodd" d="M14.615 1.595a.75.75 0 0 1 .359.852L12.982 9.75h7.268a.75.75 0 0 1 .548 1.262l-10.5 11.25a.75.75 0 0 1-1.272-.71l1.992-7.302H3.75a.75.75 0 0 1-.548-1.262l10.5-11.25a.75.75 0 0 1 .913-.143Z" clipRule="evenodd" />
           </svg>
         </button>
-
-        
       </div>
       
       <ResetModal show={showModal} onClose={() => setShowModal(false)} onConfirm={handleReset} modalTitle="Reset Entity" modalContent="Are you sure you want to reset this Entity?"/>
