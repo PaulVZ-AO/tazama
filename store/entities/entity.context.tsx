@@ -28,6 +28,8 @@ interface Context {
 
   resetEntityLoading: boolean
   resetCreditorEntityLoading: boolean
+  cloneEntityLoading: boolean
+  cloneCreditorEntityLoading: boolean
   creditorEntities: Array<CdtrEntity>
   entities: Array<Entity>
   pacs008Loading: boolean
@@ -53,11 +55,14 @@ interface Context {
   setCreditorPacs008: (entityIndex: number) => void
   setCreditorAccountPacs008: (entityIndex: number, accountIndex: number) => void
   generateTransaction: () => void
+  updateTransaction: (x: any) => void;
   buildPacs002: () => void
   setRuleLights: (lights: Array<any>) => void
   reset: () => void
   resetEntity: ( entityIndex: number) => void,
   resetCreditorEntity: ( entityIndex: number) => void,
+  cloneEntity: (entity: any, account: any) => void,
+  cloneCreditorEntity: (creditorEntity: any, account: any) => void,
 }
 
 const EntityContext = createContext<Context>({
@@ -69,6 +74,8 @@ const EntityContext = createContext<Context>({
   updateCreditorAccountsLoading: false,
   resetEntityLoading: false,
   resetCreditorEntityLoading: false,
+  cloneEntityLoading: false,
+  cloneCreditorEntityLoading: false,
   creditorEntities: [],
   entities: [],
   pacs008Loading: false,
@@ -94,11 +101,14 @@ const EntityContext = createContext<Context>({
   setCreditorPacs008: () => {},
   setCreditorAccountPacs008: () => {},
   generateTransaction: () => {},
+  updateTransaction: () => {},
   buildPacs002: () => {},
   setRuleLights: () => {},
   reset: () => {},
   resetEntity: () => {},
-  resetCreditorEntity: () => {}
+  resetCreditorEntity: () => {},
+  cloneEntity: () => {},
+  cloneCreditorEntity: () => {},
 })
 
 export default EntityContext

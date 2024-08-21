@@ -286,6 +286,23 @@ const EntityReducer = (state: any, action: any) => {
         pacs008Loading: false,
       }
 
+    case ACTIONS.UPDATE_TRANSACTION_LOADING:
+      return {
+        ...state,
+        pacs008Loading: true,
+      }
+    case ACTIONS.UPDATE_TRANSACTION_SUCCESS:
+      return {
+        ...state,
+        pacs008Loading: false,
+        pacs008: action.payload,
+      }
+    case ACTIONS.UPDATE_TRANSACTION_FAIL:
+      return {
+        ...state,
+        pacs008Loading: false,
+      }
+
     case ACTIONS.GENERATE_PACS002_LOADING:
       return {
         ...state,
@@ -317,6 +334,44 @@ const EntityReducer = (state: any, action: any) => {
       return {
         ...state,
         ruleLights: null,
+      }
+
+    case ACTIONS.CLONE_ENTITY_LOADING:
+      return {
+        ...state,
+        cloneEntityLoading: true,
+        creditorEntities: [],
+      }
+    case ACTIONS.CLONE_ENTITY_SUCCESS:
+      return {
+        ...state,
+        cloneEntityLoading: false,
+        creditorEntities: action.payload,
+      }
+    case ACTIONS.CLONE_ENTITY_FAIL:
+      return {
+        ...state,
+        cloneEntityLoading: false,
+        creditorEntities: [],
+      }
+
+    case ACTIONS.CLONE_CREDITOR_ENTITY_LOADING:
+      return {
+        ...state,
+        cloneCreditorEntityLoading: true,
+        entities: [],
+      }
+    case ACTIONS.CLONE_CREDITOR_ENTITY_SUCCESS:
+      return {
+        ...state,
+        cloneCreditorEntityLoading: false,
+        entities: action.payload,
+      }
+    case ACTIONS.CLONE_CREDITOR_ENTITY_FAIL:
+      return {
+        ...state,
+        cloneCreditorEntityLoading: false,
+        entities: [],
       }
   }
 }
