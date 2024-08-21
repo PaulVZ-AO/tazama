@@ -54,7 +54,6 @@ export const RandomCellNumber = async () => {
 }
 
 export const createAnEntity = async () => {
-
   const newEntity: DebtorEntity = {
     Dbtr: {
       Nm: `${await RandomName()} ${await RandomSurname()}`,
@@ -99,12 +98,10 @@ export const createAnEntity = async () => {
     Accounts: [newAccount],
   }
 
-  return payload;
-
+  return payload
 }
 
-export const createAnCreditorEntity= async () => {
-  
+export const createAnCreditorEntity = async () => {
   const newEntity: CreditorEntity = {
     Cdtr: {
       Nm: `${await RandomName()} ${await RandomSurname()}`,
@@ -151,7 +148,97 @@ export const createAnCreditorEntity= async () => {
     CreditorAccounts: [newAccount],
   }
 
-  return payload;
+  return payload
+}
 
+export const cloneDebtorToCreditor = (debtor: DebtorEntity): CreditorEntity => {
+  return {
+    Cdtr: {
+      Nm: debtor?.Dbtr?.Nm,
+      Id: {
+        PrvtId: {
+          DtAndPlcOfBirth: {
+            BirthDt: debtor?.Dbtr?.Id?.PrvtId?.DtAndPlcOfBirth?.BirthDt,
+            CityOfBirth: debtor?.Dbtr?.Id?.PrvtId?.DtAndPlcOfBirth?.CityOfBirth,
+            CtryOfBirth: debtor?.Dbtr?.Id?.PrvtId?.DtAndPlcOfBirth?.CtryOfBirth,
+          },
+          Othr: [
+            {
+              Id: debtor?.Dbtr?.Id?.PrvtId?.Othr[0]?.Id,
+              SchmeNm: {
+                Prtry: debtor?.Dbtr?.Id?.PrvtId?.Othr[0]?.SchmeNm?.Prtry,
+              },
+            },
+          ] as [{ Id: string; SchmeNm: { Prtry: string } }],
+        },
+      },
+      CtctDtls: {
+        MobNb: debtor?.Dbtr?.CtctDtls?.MobNb,
+      },
+    },
+  }
+}
 
+export const cloneCreditorToDebtor = (creditor: CreditorEntity): DebtorEntity => {
+  return {
+    Dbtr: {
+      Nm: creditor.Cdtr.Nm,
+      Id: {
+        PrvtId: {
+          DtAndPlcOfBirth: {
+            BirthDt: creditor.Cdtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt,
+            CityOfBirth: creditor.Cdtr.Id.PrvtId.DtAndPlcOfBirth.CityOfBirth,
+            CtryOfBirth: creditor.Cdtr.Id.PrvtId.DtAndPlcOfBirth.CtryOfBirth,
+          },
+          Othr: [
+            {
+              Id: creditor.Cdtr.Id.PrvtId.Othr[0].Id,
+              SchmeNm: {
+                Prtry: creditor.Cdtr.Id.PrvtId.Othr[0].SchmeNm.Prtry,
+              },
+            },
+          ] as [{ Id: string; SchmeNm: { Prtry: string } }],
+        },
+      },
+      CtctDtls: {
+        MobNb: creditor.Cdtr.CtctDtls.MobNb,
+      },
+    },
+  }
+}
+
+export const cloneCreditorAccountToDebtorAccount = (creditorAccount: any): DebtorAccount => {
+  return {
+    DbtrAcct: {
+      Id: {
+        Othr: [
+          {
+            Id: creditorAccount[0]?.CdtrAcct?.Id?.Othr[0]?.Id,
+            SchmeNm: {
+              Prtry: creditorAccount[0]?.CdtrAcct?.Id?.Othr[0]?.SchmeNm?.Prtry,
+            },
+          },
+        ] as [{ Id: string; SchmeNm: { Prtry: string } }],
+      },
+      Nm: creditorAccount[0]?.CdtrAcct?.Nm,
+    },
+  }
+}
+
+export const cloneDebtorAccountToCreditorAccount = (debtorAccount: any): CreditorAccount => {
+  return {
+    CdtrAcct: {
+      Id: {
+        Othr: [
+          {
+            Id: debtorAccount[0]?.DbtrAcct?.Id?.Othr[0]?.Id,
+            SchmeNm: {
+              Prtry: debtorAccount[0]?.DbtrAcct?.Id?.Othr[0]?.SchmeNm?.Prtry,
+            },
+          },
+        ] as [{ Id: string; SchmeNm: { Prtry: string } }],
+      },
+      Nm: debtorAccount[0]?.DbtrAcct?.Nm,
+    },
+  }
 }

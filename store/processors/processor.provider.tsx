@@ -36,12 +36,13 @@ const ProcessorProvider = ({ children }: Props) => {
   const [state, dispatch] = useReducer(ProcessorReducer, initialProcessorState)
 
   //---> UNCOMMENT THIS USE_EFFECT IF YOU WANT THE HARD CODED DATA IN THE API SECTION<---//
-  // useEffect(() => {
-  // createRules()
-  // createTypologies()
-  // }, [])
+  useEffect(() => {
+  createRules()
+  createTypologies()
+  }, [])
 
   //---> COMMENT THIS USE_EFFECT OUT IF YOU WANT THE DYNAMICALLY BUILT DATA<---//
+<<<<<<< HEAD
   useEffect(() => {
     ;(async () => {
       const configData = await getNetworkMap()
@@ -54,6 +55,20 @@ const ProcessorProvider = ({ children }: Props) => {
       }
     })()
   }, [])
+=======
+  // useEffect(() => {
+  //   ;(async () => {
+  //     const configData = await getNetworkMap()
+  //     console.log("RULES - TYPOLOGY CONFIG: ", configData)
+  //     if (configData.rules) {
+  //       dispatch({ type: ACTIONS.CREATE_RULES_SUCCESS, payload: configData.rules })
+  //     }
+  //     if (configData.rules) {
+  //       dispatch({ type: ACTIONS.CREATE_TYPO_SUCCESS, payload: configData.typologies })
+  //     }
+  //   })()
+  // }, [])
+>>>>>>> dev
 
   // useEffect(() => {
   //   console.log(state.rules, state.typologies)
