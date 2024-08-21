@@ -45,21 +45,9 @@ const ProcessorProvider = ({ children }: Props) => {
   useEffect(() => {
     ;(async () => {
       const configData = await getNetworkMap()
-      console.log("RULES - TYPOLOGY CONFIG: ", configData)
+      // console.log("RULES - TYPOLOGY CONFIG: ", configData)
       if (configData.rules) {
-        console.log("NEW RULES: ", configData.rules)
-
-        const rules: any = []
-
-        await configData.rules.forEach(async (rule) => {
-          if (!rules.includes(rule)) {
-            await rules.push(rule)
-          }
-        })
-
-        console.log("RULES LEN: ", configData.rules.length, rules.length)
-
-        dispatch({ type: ACTIONS.CREATE_RULES_SUCCESS, payload: rules })
+        dispatch({ type: ACTIONS.CREATE_RULES_SUCCESS, payload: configData.rules })
       }
       if (configData.typologies) {
         dispatch({ type: ACTIONS.CREATE_TYPO_SUCCESS, payload: configData.typologies })
@@ -67,9 +55,9 @@ const ProcessorProvider = ({ children }: Props) => {
     })()
   }, [])
 
-  useEffect(() => {
-    console.log(state.rules, state.typologies)
-  }, [state.rules, state.typologies])
+  // useEffect(() => {
+  //   console.log(state.rules, state.typologies)
+  // }, [state.rules, state.typologies])
 
   const WS_URL = process.env.NEXT_PUBLIC_URL || "http://localhost:3001"
 
@@ -103,7 +91,12 @@ const ProcessorProvider = ({ children }: Props) => {
     socket.on("typoResponse", (msg) => {
       console.log("Received Message from the TYPO RESPONSE: ", msg)
       setTimeout(async () => await updateTypologies(msg), 700)
-      socket.emit("tadProc", msg)
+      // ;(async () => {
+      //   const results: any = await getTADPROCResult(msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId)
+      //   await updateTadpLights(results)
+      // })()
+
+      socket.emit("tadProc", msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId)
     })
 
     socket.on("stream", (msg) => {
@@ -112,11 +105,14 @@ const ProcessorProvider = ({ children }: Props) => {
 
     socket.on("tadProc", async (msg) => {
       console.log("Received Message from the TADPROC: ", msg)
-      if (msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId !== undefined) {
-        const results: any = await getTADPROCResult(msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId)
-        console.log(results)
-        setTimeout(async () => await updateTadpLights(results), 1000)
-      }
+      // if (msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId !== undefined) {
+      setTimeout(async () => {
+        const results: any = await getTADPROCResult(msg)
+        await updateTadpLights(results)
+      }, 1000)
+      // setTimeout(async () => await updateTadpLights(results), 200)
+
+      // }
     })
 
     socket.on("subscriptions", (msg) => {
@@ -190,7 +186,7 @@ const ProcessorProvider = ({ children }: Props) => {
   const updateTypologies = async (msg: any) => {
     try {
       dispatch({ type: ACTIONS.UPDATE_TYPO_LOADING })
-      console.log("TYPOLOGY: ", msg.typologyResult.cfg.split("@")[0], msg.typologyResult.result)
+      // console.log("TYPOLOGY: ", msg.typologyResult.cfg.split("@")[0], msg.typologyResult.result)
       const index: number = state.typologies.findIndex(
         (r: Typology) => r.title === msg.typologyResult.cfg.split("@")[0]
       )

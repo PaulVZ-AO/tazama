@@ -105,11 +105,11 @@ app.prepare().then(() => {
     console.log(nc.info)
 
     const connected = nc.subscribe("connection")
-    const all = nc.subscribe(">", { queue: "MONITORING1" })
+    // const all = nc.subscribe(">", { queue: "MONITORING1" })
     const pubRule901 = nc.subscribe("pub-rule-901@1.0.0", { queue: "MONITORING_RULE_PUBLISHER" })
     const subRule901 = nc.subscribe("sub-rule-901@1.0.0", { queue: "MONITORING_RULE_SUBSCRIBER" })
     const type001 = nc.subscribe("typology-999@1.0.0", { queue: "MONITORING_TYPOLOGY" })
-    const cms = nc.subscribe("CMS", { queue: "MONITORING_CMS" })
+    const cms = nc.subscribe("cms", { queue: "MONITORING_CMS" })
 
     // subscriptions.push(connected)
     // subscriptions.push(all)
@@ -125,9 +125,9 @@ app.prepare().then(() => {
     ;(async () => {
       for await (const msg of connected) await handleMsg(msg, io, "connection")
     })()
-    ;(async () => {
-      for await (const msg of all) await handleMsg(msg, io, "stream")
-    })()
+    // ;(async () => {
+    //   for await (const msg of all) await handleMsg(msg, io, "stream")
+    // })()
     ;(async () => {
       for await (const msg of type001) await handleMsg(msg, io, "typoResponse")
     })()
@@ -148,7 +148,7 @@ app.prepare().then(() => {
     })
   })
 
-  server.listen(3001, (err) => {
+  server.listen(port, (err) => {
     if (err) throw err
     console.log(`> Ready on http://localhost:${port}`)
   })
