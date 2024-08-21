@@ -114,6 +114,19 @@ const ProcessorReducer = (state: any, action: any) => {
         edError: action.payload,
       }
 
+    case ACTIONS.VALIDATE_RESULTS_LOADING:
+      return {
+        ...state,
+      }
+    case ACTIONS.VALIDATE_RESULTS_SUCCESS:
+      return {
+        ...state,
+      }
+    case ACTIONS.VALIDATE_RESULTS_FAIL:
+      return {
+        ...state,
+      }
+
     case ACTIONS.RESET_ALL_LIGHTS:
       return {
         ...state,

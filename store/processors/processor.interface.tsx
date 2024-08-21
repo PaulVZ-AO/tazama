@@ -1,4 +1,4 @@
-interface RuleBand {
+export interface RuleBand {
   subRuleRef: string
   lowerLimit: number | null
   upperLimit: number | null
@@ -24,13 +24,29 @@ export interface Typology {
   linkedRules: string[]
 }
 
-export interface TadProcLightsManager {
-  TADPROC: {
-    result: any
-    color: "r" | "g" | "y" | "n"
-    stop: boolean
-    status: string
+interface RuleResult {
+  id: string
+  cfg: string
+  subRuleRef: string
+  prcgTm: number
+  wght: number
+}
+
+export interface TADPROC_RESULT {
+  cfg: string
+  result: number
+  workflow: {
+    alertThreshold: number | null
+    interdictionThreshold: number | null
   }
+  ruleResults: RuleResult[]
+}
+
+export interface TADPROC {
+  status: string
+  stop: boolean
+  color: "r" | "g" | "y" | "n"
+  results: TADPROC_RESULT[]
 }
 
 export interface EDLightsManager {

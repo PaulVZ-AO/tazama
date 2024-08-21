@@ -12,7 +12,7 @@ import {
   ruleInitialState,
   typologiesInitialState,
 } from "./processor.initialState"
-import { EDLightsManager, Rule, TadProcLightsManager, Typology } from "./processor.interface"
+import { EDLightsManager, Rule, RuleBand, TADPROC, TADPROC_RESULT, Typology } from "./processor.interface"
 import ProcessorReducer from "./processor.reducer"
 
 dotenv.config()
@@ -36,13 +36,12 @@ const ProcessorProvider = ({ children }: Props) => {
   const [state, dispatch] = useReducer(ProcessorReducer, initialProcessorState)
 
   //---> UNCOMMENT THIS USE_EFFECT IF YOU WANT THE HARD CODED DATA IN THE API SECTION<---//
-  useEffect(() => {
-  createRules()
-  createTypologies()
-  }, [])
+  // useEffect(() => {
+  //   createRules()
+  //   createTypologies()
+  // }, [])
 
   //---> COMMENT THIS USE_EFFECT OUT IF YOU WANT THE DYNAMICALLY BUILT DATA<---//
-<<<<<<< HEAD
   useEffect(() => {
     ;(async () => {
       const configData = await getNetworkMap()
@@ -55,20 +54,6 @@ const ProcessorProvider = ({ children }: Props) => {
       }
     })()
   }, [])
-=======
-  // useEffect(() => {
-  //   ;(async () => {
-  //     const configData = await getNetworkMap()
-  //     console.log("RULES - TYPOLOGY CONFIG: ", configData)
-  //     if (configData.rules) {
-  //       dispatch({ type: ACTIONS.CREATE_RULES_SUCCESS, payload: configData.rules })
-  //     }
-  //     if (configData.rules) {
-  //       dispatch({ type: ACTIONS.CREATE_TYPO_SUCCESS, payload: configData.typologies })
-  //     }
-  //   })()
-  // }, [])
->>>>>>> dev
 
   // useEffect(() => {
   //   console.log(state.rules, state.typologies)
@@ -84,39 +69,39 @@ const ProcessorProvider = ({ children }: Props) => {
     socket.on("connection", (msg) => {
       console.log("Connected to WebSocket server", msg)
     })
-    socket.emit("subscriptions", { subscriptions: ["connection", ">", "typology-999@1.0.0", "cms"] })
+    socket.emit("subscriptions", { subscriptions: ["connection", ">", "typology-processor@1.0.0", "cms"] })
 
     socket.on("welcome", (msg) => {
       console.log("Received Message from the welcome: ", msg)
       socket.emit("confirmation", msg)
     })
-    socket.on("ruleRequest", (msg) => {
-      console.log("Received Message from the RULE REQUEST: ", msg)
-    })
+    // socket.on("ruleRequest", (msg) => {
+    //   console.log("Received Message from the RULE REQUEST: ", msg)
+    // })
 
-    socket.on("ruleResponse", (msg) => {
-      console.log("Received Message from the RULE RESPONSE: ", msg)
-      setTimeout(async () => await updateRules(msg), 400)
-    })
+    // socket.on("ruleResponse", (msg) => {
+    //   console.log("Received Message from the RULE RESPONSE: ", msg)
+    //   setTimeout(async () => await updateRules(msg), 400)
+    // })
 
-    socket.on("typoRequest", (msg) => {
-      console.log("Received Message from the TYPO REQUEST: ", msg)
-    })
+    // socket.on("typoRequest", (msg) => {
+    //   console.log("Received Message from the TYPO REQUEST: ", msg)
+    // })
 
-    socket.on("typoResponse", (msg) => {
-      console.log("Received Message from the TYPO RESPONSE: ", msg)
-      setTimeout(async () => await updateTypologies(msg), 700)
-      // ;(async () => {
-      //   const results: any = await getTADPROCResult(msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId)
-      //   await updateTadpLights(results)
-      // })()
+    // socket.on("typoResponse", (msg) => {
+    //   console.log("Received Message from the TYPO RESPONSE: ", msg)
+    //   setTimeout(async () => await updateTypologies(msg), 700)
+    //   // ;(async () => {
+    //   //   const results: any = await getTADPROCResult(msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId)
+    //   //   await updateTadpLights(results)
+    //   // })()
 
-      socket.emit("tadProc", msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId)
-    })
+    //   socket.emit("tadProc", msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId)
+    // })
 
-    socket.on("stream", (msg) => {
-      console.log("Received Message from the Stream: ", msg)
-    })
+    // socket.on("stream", (msg) => {
+    //   console.log("Received Message from the Stream: ", msg)
+    // })
 
     socket.on("tadProc", async (msg) => {
       console.log("Received Message from the TADPROC: ", msg)
@@ -135,6 +120,23 @@ const ProcessorProvider = ({ children }: Props) => {
     })
     socket.onAny((event, ...args) => {
       console.log(`got ${event}`)
+      console.log(args)
+
+      const ruleResult = Object.keys(args[0]).includes("ruleResult")
+      const typoResult = Object.keys(args[0]).includes("typologyResult")
+
+      if (ruleResult) {
+        setTimeout(async () => await updateRules(args[0]), Math.floor(Math.random() * (500 - 200 + 100)) + 200)
+      }
+      if (typoResult) {
+        setTimeout(
+          async () => {
+            await updateTypologies(args[0])
+          },
+          Math.floor(Math.random() * (1000 - 400 + 100)) + 400
+        )
+        socket.emit("tadProc", args[0]?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId)
+      }
     })
 
     return () => {
@@ -172,16 +174,38 @@ const ProcessorProvider = ({ children }: Props) => {
       const updatedRules: any[] = [...state.rules]
 
       updatedRules[index].result = msg.ruleResult.subRuleRef
+      updatedRules[index]!.color = "g"
 
       // FIX THIS LOGIC AS PER DOCUMENTATION
 
-      if (msg.ruleResult.subRuleRef === ".01") {
-        updatedRules[index]!.color = "g"
-      }
-      if (msg.ruleResult.subRuleRef === ".02") {
-        updatedRules[index]!.color = "y"
-      }
-      if (msg.ruleResult.subRuleRef === ".03") {
+      // if (msg.ruleResult.subRuleRef === ".01") {
+      //   updatedRules[index]!.color = "g"
+      // }
+      // if (msg.ruleResult.subRuleRef === ".02") {
+      //   updatedRules[index]!.color = "y"
+      // }
+      // if (msg.ruleResult.subRuleRef === ".03") {
+      //   updatedRules[index]!.color = "r"
+      // }
+
+      if (msg.ruleResult.subRuleRef === ".err") {
+        const idx: number = updatedRules[index].ruleBands.findIndex(
+          (r: RuleBand) => r.subRuleRef === msg.ruleResult.subRuleRef
+        )
+
+        let errorBand: RuleBand = {
+          subRuleRef: ".err",
+          reason: msg.ruleResult.reason,
+          lowerLimit: null,
+          upperLimit: null,
+        }
+        if (idx !== -1) {
+          updatedRules[index].ruleBands[idx].reason = msg.ruleResult.reason
+        } else {
+          updatedRules[index].ruleBands.push(errorBand)
+        }
+
+        // const updatedRules: any[] = [...state.rules]
         updatedRules[index]!.color = "r"
       }
 
@@ -201,7 +225,7 @@ const ProcessorProvider = ({ children }: Props) => {
   const updateTypologies = async (msg: any) => {
     try {
       dispatch({ type: ACTIONS.UPDATE_TYPO_LOADING })
-      // console.log("TYPOLOGY: ", msg.typologyResult.cfg.split("@")[0], msg.typologyResult.result)
+      console.log("TYPOLOGY RESULT: ", msg)
       const index: number = state.typologies.findIndex(
         (r: Typology) => r.title === msg.typologyResult.cfg.split("@")[0]
       )
@@ -211,20 +235,49 @@ const ProcessorProvider = ({ children }: Props) => {
       updatedTypo[index].result = msg.typologyResult.result
 
       // FIX THIS LOGIC AS PER DOCUMENTATION
+      let interThreshold = null
+      let alertThreshold = null
 
-      let interThreshold = msg.typologyResult.workflow.interdictionThreshold
-      let alertThreshold = msg.typologyResult.workflow.alertThreshold
-
-      if (msg.typologyResult.result >= alertThreshold) {
-        updatedTypo[index].color = "r"
+      if (Object.keys(msg?.typologyResult?.workflow).includes("interdictionThreshold")) {
+        interThreshold = msg.typologyResult.workflow.interdictionThreshold
       }
 
-      if (msg.typologyResult.result >= alertThreshold && msg.typologyResult.result < interThreshold) {
-        updatedTypo[index].color = "y"
+      if (Object.keys(msg?.typologyResult?.workflow).includes("alertThreshold")) {
+        alertThreshold = msg.typologyResult.workflow.alertThreshold
       }
+      // if (msg?.typologyResult?.workflow?.interdictionThreshold !== undefined) {
 
-      if (msg.typologyResult.result < alertThreshold) {
-        updatedTypo[index].color = "g"
+      // }
+      // if (msg?.typologyResult?.workflow?.interdictionThreshold !== undefined) {
+      //   alertThreshold = msg.typologyResult.workflow.alertThreshold
+      // }
+
+      updatedTypo[index].color = "g"
+
+      console.log("THRESHOLDS: ", msg.typologyResult.cfg.split("@")[0], alertThreshold, interThreshold)
+
+      if (alertThreshold !== null && interThreshold !== null) {
+        console.log("both thresholds")
+        if (msg.typologyResult.result < alertThreshold) {
+          updatedTypo[index].color = "g"
+        } else if (msg.typologyResult.result >= alertThreshold && msg.typologyResult.result < interThreshold) {
+          updatedTypo[index].color = "y"
+        } else if (msg.typologyResult.result >= interThreshold) {
+          updatedTypo[index].color = "r"
+          updatedTypo[index].stop = true
+        }
+      } else if (alertThreshold !== null && interThreshold === null) {
+        console.log("alertThreshold")
+        if (msg.typologyResult.result < alertThreshold) {
+          updatedTypo[index].color = "g"
+        } else if (msg.typologyResult.result >= alertThreshold) {
+          updatedTypo[index].color = "y"
+        }
+      } else {
+        console.log("Error", msg.typologyResult)
+        if (msg.typologyResult.result < 0) {
+          updatedTypo[index].color = "y"
+        }
       }
 
       dispatch({ type: ACTIONS.UPDATE_TYPO_SUCCESS, payload: updatedTypo })
@@ -239,9 +292,38 @@ const ProcessorProvider = ({ children }: Props) => {
     }
   }
 
-  const updateTadpLights = async (data: TadProcLightsManager) => {
+  const validateResults = async (result: TADPROC_RESULT) => {
+    try {
+      dispatch({ type: ACTIONS.VALIDATE_RESULTS_LOADING })
+
+      // Perform validation logic here
+      console.log("VALIDATION STARTED: ", result)
+      // check weights
+      // if (result.TADPROC.result > 0) {
+      result.ruleResults.forEach((ruleResult) => {
+        const index: number = state.rules.findIndex((r: Rule) => r.title === ruleResult.id.split("@")[0])
+        console.log("INDEX: " + index)
+        const updatedRules: any[] = [...state.rules]
+        if (ruleResult.wght > 0) {
+          updatedRules[index].color = "r"
+          console.log(updatedRules[index])
+        }
+      })
+      // }
+
+      dispatch({ type: ACTIONS.VALIDATE_RESULTS_SUCCESS, payload: null })
+    } catch (error) {
+      dispatch({ type: ACTIONS.VALIDATE_RESULTS_FAIL })
+    }
+  }
+
+  const updateTadpLights = async (data: TADPROC) => {
     try {
       dispatch({ type: ACTIONS.UPDATE_TADPROC_LOADING })
+      await data.results.forEach(async (result) => {
+        await validateResults(result)
+      })
+
       dispatch({ type: ACTIONS.UPDATE_TADPROC_SUCCESS, payload: data })
     } catch (error) {
       dispatch({ type: ACTIONS.UPDATE_TADPROC_FAIL })

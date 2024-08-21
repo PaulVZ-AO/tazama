@@ -122,8 +122,8 @@ const Web = () => {
 
     console.log("HIT")
     const description = desc.ruleBands.find((item: any) => item.subRuleRef === result)
-    console.log("description: ", description.reason)
-    return description.reason
+    console.log("description: ", description?.reason)
+    return description?.reason
 
     // const description: any = descriptions!.find((item) => item.subRuleRef === result)
   }
@@ -145,7 +145,7 @@ const Web = () => {
               {hoveredRule ? hoveredRule?.rule : selectedRule && selectedRule.rule}
             </p>
             <p className="align-center m-1 flex w-full justify-center border-2 border-black px-5 py-2 text-center text-xs">
-              {selectedRule ? selectedRule.ruleDescription : hoveredRule?.ruleDescription}
+              {hoveredRule ? hoveredRule?.ruleDescription : selectedRule.ruleDescription}
             </p>
           </div>
           <hr className="mb-2 border-black" />
@@ -377,7 +377,7 @@ const Web = () => {
               <div className="mb-5 text-center text-xl">Debtors</div>
               <Droppable droppableId="debtorProfiles">
                 {(provided) => (
-                  <div ref={provided.innerRef} {...provided.droppableProps} className="space-y-2">
+                  <div ref={provided.innerRef} {...provided.droppableProps} className="min-w-full space-y-2">
                     <>
                       <Draggable key={`debtor-0`} draggableId={`debtor-0`} index={0}>
                         {(provided) => (
@@ -482,7 +482,7 @@ const Web = () => {
                 />
               </div>
               <div className="col-span-4 flex items-center justify-between px-5">
-                <ProcessIndicator started={started} stop={procCtx.tadpLights.TADPROC.stop} />
+                <ProcessIndicator started={started} stop={procCtx.tadpLights.stop} />
               </div>
               <div className="col-span-4">
                 <DebtorDevice
@@ -505,7 +505,7 @@ const Web = () => {
               <div className="mb-5 text-center text-xl">Creditors</div>
               <Droppable droppableId="creditorProfiles">
                 {(provided: any) => (
-                  <div ref={provided.innerRef} {...provided.droppableProps} className="space-y-2">
+                  <div ref={provided.innerRef} {...provided.droppableProps} className="min-w-full space-y-2">
                     <>
                       <Draggable key={`creditor-0`} draggableId={`creditor-0`} index={0}>
                         {(provided: any) => (
@@ -629,8 +629,16 @@ const Web = () => {
                           handleRuleMouseEnter(rule)
                           console.log(rule)
                         }}
+                        onMouseLeave={() => handleRuleMouseLeave()}
                         onClick={() => {
-                          handleRuleMouseLeave()
+                          if (selectedRule === null) {
+                            handleRuleClick(rule)
+                          } else if (selectedRule === rule) {
+                            handleRuleClickClose()
+                          } else {
+                            handleRuleClick(rule)
+                          }
+
                           console.log(rule)
                         }}
                       >
@@ -682,16 +690,16 @@ const Web = () => {
             </h2>
 
             <div className="flex min-h-80 items-center justify-center">
-              <StatusIndicator large={true} colour={procCtx.tadpLights.TADPROC.color} />
+              <StatusIndicator large={true} colour={procCtx.tadpLights.color} />
             </div>
           </div>
         </div>
-        {procCtx.tadpLights.TADPROC.stop && (
+        {procCtx.tadpLights.stop && (
           <Image
             src="/stop.png"
             width="250"
             height="250"
-            className="absolute inset-x-0 inset-y-0 mx-auto my-auto"
+            className="absolute inset-0 m-auto"
             style={{
               position: "absolute",
               top: -355,

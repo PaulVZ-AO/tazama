@@ -111,30 +111,70 @@ export const getTADPROCResult = async (transactionID) => {
     result.push(transaction)
   }
 
-  let response = {
-    TADPROC: {
-      result: null,
-      color: "n",
-      stop: false,
-      status: "NALT",
-    },
-  }
-
   if (result.length > 0) {
-    response.TADPROC.status = result[0]?.report?.status
-    response.TADPROC.result = result[0]?.report?.tadpResult?.typologyResult[0]?.result
+    let response = {
+      status: result[0]?.report?.status,
+      stop: false,
+      color: "n",
+      results: [],
+    }
+    // DOUBLE CHECK THIS LOGIC
     if (result[0]?.report?.status === "NALT") {
-      response.TADPROC.color = "g"
+      response.color = "g"
     } else if (result[0]?.report?.status === "ALRT") {
-      response.TADPROC.color = "y"
+      response.color = "y"
     }
 
-    if (result[0]?.report?.tadpResult?.typologyResult[0]?.result >= 400) {
-      response.TADPROC.stop = true
+    let tr = result[0]?.report?.tadpResult?.typologyResult
+    // LOOP HERE
+    if (tr.length > 0) {
+      tr.forEach((typoRes) => {
+        // new result object
+        let typoResult = {
+          cfg: typoRes.cfg,
+          result: typoRes.result,
+          workflow: {
+            alertThreshold: null,
+            interdictionThreshold: null,
+          },
+          ruleResults: [],
+        }
+
+        // modify result object
+        typoRes.ruleResults.forEach((result) => {
+          typoResult.ruleResults.push(result)
+        })
+
+        typoResult.workflow.interdictionThreshold = typoRes.workflow.interdictionThreshold
+          ? typoRes.workflow.interdictionThreshold
+          : null
+
+        typoResult.workflow.alertThreshold = typoRes.workflow.alertThreshold ? typoRes.workflow.alertThreshold : null
+
+        if (typoResult.workflow.interdictionThreshold !== null) {
+          if (typoRes.result >= typoResult.workflow.interdictionThreshold) {
+            response.stop = true
+            response.color = "r"
+          }
+        }
+        // } else if (typoResult.workflow.alertThreshold !== null && typoResult.workflow.interdictionThreshold !== null) {
+        //   if (typoRes.result <= typoResult.workflow.alertThreshold) {
+        //     response.color = "y"
+        //   } else if (
+        //     typoRes.result >= typoResult.workflow.alertThreshold &&
+        //     typoRes.result < typoResult.workflow.interdictionThreshold
+        //   ) {
+        //     response.color = "y"
+        //   }
+        // }
+
+        // push result object
+        response.results.push(typoResult)
+      })
     }
+    // return the list of typologies
+    return response
   }
-  // return the list of typologies
-  return response
 }
 
 export const getNetworkMap = async () => {
@@ -143,7 +183,7 @@ export const getNetworkMap = async () => {
   await getCollection("ruleConfiguration", db)
 
   let result = []
-  const results = await db.query(aql`FOR c IN networkConfiguration RETURN c`)
+  const results = await db.query(aql`FOR c IN networkConfiguration FILTER c.active == true RETURN c`)
 
   for await (let config of results) {
     result.push(config)
@@ -300,7 +340,19 @@ export const getNetworkMap = async () => {
             }
             rule.ruleBands.push(newBand)
           })
+        } else if (result[0].config.hasOwnProperty("exitConditions")) {
+          console.log("EXIT CONDITIONS EXIST")
+          result[0].config.exitConditions.forEach((item) => {
+            let newCondition = {
+              subRuleRef: item.subRuleRef,
+              lowerLimit: item.lowerLimit ? item.lowerLimit : null,
+              upperLimit: item.upperLimit ? item.upperLimit : null,
+              reason: item.reason,
+            }
+            rule.ruleBands.push(newCondition)
+          })
         }
+
         typologiesRes.forEach((typology) => {
           if (typology.linkedRules.includes(rule.title)) {
             rule.linkedTypologies.push(typology.title)

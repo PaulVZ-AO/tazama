@@ -105,9 +105,9 @@ app.prepare().then(() => {
     console.log(nc.info)
 
     const connected = nc.subscribe("connection")
-    // const all = nc.subscribe(">", { queue: "MONITORING1" })
-    const pubRule901 = nc.subscribe("pub-rule-901@1.0.0", { queue: "MONITORING_RULE_PUBLISHER" })
-    const subRule901 = nc.subscribe("sub-rule-901@1.0.0", { queue: "MONITORING_RULE_SUBSCRIBER" })
+    const all = nc.subscribe(">", { queue: "MONITORING1" })
+    // const pubRule901 = nc.subscribe("pub-rule-016@1.0.0", { queue: "MONITORING_RULE_PUBLISHER" })
+    // const subRule901 = nc.subscribe("sub-rule-016@1.0.0", { queue: "MONITORING_RULE_SUBSCRIBER" })
     const type001 = nc.subscribe("typology-999@1.0.0", { queue: "MONITORING_TYPOLOGY" })
     const cms = nc.subscribe("cms", { queue: "MONITORING_CMS" })
 
@@ -125,18 +125,18 @@ app.prepare().then(() => {
     ;(async () => {
       for await (const msg of connected) await handleMsg(msg, io, "connection")
     })()
+    ;(async () => {
+      for await (const msg of all) await handleMsg(msg, io, "stream")
+    })()
     // ;(async () => {
-    //   for await (const msg of all) await handleMsg(msg, io, "stream")
+    //   for await (const msg of type001) await handleMsg(msg, io, "typoResponse")
     // })()
-    ;(async () => {
-      for await (const msg of type001) await handleMsg(msg, io, "typoResponse")
-    })()
-    ;(async () => {
-      for await (const msg of pubRule901) await handleMsg(msg, io, "ruleResponse")
-    })()
-    ;(async () => {
-      for await (const msg of subRule901) await handleMsg(msg, io, "ruleRequest")
-    })()
+    // ;(async () => {
+    //   for await (const msg of pubRule901) await handleMsg(msg, io, "ruleResponse")
+    // })()
+    // ;(async () => {
+    //   for await (const msg of subRule901) await handleMsg(msg, io, "ruleRequest")
+    // })()
     ;(async () => {
       for await (const msg of cms) await handleMsg(msg, io, "tadProc")
     })()
