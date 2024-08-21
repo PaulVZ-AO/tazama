@@ -694,7 +694,7 @@ const EntityProvider = ({ children }: Props) => {
       setPacs008.FIToFICstmrCdtTrf.RmtInf.Ustrd = crypto.randomUUID().replaceAll("-", "")
       setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt = RandomNumbers()
       setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.InstdAmt.Amt.Amt =
-        setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt
+      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt
       setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.InstrId = crypto.randomUUID().replaceAll("-", "")
       setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.EndToEndId = crypto.randomUUID().replaceAll("-", "")
 
@@ -709,6 +709,37 @@ const EntityProvider = ({ children }: Props) => {
     }
   }
 
+  const updateTransaction = async (updates: Partial<PACS008>) => {
+    try {
+      dispatch({ type: ACTIONS.UPDATE_TRANSACTION_LOADING });
+  
+      const updatedPacs008: PACS008 = { ...state.pacs008 };
+  
+      updatedPacs008.FIToFICstmrCdtTrf.GrpHdr.MsgId = crypto.randomUUID().replaceAll("-", "");
+      updatedPacs008.FIToFICstmrCdtTrf.GrpHdr.CreDtTm = new Date().toISOString();
+  
+      updatedPacs008.FIToFICstmrCdtTrf.RmtInf.Ustrd = updates.FIToFICstmrCdtTrf?.RmtInf?.Ustrd || crypto.randomUUID().replaceAll("-", "");
+      updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt = updates.FIToFICstmrCdtTrf?.CdtTrfTxInf?.IntrBkSttlmAmt?.Amt?.Amt || RandomNumbers();
+      updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.InstdAmt.Amt.Amt = updates.FIToFICstmrCdtTrf?.CdtTrfTxInf?.InstdAmt?.Amt?.Amt || updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt;
+      updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.InstrId = updates.FIToFICstmrCdtTrf?.CdtTrfTxInf?.PmtId?.InstrId || crypto.randomUUID().replaceAll("-", "");
+      updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.EndToEndId = updates.FIToFICstmrCdtTrf?.CdtTrfTxInf?.PmtId?.EndToEndId || crypto.randomUUID().replaceAll("-", "");
+      updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.Purp.Cd = updates.FIToFICstmrCdtTrf?.CdtTrfTxInf?.Purp?.Cd || "";
+      updatedPacs008.FIToFICstmrCdtTrf.SplmtryData.Envlp.Doc.InitgPty.Glctn.Lat = updates.FIToFICstmrCdtTrf?.SplmtryData?.Envlp?.Doc?.InitgPty?.Glctn?.Lat || "";
+      updatedPacs008.FIToFICstmrCdtTrf.SplmtryData.Envlp.Doc.InitgPty.Glctn.Long = updates.FIToFICstmrCdtTrf?.SplmtryData?.Envlp?.Doc?.InitgPty?.Glctn?.Long || "";
+  
+      await buildPacs002();
+  
+      dispatch({ type: ACTIONS.UPDATE_TRANSACTION_SUCCESS, payload: updatedPacs008 });
+  
+      localStorage.setItem("PACS008", JSON.stringify(updatedPacs008));
+  
+      console.log("PACS008 UPDATED: ", updatedPacs008);
+    } catch (error) {
+      dispatch({ type: ACTIONS.UPDATE_TRANSACTION_FAIL });
+      console.log("ERROR UPDATING TRANSACTION PACS008: ", error);
+    }
+  };
+  
   const resetEntity = async (entityIndex: number) => {
     try {
       dispatch({ type: ACTIONS.RESET_ENTITY_LOADING })
@@ -841,6 +872,7 @@ const EntityProvider = ({ children }: Props) => {
         setCreditorPacs008,
         setCreditorAccountPacs008,
         generateTransaction,
+        updateTransaction,
         buildPacs002,
         setRuleLights,
         reset,
