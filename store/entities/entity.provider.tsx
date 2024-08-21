@@ -33,6 +33,10 @@ import {
   RandomSurname,
   createAnEntity,
   createAnCreditorEntity,
+  cloneCreditorToDebtor,
+  cloneCreditorAccountToDebtorAccount,
+  cloneDebtorAccountToCreditorAccount,
+  cloneDebtorToCreditor,
 } from "./entity.utils"
 
 interface Props {
@@ -262,52 +266,6 @@ const EntityProvider = ({ children }: Props) => {
   const createEntity = async () => {
     try {
       dispatch({ type: ACTIONS.CREATE_ENTITY_LOADING })
-
-      // const newEntity: DebtorEntity = {
-      //   Dbtr: {
-      //     Nm: `${await RandomName()} ${await RandomSurname()}`,
-      //     Id: {
-      //       PrvtId: {
-      //         DtAndPlcOfBirth: {
-      //           BirthDt: await GenerateBirthDate(),
-      //           CityOfBirth: "Unknown",
-      //           CtryOfBirth: "ZZ",
-      //         },
-      //         Othr: [
-      //           {
-      //             Id: crypto.randomUUID().replaceAll("-", ""),
-      //             SchmeNm: {
-      //               Prtry: "TAZAMA_EID",
-      //             },
-      //           },
-      //         ],
-      //       },
-      //     },
-      //     CtctDtls: { MobNb: await RandomCellNumber() },
-      //   },
-      // }
-
-      // const newAccount: DebtorAccount = {
-      //   DbtrAcct: {
-      //     Id: {
-      //       Othr: [
-      //         {
-      //           Id: crypto.randomUUID().replaceAll("-", ""),
-
-      //           SchmeNm: {
-      //             Prtry: "MSISDN",
-      //           },
-      //         },
-      //       ],
-      //     },
-      //     Nm: newEntity.Dbtr.Nm.split(" ")[0] + "'s first account",
-      //   },
-      // }
-
-      // const payload: Entity = {
-      //   Entity: newEntity,
-      //   Accounts: [newAccount],
-      // }
 
       const payload = await createAnEntity()
 
@@ -824,6 +782,58 @@ const EntityProvider = ({ children }: Props) => {
     }
   }
 
+  const cloneEntity = async (entity: any, account: any) => {
+    try {
+      dispatch({ type: ACTIONS.CLONE_ENTITY_LOADING })
+
+      const newEntity = cloneDebtorToCreditor(entity)
+      const newAccount = cloneDebtorAccountToCreditorAccount(account)
+
+
+      const payload: CdtrEntity = {
+        CreditorEntity: newEntity,
+        CreditorAccounts: [newAccount],
+      }
+
+      let entitiesList: Array<CdtrEntity> = state.creditorEntities
+
+      if (state.creditorEntities.length < 4){
+        entitiesList.push(payload)
+      }
+
+
+      dispatch({ type: ACTIONS.CLONE_ENTITY_SUCCESS, payload: [...entitiesList] })
+      localStorage.setItem("CREDITOR_ENTITIES", JSON.stringify(state.creditorEntities))
+    } catch (error) {
+      dispatch({ type: ACTIONS.CLONE_ENTITY_FAIL })
+    }
+  }
+
+  const cloneCreditorEntity = async (entity: any, account: any) => {
+    try {
+      dispatch({ type: ACTIONS.CLONE_CREDITOR_ENTITY_LOADING })
+
+      const newEntity = cloneCreditorToDebtor(entity)
+      const newAccount = cloneCreditorAccountToDebtorAccount(account)
+
+      const payload: Entity = {
+        Entity: newEntity,
+        Accounts: [newAccount],
+      }
+
+        let entitiesList: Array<Entity> = state.entities
+
+        if (state.entities.length < 4){
+          entitiesList.push(payload)
+        }
+
+      dispatch({ type: ACTIONS.CLONE_CREDITOR_ENTITY_SUCCESS, payload: [...entitiesList] })
+      localStorage.setItem("DEBTOR_ENTITIES", JSON.stringify(state.entities))
+    } catch (error) {
+      dispatch({ type: ACTIONS.CLONE_CREDITOR_ENTITY_FAIL })
+    }
+  }
+
   return (
     <EntityContext.Provider
       value={{
@@ -835,6 +845,8 @@ const EntityProvider = ({ children }: Props) => {
         updateCreditorAccountsLoading: state.updateCreditorAccountsLoading,
         resetEntityLoading: state.resetEntityLoading,
         resetCreditorEntityLoading: state.resetCreditorEntityLoading,
+        cloneEntityLoading: state.cloneEntityLoading,
+        cloneCreditorEntityLoading: state.cloneCreditorEntityLoading,
         pacs008Loading: state.pacs008Loading,
         pacs002Loading: state.pacs002Loading,
         creditorEntities: state.creditorEntities,
@@ -866,6 +878,8 @@ const EntityProvider = ({ children }: Props) => {
         reset,
         resetEntity,
         resetCreditorEntity,
+        cloneEntity,
+        cloneCreditorEntity,
       }}
     >
       {children}
