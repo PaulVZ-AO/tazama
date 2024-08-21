@@ -3,7 +3,7 @@
 import React, { useContext, useEffect, useState } from "react"
 import EntityContext from "store/entities/entity.context"
 import { UIConfiguration } from "store/entities/entity.interface"
-import ResetModal from "./ResetModal"
+import ResetModal from "components/Modal/ResetModal"
 
 const Settings = () => {
   const entityCtx = useContext(EntityContext);
@@ -132,7 +132,7 @@ const Settings = () => {
         </div>
       </div>
 
-      <ResetModal show={showModal} onClose={() => setShowModal(false)} onConfirm={handleReset} />
+      <ResetModal show={showModal} onClose={() => setShowModal(false)} onConfirm={handleReset} modalTitle="Confirm Reset" modalContent="Are you sure you want to reset all data?"/>
     </div>
   )
 }
