@@ -318,6 +318,44 @@ const EntityReducer = (state: any, action: any) => {
         ...state,
         ruleLights: null,
       }
+
+    case ACTIONS.CLONE_ENTITY_LOADING:
+      return {
+        ...state,
+        cloneEntityLoading: true,
+        creditorEntities: [],
+      }
+    case ACTIONS.CLONE_ENTITY_SUCCESS:
+      return {
+        ...state,
+        cloneEntityLoading: false,
+        creditorEntities: action.payload,
+      }
+    case ACTIONS.CLONE_ENTITY_FAIL:
+      return {
+        ...state,
+        cloneEntityLoading: false,
+        creditorEntities: [],
+      }
+
+    case ACTIONS.CLONE_CREDITOR_ENTITY_LOADING:
+      return {
+        ...state,
+        cloneCreditorEntityLoading: true,
+        entities: [],
+      }
+    case ACTIONS.CLONE_CREDITOR_ENTITY_SUCCESS:
+      return {
+        ...state,
+        cloneCreditorEntityLoading: false,
+        entities: action.payload,
+      }
+    case ACTIONS.CLONE_CREDITOR_ENTITY_FAIL:
+      return {
+        ...state,
+        cloneCreditorEntityLoading: false,
+        entities: [],
+      }
   }
 }
 
