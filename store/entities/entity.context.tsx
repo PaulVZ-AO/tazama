@@ -55,6 +55,7 @@ interface Context {
   setCreditorPacs008: (entityIndex: number) => void
   setCreditorAccountPacs008: (entityIndex: number, accountIndex: number) => void
   generateTransaction: () => void
+  updateTransaction: (x: any) => void;
   buildPacs002: () => void
   setRuleLights: (lights: Array<any>) => void
   reset: () => void
@@ -100,6 +101,7 @@ const EntityContext = createContext<Context>({
   setCreditorPacs008: () => {},
   setCreditorAccountPacs008: () => {},
   generateTransaction: () => {},
+  updateTransaction: () => {},
   buildPacs002: () => {},
   setRuleLights: () => {},
   reset: () => {},
