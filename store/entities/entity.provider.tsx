@@ -26,6 +26,10 @@ import {
 } from "./entity.interface"
 import EntityReducer from "./entity.reducer"
 import {
+  cloneCreditorAccountToDebtorAccount,
+  cloneCreditorToDebtor,
+  cloneDebtorAccountToCreditorAccount,
+  cloneDebtorToCreditor,
   createAnCreditorEntity,
   createAnEntity,
   GenerateBirthDate,
@@ -33,12 +37,6 @@ import {
   RandomName,
   RandomNumbers,
   RandomSurname,
-  createAnEntity,
-  createAnCreditorEntity,
-  cloneCreditorToDebtor,
-  cloneCreditorAccountToDebtorAccount,
-  cloneDebtorAccountToCreditorAccount,
-  cloneDebtorToCreditor,
 } from "./entity.utils"
 
 interface Props {

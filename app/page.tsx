@@ -1,5 +1,6 @@
 "use client"
 
+import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd"
 import axios from "axios"
 import Image from "next/image"
 import { useContext, useEffect, useState } from "react"
@@ -11,12 +12,9 @@ import { Profile } from "components/Profile/Profile"
 import { CreditorProfile } from "components/ProfileCreditor/ProfileCreditor"
 import { StatusIndicator } from "components/StatusIndicator/StatusIndicator"
 import EntityContext from "store/entities/entity.context"
+import { CdtrEntity, Entity } from "store/entities/entity.interface"
 import ProcessorContext from "store/processors/processor.context"
 import { getTADPROCResult } from "utils/db"
-import DebtorModal from "components/Modal/Modal"
-import CreditorModal from "components/Modal/CreditorsModal"
-import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
-import { CdtrEntity, Entity } from "store/entities/entity.interface"
 
 const Web = () => {
   // const [types, setTypes] = useState<any[] | null>(null)
