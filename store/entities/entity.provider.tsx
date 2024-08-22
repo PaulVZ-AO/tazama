@@ -389,6 +389,42 @@ const EntityProvider = ({ children }: Props) => {
     }
   }
 
+  const deleteEntityAccount = async (entityIndex: number) => {
+    try {
+      dispatch({ type: ACTIONS.DELETE_ACCOUNT_LOADING });
+  
+      // Retrieve the list of accounts for the specified entity
+      let accountsList: Array<DebtorAccount> = state.entities[entityIndex].Accounts;
+  
+      // Only proceed if there's at least one account to delete
+      if (accountsList.length > 0) {
+        // Remove the last account from the list
+        accountsList.pop();
+  
+        // Update the entity's account list after deletion
+        let updatedEntityAccounts: Entity = {
+          Entity: state.entities[entityIndex]?.Entity,
+          Accounts: accountsList,
+        };
+  
+        // Update the entities list with the modified entity
+        let entitiesList: Array<Entity> = state.entities;
+        if (entitiesList[entityIndex]?.Entity && typeof entityIndex === "number") {
+          entitiesList.splice(entityIndex, 1, updatedEntityAccounts);
+        }
+  
+        // Dispatch success action with the updated entities list
+        dispatch({ type: ACTIONS.DELETE_ACCOUNT_SUCCESS, payload: [...entitiesList] });
+  
+        // Persist the updated entities list to localStorage
+        localStorage.setItem("DEBTOR_ENTITIES", JSON.stringify(state.entities));
+      }
+    } catch (error) {
+      // Dispatch failure action if an error occurs
+      dispatch({ type: ACTIONS.DELETE_ACCOUNT_FAIL });
+    }
+  };  
+
   const createCreditorEntity = async () => {
     try {
       dispatch({ type: ACTIONS.CREATE_CREDITOR_ENTITY_LOADING })
@@ -841,6 +877,7 @@ const EntityProvider = ({ children }: Props) => {
         updateEntityLoading: state.updateEntityLoading,
         createAccountLoading: state.createAccountLoading,
         updateAccountsLoading: state.updateAccountsLoading,
+        deleteCreditorAccountLoading: state.deleteCreditorAccountLoading,
         createCreditorAccountLoading: state.createCreditorAccountLoading,
         updateCreditorAccountsLoading: state.updateCreditorAccountsLoading,
         resetEntityLoading: state.resetEntityLoading,
@@ -865,6 +902,7 @@ const EntityProvider = ({ children }: Props) => {
         updateAccounts,
         createCreditorEntity,
         updateCreditorEntity,
+        deleteEntityAccount,
         createCreditorEntityAccount,
         updateCreditorAccounts,
         setDebtorPacs008,

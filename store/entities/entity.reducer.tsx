@@ -204,6 +204,25 @@ const EntityReducer = (state: any, action: any) => {
         creditorEntities: [],
       }
 
+      case ACTIONS.DELETE_ACCOUNT_LOADING:
+        return {
+          ...state,
+          deleteCreditorAccountLoading: true,
+          creditorEntities: [],
+        }
+      case ACTIONS.DELETE_ACCOUNT_SUCCESS:
+        return {
+          ...state,
+          deleteCreditorAccountLoading: false,
+          creditorEntities: action.payload,
+        }
+      case ACTIONS.DELETE_ACCOUNT_FAIL:
+        return {
+          ...state,
+          deleteCreditorAccountLoading: false,
+          creditorEntities: [],
+        }
+
     case ACTIONS.SET_DEBTOR_PACS008_LOADING:
       return {
         ...state,
