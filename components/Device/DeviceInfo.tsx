@@ -104,7 +104,7 @@ export function DeviceInfo(props: DeviceProps) {
 
             <div className="m-2 rounded-md border bg-gray-100 p-2 text-sm shadow-sm">
               <p className={`font-bold ${fillColour}`}>{entity?.Accounts[accountIndex || 0]?.DbtrAcct?.Nm} </p>
-              <p className="truncate">ID: {entity?.Accounts[accountIndex || 0]?.DbtrAcct.Id.Othr[0].Id}</p>
+              <p className="truncate">ID: {entity?.Accounts[accountIndex || 0]?.DbtrAcct?.Id?.Othr[0]?.Id}</p>
             </div>
 
             {isTransaction && (
