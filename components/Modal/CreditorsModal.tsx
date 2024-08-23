@@ -65,8 +65,8 @@ const CreditorModal = ({ ...props }: Props) => {
 
   // Set min and max age of Birth Date input
   const today = new Date();
-  const minDate = new Date(today.getFullYear() - 60, today.getMonth(), today.getDate()).toISOString().split('T')[0];
-  const maxDate = new Date(today.getFullYear() - 20, today.getMonth(), today.getDate()).toISOString().split('T')[0];
+  const minDate = new Date(today.getFullYear() - 60, today.getMonth(), today.getDate()).toISOString().split("T")[0];
+  const maxDate = new Date(today.getFullYear() - 20, today.getMonth(), today.getDate()).toISOString().split("T")[0];
 
   // Swap between Entities and Accounts
   const handleSectionChange = (section: "Entity" | "Accounts") => {
@@ -126,7 +126,7 @@ const CreditorModal = ({ ...props }: Props) => {
                           Cdtr: {
                           ...customEntity.Cdtr,
                           Nm: e.target.value,
-                          },});}}}
+                        },});}}}
                       />
                       {errors.Nm && <p className="text-red-500">{errors.Nm}</p>}
                     </div>
@@ -152,7 +152,7 @@ const CreditorModal = ({ ...props }: Props) => {
                           DtAndPlcOfBirth: {
                           ...customEntity?.Cdtr.Id.PrvtId.DtAndPlcOfBirth,
                           BirthDt: e.target.value,
-                          },},},},});}}}
+                        },},},},});}}}
                       />
                       {errors.BirthDt && <p className="text-red-500">{errors.BirthDt}</p>}
                     </div>
@@ -176,7 +176,7 @@ const CreditorModal = ({ ...props }: Props) => {
                           DtAndPlcOfBirth: {
                           ...customEntity.Cdtr.Id.PrvtId.DtAndPlcOfBirth,
                           CityOfBirth: e.target.value,
-                          },},},},});}}}
+                        },},},},});}}}
                       />
                       {errors.CityOfBirth && <p className="text-red-500">{errors.CityOfBirth}</p>}
                     </div>
@@ -200,7 +200,7 @@ const CreditorModal = ({ ...props }: Props) => {
                           DtAndPlcOfBirth: {
                           ...customEntity.Cdtr.Id.PrvtId.DtAndPlcOfBirth,
                           CtryOfBirth: e.target.value,
-                          },},},},});}}}
+                        },},},},});}}}
                       />
                       {errors.CtryOfBirth && <p className="text-red-500">{errors.CtryOfBirth}</p>}
                     </div>
@@ -221,10 +221,10 @@ const CreditorModal = ({ ...props }: Props) => {
                           Id: {
                           PrvtId: {
                           ...customEntity.Cdtr.Id.PrvtId,
-                          Othr: {
+                          Othr: [{
                           ...customEntity.Cdtr.Id.PrvtId.Othr[0],
                           Id: e.target.value,
-                          },},},},});}}}
+                        }],},},},});}}}
                         readOnly
                         type="text"
                       />
@@ -247,7 +247,7 @@ const CreditorModal = ({ ...props }: Props) => {
                           ...customEntity.Cdtr.CtctDtls,
                           CtctDtls: {
                           MobNb: e.target.value,
-                          },},});}}}
+                        },},});}}}
                       />
                       {errors.MobNb && <p className="text-red-500">{errors.MobNb}</p>}
                     </div>
@@ -293,9 +293,9 @@ const CreditorModal = ({ ...props }: Props) => {
                                 CdtrAcct: {
                                 ...accountDetail.CdtrAcct,
                                 Nm: e.target.value,
-                                },})}}
+                              },})}}
                             />
-                              {errors[`accountName-${index}`] && <p className="text-red-500">{errors[`accountName-${index}`]}</p>}
+                            {errors[`accountName-${index}`] && <p className="text-red-500">{errors[`accountName-${index}`]}</p>}
                           </div>
                           <div>
                             <label htmlFor={`modal-Account-ID-${index}`}>ID number</label>
@@ -315,7 +315,7 @@ const CreditorModal = ({ ...props }: Props) => {
                     onClick={async () => {
                       if (props.selectedEntity !== undefined) {
                       if (validateForm()) {
-                      await entityCtx.updateCreditorAccounts(customAccounts, props.selectedEntity)
+                      await entityCtx.updateCreditorAccount(customAccounts, props.selectedEntity)
                       handleClick();
                     }}}}
                   >Save</button>

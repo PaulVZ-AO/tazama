@@ -75,6 +75,13 @@ export const CreditorProfile = ({ ...props }: ProfileProps) => {
   let reverse = ""
   if (props.reverse) {reverse = "flex-row-reverse text-right"}
 
+  const handleDeleteAccount = async () => {
+    await entityCtx.selectCreditorEntity(props.index, 0);
+    if (props.creditorAccounts && props.creditorAccounts.length > 0) {
+      await entityCtx.deleteCreditorAccount(props.index);
+    }
+  };
+
   return (
     <div className={`mb-7 rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 px-3 py-1 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)] ${props.colour} flex w-full justify-between ${reverse}`}>
       {/* Edit Button */}
@@ -105,7 +112,7 @@ export const CreditorProfile = ({ ...props }: ProfileProps) => {
         if (account !== null && account !== undefined) {
           return (
             <CreditorAccountsComponent key={crypto.randomUUID().replaceAll("-", "")} index={index} selected={selectedAccountIndex} setSelected={setSelectedAccountIndex} selectedEntityIndex={props.index} setSelectedEntity={props.setSelectedEntity} />
-          )
+          );
         } else {
           return null
         }
@@ -141,9 +148,8 @@ export const CreditorProfile = ({ ...props }: ProfileProps) => {
         </svg>
       </button>
 
-
-      {props?.creditorAccounts !== null && props.creditorAccounts !== undefined && props?.creditorAccounts.length < 4 && (
-        <button>
+      {props?.creditorAccounts !== null && props.creditorAccounts !== undefined && props?.creditorAccounts.length > 0 && (
+        <button onClick={handleDeleteAccount}>
           <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="24px" height="24px" viewBox="0 0 1000 1000">
             <path d="M767 336H233q-12 0-21 9t-9 21l38 505q1 13 12 21.5t30 8.5h434q18 0 29-8.5t13-21.5l38-505q0-12-9-21t-21-9zM344 841q-10 0-18-9t-8-21l-26-386q0-12 9-20.5t21-8.5 21 8.5 9 20.5l18 386q0 12-7.5 21t-18.5 9zm182-31q0 13-7.5 22t-18.5 9-18.5-9-7.5-22l-4-385q0-12 9-20.5t21-8.5 21 8.5 9 20.5zm156 1q0 12-8 21t-18 9q-11 0-18.5-9t-7.5-21l18-386q0-12 9-20.5t21-8.5 21 8.5 9 20.5zm101-605l-179-30q-12-2-15-15l-8-33q-4-20-14-26-6-3-22-3h-90q-16 0-23 3-10 6-13 26l-8 33q-2 13-15 15l-179 30q-19 3-31.5 14.5T173 249v28q0 9 6.5 15t15.5 6h610q9 0 15.5-6t6.5-15v-28q0-17-12.5-28.5T783 206z"/>
           </svg>

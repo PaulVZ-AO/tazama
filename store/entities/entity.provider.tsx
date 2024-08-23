@@ -318,8 +318,7 @@ const EntityProvider = ({ children }: Props) => {
       dispatch({ type: ACTIONS.DELETE_DEBTOR_ENTITY_FAIL });
     }
   };
-  
-  
+   
   const createEntityAccount = async (entityIndex: number) => {
     try {
       dispatch({ type: ACTIONS.CREATE_DEBTOR_ACCOUNT_LOADING })
@@ -407,66 +406,46 @@ const EntityProvider = ({ children }: Props) => {
     }
   }
 
-  const deleteEntityAccount = async (entityIndex: number) => {
+  const deleteAccount = async (entityIndex: number) => {
     try {
       dispatch({ type: ACTIONS.DELETE_DEBTOR_ACCOUNT_LOADING });
   
       // Retrieve the list of accounts for the specified entity
       let accountsList: Array<DebtorAccount> = state.entities[entityIndex].Accounts;
   
-      // Only proceed if there's at least one account to delete
-      // if (accountsList.length > 0) {
-      //   // Remove the last account from the list
-      //   accountsList.pop();
-  
-      //   // Update the entity's account list after deletion
-      //   let updatedEntityAccounts: Entity = {
-      //     Entity: state.entities[entityIndex]?.Entity,
-      //     Accounts: accountsList,
-      //   };
-  
-      //   // Update the entities list with the modified entity
-      //   let entitiesList: Array<Entity> = state.entities;
-      //   if (entitiesList[entityIndex]?.Entity && typeof entityIndex === "number") {
-      //     entitiesList.splice(entityIndex, 1, updatedEntityAccounts);
-      //   }
-  
-      //   // Dispatch success action with the updated entities list
-      //   dispatch({ type: ACTIONS.DELETE_DEBTOR_ACCOUNT_SUCCESS, payload: [...entitiesList] });
-  
-      //   // Persist the updated entities list to localStorage
-      //   localStorage.setItem("DEBTOR_ENTITIES", JSON.stringify(state.entities));
-      // }
-
-      if (accountsList.length) {
+      // Proceed if there are accounts to delete
+      if (accountsList.length > 0) {
         // Remove the last account from the list
         accountsList.pop();
   
-        // Update the entity's account list after deletion
-        let updatedEntityAccounts: Entity = {
-          Entity: state.entities[entityIndex]?.Entity,
-          Accounts: accountsList,
-        };
+        if (accountsList.length === 0) {
+          // If all accounts are deleted, call deleteEntity to remove the entire entity
+          await deleteEntity(entityIndex);
+        } else {
+          // Update the entity's account list after deletion
+          let updatedEntityAccounts: Entity = {
+            Entity: state.entities[entityIndex]?.Entity,
+            Accounts: accountsList,
+          };
   
-        // Update the entities list with the modified entity
-        let entitiesList: Array<Entity> = state.entities;
-        if (entitiesList[entityIndex]?.Entity && typeof entityIndex === "number") {
-          entitiesList.splice(entityIndex, 1, updatedEntityAccounts);
+          // Update the entities list with the modified entity
+          let entitiesList: Array<Entity> = [...state.entities];
+          entitiesList[entityIndex] = updatedEntityAccounts;
+  
+          // Dispatch success action with the updated entities list
+          dispatch({ type: ACTIONS.DELETE_DEBTOR_ACCOUNT_SUCCESS, payload: entitiesList });
+  
+          // Persist the updated entities list to localStorage
+          localStorage.setItem("DEBTOR_ENTITIES", JSON.stringify(entitiesList));
         }
-  
-        // Dispatch success action with the updated entities list
-        dispatch({ type: ACTIONS.DELETE_DEBTOR_ACCOUNT_SUCCESS, payload: [...entitiesList] });
-  
-        // Persist the updated entities list to localStorage
-        localStorage.setItem("DEBTOR_ENTITIES", JSON.stringify(state.entities));
       }
-
+  
     } catch (error) {
       // Dispatch failure action if an error occurs
       dispatch({ type: ACTIONS.DELETE_DEBTOR_ACCOUNT_FAIL });
     }
-  };  
-
+  };
+  
   const createCreditorEntity = async () => {
     try {
       dispatch({ type: ACTIONS.CREATE_CREDITOR_ENTITY_LOADING })
@@ -549,6 +528,23 @@ const EntityProvider = ({ children }: Props) => {
     }
   }
 
+  const deleteCreditorEntity = async (entityIndex: number) => {
+    try {
+      dispatch({ type: ACTIONS.DELETE_CREDITOR_ENTITY_LOADING });
+  
+      let entitiesList: Array<CdtrEntity> = state.creditorEntities;
+  
+      if (entitiesList[entityIndex]?.CreditorEntity && typeof entityIndex === "number") {
+        entitiesList.splice(entityIndex, 1);
+      }
+  
+      dispatch({ type: ACTIONS.DELETE_CREDITOR_ENTITY_SUCCESS, payload: [...entitiesList] });
+      localStorage.setItem("CREDITOR_ENTITIES", JSON.stringify(entitiesList));
+    } catch (error) {
+      dispatch({ type: ACTIONS.DELETE_CREDITOR_ENTITY_FAIL });
+    }
+  };
+
   const createCreditorEntityAccount = async (entityIndex: number) => {
     try {
       dispatch({ type: ACTIONS. CREATE_CREDITOR_ACCOUNT_LOADING })
@@ -603,7 +599,7 @@ const EntityProvider = ({ children }: Props) => {
     }
   }
 
-  const updateCreditorAccounts = async (updatedCreditorAccounts: Array<CreditorAccount>, entityIndex: number) => {
+  const updateCreditorAccount = async (updatedCreditorAccounts: Array<CreditorAccount>, entityIndex: number) => {
     try {
       dispatch({ type: ACTIONS.UPDATE_CREDITOR_ACCOUNT_LOADING })
 
@@ -633,6 +629,39 @@ const EntityProvider = ({ children }: Props) => {
       dispatch({ type: ACTIONS.UPDATE_CREDITOR_ACCOUNT_FAIL })
     }
   }
+
+  const deleteCreditorAccount = async (entityIndex: number) => {
+    try {
+      dispatch({ type: ACTIONS.DELETE_CREDITOR_ACCOUNT_LOADING });
+  
+      let accountsList: Array<CreditorAccount> = state.creditorEntities[entityIndex].CreditorAccounts;
+  
+      if (accountsList.length > 0) {
+        accountsList.pop();
+  
+        if (accountsList.length === 0) {
+          await deleteCreditorEntity(entityIndex);
+        } else {
+
+          let updatedEntityAccounts: CdtrEntity = {
+            CreditorEntity: state.creditorEntities[entityIndex]?.CreditorEntity,
+            CreditorAccounts: accountsList,
+          };
+
+          let entitiesList: Array<CdtrEntity> = [...state.creditorEntities];
+          entitiesList[entityIndex] = updatedEntityAccounts;
+
+          dispatch({ type: ACTIONS.DELETE_CREDITOR_ACCOUNT_SUCCESS, payload: entitiesList });
+
+          localStorage.setItem("CREDITOR_ENTITIES", JSON.stringify(entitiesList));
+        }
+      }
+  
+    } catch (error) {
+      // Dispatch failure action if an error occurs
+      dispatch({ type: ACTIONS.DELETE_CREDITOR_ACCOUNT_FAIL });
+    }
+  };
 
   const setDebtorPacs008 = async (entityIndex: number) => {
     try {
@@ -918,11 +947,15 @@ const EntityProvider = ({ children }: Props) => {
         createEntityLoading: state.createEntityLoading,
         updateEntityLoading: state.updateEntityLoading,
         deleteEntityLoading: state.deleteEntityLoading,
+        createCreditorEntityLoading: state.createEntityLoading,
+        updateCreditorEntityLoading: state.updateCreditorEntityLoading,
+        deleteCreditorEntityLoading: state.deleteCreditorEntityLoading,
         createAccountLoading: state.createAccountLoading,
-        updateAccountsLoading: state.updateAccountsLoading,
-        deleteDebtorAccountLoading: state.deleteDebtorAccountLoading,
+        updateAccountLoading: state.updateAccountLoading,
+        deleteAccountLoading: state.deleteAccountLoading,
         createCreditorAccountLoading: state.createCreditorAccountLoading,
-        updateCreditorAccountsLoading: state.updateCreditorAccountsLoading,
+        updateCreditorAccountLoading: state.updateCreditorAccountLoading,
+        deleteCreditorAccountLoading: state.deleteCreditorAccountLoading,
         resetEntityLoading: state.resetEntityLoading,
         resetCreditorEntityLoading: state.resetCreditorEntityLoading,
         cloneEntityLoading: state.cloneEntityLoading,
@@ -946,9 +979,11 @@ const EntityProvider = ({ children }: Props) => {
         updateAccounts,
         createCreditorEntity,
         updateCreditorEntity,
-        deleteEntityAccount,
+        deleteCreditorEntity,
+        deleteAccount,
         createCreditorEntityAccount,
-        updateCreditorAccounts,
+        updateCreditorAccount,
+        deleteCreditorAccount,
         setDebtorPacs008,
         setDebtorAccountPacs008,
         setCreditorPacs008,

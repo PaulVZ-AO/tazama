@@ -74,38 +74,38 @@ const EntityReducer = (state: any, action: any) => {
     case ACTIONS.UPDATE_DEBTOR_ACCOUNT_LOADING:
       return {
         ...state,
-        updateAccountsLoading: true,
+        updateAccountLoading: true,
         entities: [],
       }
     case ACTIONS.UPDATE_DEBTOR_ACCOUNT_SUCCESS:
       return {
         ...state,
-        updateAccountsLoading: false,
+        updateAccountLoading: false,
         entities: action.payload,
       }
     case ACTIONS.UPDATE_DEBTOR_ACCOUNT_FAIL:
       return {
         ...state,
-        updateAccountsLoading: false,
+        updateAccountLoading: false,
         entities: [],
       }
 
     case ACTIONS.DELETE_DEBTOR_ACCOUNT_LOADING:
       return {
         ...state,
-        deleteDebtorAccountLoading: true,
+        deleteAccountLoading: true,
         entities: [],
       }
     case ACTIONS.DELETE_DEBTOR_ACCOUNT_SUCCESS:
       return {
         ...state,
-        deleteDebtorAccountLoading: false,
+        deleteAccountLoading: false,
         entities: action.payload,
       }
     case ACTIONS.DELETE_DEBTOR_ACCOUNT_FAIL:
       return {
         ...state,
-        deleteDebtorAccountLoading: false,
+        deleteAccountLoading: false,
         entities: [],
       }
 
@@ -166,25 +166,6 @@ const EntityReducer = (state: any, action: any) => {
         entities: [],
       }
 
-    case ACTIONS.UPDATE_CREDITOR_ACCOUNT_LOADING:
-      return {
-        ...state,
-        updateCreditorAccountsLoading: true,
-        creditorEntities: [],
-      }
-    case ACTIONS.UPDATE_CREDITOR_ACCOUNT_SUCCESS:
-      return {
-        ...state,
-        updateCreditorAccountsLoading: false,
-        creditorEntities: action.payload,
-      }
-    case ACTIONS.UPDATE_CREDITOR_ACCOUNT_FAIL:
-      return {
-        ...state,
-        updateCreditorAccountsLoading: false,
-        creditorEntities: [],
-      }
-
     case ACTIONS.CREATE_CREDITOR_ENTITY_LOADING:
       return {
         ...state,
@@ -223,6 +204,25 @@ const EntityReducer = (state: any, action: any) => {
         creditorEntities: [],
       }
 
+    case ACTIONS.DELETE_CREDITOR_ENTITY_LOADING:
+      return {
+        ...state,
+        deleteCreditorEntityLoading: true,
+        creditorEntities: [],
+      }
+    case ACTIONS.DELETE_CREDITOR_ENTITY_SUCCESS:
+      return {
+        ...state,
+        deleteCreditorEntityLoading: false,
+        creditorEntities: action.payload,
+      }
+    case ACTIONS.DELETE_CREDITOR_ENTITY_FAIL:
+      return {
+        ...state,
+        deleteCreditorEntityLoading: false,
+        creditorEntities: [],
+      }
+
     case ACTIONS.CREATE_CREDITOR_ACCOUNT_LOADING:
       return {
         ...state,
@@ -239,6 +239,44 @@ const EntityReducer = (state: any, action: any) => {
       return {
         ...state,
         createCreditorAccountLoading: false,
+        creditorEntities: [],
+      }
+
+    case ACTIONS.UPDATE_CREDITOR_ACCOUNT_LOADING:
+      return {
+        ...state,
+        updateCreditorAccountLoading: true,
+        creditorEntities: [],
+      }
+    case ACTIONS.UPDATE_CREDITOR_ACCOUNT_SUCCESS:
+      return {
+        ...state,
+        updateCreditorAccountLoading: false,
+        creditorEntities: action.payload,
+      }
+    case ACTIONS.UPDATE_CREDITOR_ACCOUNT_FAIL:
+      return {
+        ...state,
+        updateCreditorAccountLoading: false,
+        creditorEntities: [],
+      }
+
+    case ACTIONS.DELETE_CREDITOR_ACCOUNT_LOADING:
+      return {
+        ...state,
+        deleteCreditorAccountLoading: true,
+        creditorEntities: [],
+      }
+    case ACTIONS.DELETE_CREDITOR_ACCOUNT_SUCCESS:
+      return {
+        ...state,
+        deleteCreditorAccountLoading: false,
+        creditorEntities: action.payload,
+      }
+    case ACTIONS.DELETE_CREDITOR_ACCOUNT_FAIL:
+      return {
+        ...state,
+        deleteCreditorAccountLoading: false,
         creditorEntities: [],
       }
 
