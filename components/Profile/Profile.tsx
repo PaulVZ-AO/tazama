@@ -81,6 +81,12 @@ export const Profile = ({ ...props }: ProfileProps) => {
     }
   };
 
+  const handleDeleteEntity = async () => {
+    if (props.accounts && props.accounts.length > 0) {
+      await entityCtx.deleteEntity(props.index);
+    }
+  };
+
   return (
     <div className={`mb-7 rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 px-3 py-1 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)] ${props.colour} flex w-full justify-between ${reverse}`}>
       {/* Edit Button */}

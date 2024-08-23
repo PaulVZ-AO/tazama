@@ -21,11 +21,12 @@ import {
 interface Context {
   createEntityLoading: boolean
   updateEntityLoading: boolean
+  deleteEntityLoading: boolean
   createAccountLoading: boolean
   updateAccountsLoading: boolean
   createCreditorAccountLoading: boolean
   updateCreditorAccountsLoading: boolean
-  deleteCreditorAccountLoading: boolean
+  deleteDebtorAccountLoading: boolean
   resetEntityLoading: boolean
   resetCreditorEntityLoading: boolean
   cloneEntityLoading: boolean
@@ -44,15 +45,14 @@ interface Context {
   selectCreditorEntity: (index: number, accountIndex: number) => void
   createEntity: () => void
   updateEntity: (entity: DebtorEntity, entityIndex: number) => void
+  deleteEntity: (entityIndex: number) => void
   createEntityAccount: (entityIndex: number) => void
   updateAccounts: (accounts: any, entityIndex: number) => void
+  deleteEntityAccount: (entityIndex: number) => void
   createCreditorEntity: () => void
   updateCreditorEntity: (entity: CreditorEntity, entityIndex: number) => void
   createCreditorEntityAccount: (entityIndex: number) => void
   updateCreditorAccounts: (creditorAccounts: any, entityIndex: number) => void
-
-  deleteEntityAccount: (entityIndex: number) => void
-
   setDebtorPacs008: (entityIndex: number) => void
   setDebtorAccountPacs008: (entityIndex: number, accountIndex: number) => void
   setCreditorPacs008: (entityIndex: number) => void
@@ -71,11 +71,12 @@ interface Context {
 const EntityContext = createContext<Context>({
   createEntityLoading: false,
   updateEntityLoading: false,
+  deleteEntityLoading: false,
   createAccountLoading: false,
   updateAccountsLoading: false,
   createCreditorAccountLoading: false,
   updateCreditorAccountsLoading: false,
-  deleteCreditorAccountLoading:false,  
+  deleteDebtorAccountLoading:false,  
   resetEntityLoading: false,
   resetCreditorEntityLoading: false,
   cloneEntityLoading: false,
@@ -94,15 +95,14 @@ const EntityContext = createContext<Context>({
   selectCreditorEntity: () => {},
   createEntity: () => {},
   updateEntity: () => {},
+  deleteEntity: () => {},
   createEntityAccount: () => {},
   updateAccounts: () => {},
+  deleteEntityAccount: () => {},
   createCreditorEntity: () => {},
   updateCreditorEntity: () => {},
   createCreditorEntityAccount: () => {},
   updateCreditorAccounts: () => {},
-
-  deleteEntityAccount: () => {},
-
   setDebtorPacs008: () => {},
   setDebtorAccountPacs008: () => {},
   setCreditorPacs008: () => {},

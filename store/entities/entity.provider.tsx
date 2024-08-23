@@ -302,9 +302,27 @@ const EntityProvider = ({ children }: Props) => {
     }
   }
 
+  const deleteEntity = async (entityIndex: number) => {
+    try {
+      dispatch({ type: ACTIONS.DELETE_DEBTOR_ENTITY_LOADING });
+  
+      let entitiesList: Array<Entity> = state.entities;
+  
+      if (entitiesList[entityIndex]?.Entity && typeof entityIndex === "number") {
+        entitiesList.splice(entityIndex, 1);
+      }
+  
+      dispatch({ type: ACTIONS.DELETE_DEBTOR_ENTITY_SUCCESS, payload: [...entitiesList] });
+      localStorage.setItem("DEBTOR_ENTITIES", JSON.stringify(entitiesList));
+    } catch (error) {
+      dispatch({ type: ACTIONS.DELETE_DEBTOR_ENTITY_FAIL });
+    }
+  };
+  
+  
   const createEntityAccount = async (entityIndex: number) => {
     try {
-      dispatch({ type: ACTIONS.CREATE_ENTITY_ACCOUNT_LOADING })
+      dispatch({ type: ACTIONS.CREATE_DEBTOR_ACCOUNT_LOADING })
 
       let accountsList: Array<DebtorAccount> = state.entities[entityIndex].Accounts
 
@@ -349,16 +367,16 @@ const EntityProvider = ({ children }: Props) => {
         entitiesList.splice(entityIndex, 1, updatedEntityAccounts)
       }
 
-      dispatch({ type: ACTIONS.CREATE_ENTITY_ACCOUNT_SUCCESS, payload: [...entitiesList] })
+      dispatch({ type: ACTIONS.CREATE_DEBTOR_ACCOUNT_SUCCESS, payload: [...entitiesList] })
       localStorage.setItem("DEBTOR_ENTITIES", JSON.stringify(state.entities))
     } catch (error) {
-      dispatch({ type: ACTIONS.CREATE_ENTITY_ACCOUNT_FAIL })
+      dispatch({ type: ACTIONS.CREATE_DEBTOR_ACCOUNT_FAIL })
     }
   }
 
   const updateAccounts = async (updatedAccounts: Array<DebtorAccount>, entityIndex: number) => {
     try {
-      dispatch({ type: ACTIONS.UPDATE_ACCOUNTS_LOADING })
+      dispatch({ type: ACTIONS.UPDATE_DEBTOR_ACCOUNT_LOADING })
 
       // Get the current accounts for the entity
       const currentAccounts = state.entities[entityIndex]?.Accounts || []
@@ -382,22 +400,45 @@ const EntityProvider = ({ children }: Props) => {
         accountsList.splice(entityIndex, 1, updatedEntity)
       }
 
-      dispatch({ type: ACTIONS.UPDATE_ACCOUNTS_SUCCESS, payload: [...accountsList] })
+      dispatch({ type: ACTIONS.UPDATE_DEBTOR_ACCOUNT_SUCCESS, payload: [...accountsList] })
       localStorage.setItem("DEBTOR_ENTITIES", JSON.stringify(accountsList))
     } catch (error) {
-      dispatch({ type: ACTIONS.UPDATE_ACCOUNTS_FAIL })
+      dispatch({ type: ACTIONS.UPDATE_DEBTOR_ACCOUNT_FAIL })
     }
   }
 
   const deleteEntityAccount = async (entityIndex: number) => {
     try {
-      dispatch({ type: ACTIONS.DELETE_ACCOUNT_LOADING });
+      dispatch({ type: ACTIONS.DELETE_DEBTOR_ACCOUNT_LOADING });
   
       // Retrieve the list of accounts for the specified entity
       let accountsList: Array<DebtorAccount> = state.entities[entityIndex].Accounts;
   
       // Only proceed if there's at least one account to delete
-      if (accountsList.length > 0) {
+      // if (accountsList.length > 0) {
+      //   // Remove the last account from the list
+      //   accountsList.pop();
+  
+      //   // Update the entity's account list after deletion
+      //   let updatedEntityAccounts: Entity = {
+      //     Entity: state.entities[entityIndex]?.Entity,
+      //     Accounts: accountsList,
+      //   };
+  
+      //   // Update the entities list with the modified entity
+      //   let entitiesList: Array<Entity> = state.entities;
+      //   if (entitiesList[entityIndex]?.Entity && typeof entityIndex === "number") {
+      //     entitiesList.splice(entityIndex, 1, updatedEntityAccounts);
+      //   }
+  
+      //   // Dispatch success action with the updated entities list
+      //   dispatch({ type: ACTIONS.DELETE_DEBTOR_ACCOUNT_SUCCESS, payload: [...entitiesList] });
+  
+      //   // Persist the updated entities list to localStorage
+      //   localStorage.setItem("DEBTOR_ENTITIES", JSON.stringify(state.entities));
+      // }
+
+      if (accountsList.length) {
         // Remove the last account from the list
         accountsList.pop();
   
@@ -414,14 +455,15 @@ const EntityProvider = ({ children }: Props) => {
         }
   
         // Dispatch success action with the updated entities list
-        dispatch({ type: ACTIONS.DELETE_ACCOUNT_SUCCESS, payload: [...entitiesList] });
+        dispatch({ type: ACTIONS.DELETE_DEBTOR_ACCOUNT_SUCCESS, payload: [...entitiesList] });
   
         // Persist the updated entities list to localStorage
         localStorage.setItem("DEBTOR_ENTITIES", JSON.stringify(state.entities));
       }
+
     } catch (error) {
       // Dispatch failure action if an error occurs
-      dispatch({ type: ACTIONS.DELETE_ACCOUNT_FAIL });
+      dispatch({ type: ACTIONS.DELETE_DEBTOR_ACCOUNT_FAIL });
     }
   };  
 
@@ -509,7 +551,7 @@ const EntityProvider = ({ children }: Props) => {
 
   const createCreditorEntityAccount = async (entityIndex: number) => {
     try {
-      dispatch({ type: ACTIONS.CREATE_CREDITOR_ENTITY_ACCOUNT_LOADING })
+      dispatch({ type: ACTIONS. CREATE_CREDITOR_ACCOUNT_LOADING })
 
       let accountsList: Array<CreditorAccount> = state.creditorEntities[entityIndex].CreditorAccounts
 
@@ -554,16 +596,16 @@ const EntityProvider = ({ children }: Props) => {
         entitiesList.splice(entityIndex, 1, updatedEntityAccounts)
       }
 
-      dispatch({ type: ACTIONS.CREATE_CREDITOR_ENTITY_ACCOUNT_SUCCESS, payload: [...entitiesList] })
+      dispatch({ type: ACTIONS. CREATE_CREDITOR_ACCOUNT_SUCCESS, payload: [...entitiesList] })
       localStorage.setItem("CREDITOR_ENTITIES", JSON.stringify(state.creditorEntities))
     } catch (error) {
-      dispatch({ type: ACTIONS.CREATE_CREDITOR_ENTITY_ACCOUNT_FAIL })
+      dispatch({ type: ACTIONS. CREATE_CREDITOR_ACCOUNT_FAIL })
     }
   }
 
   const updateCreditorAccounts = async (updatedCreditorAccounts: Array<CreditorAccount>, entityIndex: number) => {
     try {
-      dispatch({ type: ACTIONS.UPDATE_CREDITOR_ACCOUNTS_LOADING })
+      dispatch({ type: ACTIONS.UPDATE_CREDITOR_ACCOUNT_LOADING })
 
       const currentCdtrAccounts = state.creditorEntities[entityIndex]?.CreditorAccounts || []
 
@@ -585,10 +627,10 @@ const EntityProvider = ({ children }: Props) => {
         accountsList.splice(entityIndex, 1, updatedCdtrEntity)
       }
 
-      dispatch({ type: ACTIONS.UPDATE_CREDITOR_ACCOUNTS_SUCCESS, payload: [...accountsList] })
+      dispatch({ type: ACTIONS.UPDATE_CREDITOR_ACCOUNT_SUCCESS, payload: [...accountsList] })
       localStorage.setItem("CREDITOR_ENTITIES", JSON.stringify(accountsList))
     } catch (error) {
-      dispatch({ type: ACTIONS.UPDATE_CREDITOR_ACCOUNTS_FAIL })
+      dispatch({ type: ACTIONS.UPDATE_CREDITOR_ACCOUNT_FAIL })
     }
   }
 
@@ -875,9 +917,10 @@ const EntityProvider = ({ children }: Props) => {
       value={{
         createEntityLoading: state.createEntityLoading,
         updateEntityLoading: state.updateEntityLoading,
+        deleteEntityLoading: state.deleteEntityLoading,
         createAccountLoading: state.createAccountLoading,
         updateAccountsLoading: state.updateAccountsLoading,
-        deleteCreditorAccountLoading: state.deleteCreditorAccountLoading,
+        deleteDebtorAccountLoading: state.deleteDebtorAccountLoading,
         createCreditorAccountLoading: state.createCreditorAccountLoading,
         updateCreditorAccountsLoading: state.updateCreditorAccountsLoading,
         resetEntityLoading: state.resetEntityLoading,
@@ -898,6 +941,7 @@ const EntityProvider = ({ children }: Props) => {
         selectCreditorEntity,
         createEntity,
         updateEntity,
+        deleteEntity,
         createEntityAccount,
         updateAccounts,
         createCreditorEntity,
