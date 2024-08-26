@@ -23,18 +23,18 @@ const Settings = () => {
   }, [entityCtx.uiConfig])
 
   useEffect(() => {
-    console.log("CONFIG: yayay ", entityCtx.uiConfig)
+    console.log("CONFIG: ", config)
   }, [config])
 
   const handleReset = async () => {
     await entityCtx.reset()
     window.location.replace("/")
+    localStorage.setItem("UI_CONFIG", JSON.stringify(entityCtx.uiConfig))
   }
 
   const handleConfigUpdate = async (configData: any) => {
     if (config !== undefined) {
       await entityCtx.setUiConfig(configData)
-      console.log("new config--->", config)
       setShowConfigModal(false)
     }
   }
@@ -225,11 +225,6 @@ const Settings = () => {
             className="w-full rounded-lg py-3 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"
             type="button"
             value="Cancel Update"
-            onClick={async () => {
-              if (config !== undefined) {
-                // setConfig()
-              }
-            }}
           />
         </div>
         <div className="col-span-2">
@@ -237,12 +232,6 @@ const Settings = () => {
             className="w-full rounded-lg py-3 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"
             type="button"
             value="Update"
-            // onClick={async () => {
-            //   if (config !== undefined) {
-            //     await entityCtx.setUiConfig(config)
-            //     console.log("new config--->", config)
-            //   }
-            // }}
             onClick={() => setShowConfigModal(true)}
           />
         </div>

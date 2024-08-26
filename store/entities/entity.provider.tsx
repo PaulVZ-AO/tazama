@@ -57,7 +57,7 @@ const EntityProvider = ({ children }: Props) => {
     selectedCreditorEntity: creditorInitialState,
     pacs008: pacs008InitialState,
     pacs002: pacs002InitialState,
-    // uiConfig: uiConfigInitialState,
+    uiConfig: uiConfigInitialState,
     ruleLights: rulesLightsInitialState,
   }
   const [state, dispatch] = useReducer(EntityReducer, initialEntityState)
@@ -129,7 +129,7 @@ const EntityProvider = ({ children }: Props) => {
 
   const reset = async () => {
     localStorage.clear()
-    // localStorage.setItem("UI_CONFIG", JSON.stringify(uiConfigInitialState))
+   
   }
 
   const setRuleLights = async (rules: any[]) => {
