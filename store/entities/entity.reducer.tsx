@@ -373,6 +373,23 @@ const EntityReducer = (state: any, action: any) => {
         cloneCreditorEntityLoading: false,
         entities: [],
       }
+
+    case ACTIONS.SET_UI_CONFIG_LOADING:
+      return {
+        ...state,
+        setUiConfigLoading: true,
+      }
+    case ACTIONS.SET_UI_CONFIG_SUCCESS:
+      return {
+        ...state,
+        setUiConfigLoading: false,
+        uiConfig: action.payload,
+      }
+    case ACTIONS.SET_UI_CONFIG_FAIL:
+      return {
+        ...state,
+        setUiConfigLoading: false,
+      }
   }
 }
 
