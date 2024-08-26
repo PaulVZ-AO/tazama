@@ -117,7 +117,7 @@ const CreditorModal = ({ ...props }: Props) => {
                         type="text"
                         id="modal-Nm"
                         className="w-full"
-                        value={customEntity?.Cdtr.Nm}
+                        value={customEntity?.Cdtr.Nm || ""}
                         maxLength={140}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
@@ -136,7 +136,7 @@ const CreditorModal = ({ ...props }: Props) => {
                         type="date"
                         id="modal-BirthDt"
                         className="w-full"
-                        value={customEntity?.Cdtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt}
+                        value={customEntity?.Cdtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt || ""}
                         min={minDate}
                         max={maxDate}
                         onChange={(e) => {
@@ -162,7 +162,7 @@ const CreditorModal = ({ ...props }: Props) => {
                         type="text"
                         id="modal-CityOfBirth"
                         className="w-full"
-                        value={customEntity?.Cdtr.Id.PrvtId.DtAndPlcOfBirth.CityOfBirth}
+                        value={customEntity?.Cdtr.Id.PrvtId.DtAndPlcOfBirth.CityOfBirth || ""}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
                           setCustomEntity({
@@ -186,7 +186,7 @@ const CreditorModal = ({ ...props }: Props) => {
                         type="text"
                         id="modal-CtryOfBirth"
                         className="w-full"
-                        value={customEntity?.Cdtr.Id.PrvtId.DtAndPlcOfBirth.CtryOfBirth}
+                        value={customEntity?.Cdtr.Id.PrvtId.DtAndPlcOfBirth.CtryOfBirth || ""}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
                           setCustomEntity({
@@ -208,7 +208,7 @@ const CreditorModal = ({ ...props }: Props) => {
                       <label htmlFor="modal-ID">ID number</label>
                       <input
                         className="w-full"
-                        value={customEntity?.Cdtr.Id.PrvtId.Othr[0].Id}
+                        value={customEntity?.Cdtr.Id.PrvtId.Othr[0].Id || ""}
                         id="modal-ID"
                         maxLength={35}
                         onChange={(e) => {
@@ -236,7 +236,7 @@ const CreditorModal = ({ ...props }: Props) => {
                         type="text"
                         id="modal-MobNb"
                         className="w-full"
-                        value={customEntity?.Cdtr.CtctDtls.MobNb}
+                        value={customEntity?.Cdtr.CtctDtls.MobNb || ""}
                         maxLength={35}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
