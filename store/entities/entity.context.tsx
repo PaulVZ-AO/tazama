@@ -15,6 +15,7 @@ import {
   PACS008,
   SelectedCreditor,
   SelectedDebtor,
+  UIConfigs,
   UIConfiguration,
 } from "./entity.interface"
 
@@ -25,11 +26,11 @@ interface Context {
   updateAccountsLoading: boolean
   createCreditorAccountLoading: boolean
   updateCreditorAccountsLoading: boolean
-
   resetEntityLoading: boolean
   resetCreditorEntityLoading: boolean
   cloneEntityLoading: boolean
   cloneCreditorEntityLoading: boolean
+  setUiConfigLoading: boolean
   creditorEntities: Array<CdtrEntity>
   entities: Array<Entity>
   pacs008Loading: boolean
@@ -63,6 +64,7 @@ interface Context {
   resetCreditorEntity: ( entityIndex: number) => void,
   cloneEntity: (entity: any, account: any) => void,
   cloneCreditorEntity: (creditorEntity: any, account: any) => void,
+  setUiConfig: (UiConfig: UIConfiguration) => void,
 }
 
 const EntityContext = createContext<Context>({
@@ -76,6 +78,7 @@ const EntityContext = createContext<Context>({
   resetCreditorEntityLoading: false,
   cloneEntityLoading: false,
   cloneCreditorEntityLoading: false,
+  setUiConfigLoading: false,
   creditorEntities: [],
   entities: [],
   pacs008Loading: false,
@@ -109,6 +112,7 @@ const EntityContext = createContext<Context>({
   resetCreditorEntity: () => {},
   cloneEntity: () => {},
   cloneCreditorEntity: () => {},
+  setUiConfig: () => {},
 })
 
 export default EntityContext
