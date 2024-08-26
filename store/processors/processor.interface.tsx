@@ -21,6 +21,11 @@ export interface Typology {
   title: string
   color: "r" | "g" | "y" | "n"
   result: any
+  typoDescription: string
+  workflow: {
+    interdictionThreshold: number | null
+    alertThreshold: number | null
+  }
   linkedRules: string[]
 }
 

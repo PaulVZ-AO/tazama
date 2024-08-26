@@ -1,10 +1,11 @@
 const { Database, aql } = require("arangojs")
 require("dotenv").config()
 
+// PASS ALL .ENV VARIABLES INTO THE FUNCTIONS FROM THE FE THAT COMES FROM THE LOCAL STORAGE
+
 const getConfigConnection = () => {
   // establish database connection
   return new Database({
-    // url: "tcp://localhost:18529",
     url: process.env.NEXT_PUBLIC_ARANGO_DB_HOSTING,
     databaseName: "configuration",
     auth: { username: process.env.NEXT_PUBLIC_DB_USER, password: process.env.NEXT_PUBLIC_DB_PASSWORD },
@@ -177,6 +178,21 @@ export const getTADPROCResult = async (transactionID) => {
   }
 }
 
+const getTypologyDetails = async (cfg) => {
+  const db = getConfigConnection()
+  await getCollection("typologyConfiguration", db)
+  let result = []
+  const results = await db.query(aql`FOR typo IN typologyConfiguration FILTER typo.cfg == ${cfg} RETURN typo`)
+
+  for await (let typo of results) {
+    result.push(typo)
+  }
+
+  db.close()
+
+  return result
+}
+
 export const getNetworkMap = async () => {
   const db = getConfigConnection()
   await getCollection("networkConfiguration", db)
@@ -195,11 +211,15 @@ export const getNetworkMap = async () => {
   if (result.length > 0) {
     result[0].messages.forEach((element) => {
       element.typologies.forEach((typology) => {
+        // console.log("TYPO DESC: ", typo[0].desc)
+
         let newTypology = {
-          id: parseInt(typology.cfg.split("@")[0]),
+          id: typology.cfg,
           title: typology.cfg.split("@")[0],
           color: "n",
           result: null,
+          typoDescription: "",
+          workflow: { interdictionThreshold: null, alertThreshold: null },
           linkedRules: [],
         }
         typology.rules.forEach(async (rule) => {
@@ -220,71 +240,8 @@ export const getNetworkMap = async () => {
               r.linkedTypologies.push(typology.cfg.split("@")[0])
             }
           })
-          // if (rulesRes.includes(newRule.id)) {
-          //   console.log("Rule Exists", newRule)
-          // }
-
-          // if (!newRule.linkedTypologies.includes(typology.cfg.split("@")[0])) {
-          //   newRule.linkedTypologies.push(typology.cfg.split("@")[0])
-          // }
-
-          // make sure rule collection exists
-
-          // declare array to hold rules
-          //   let result = []
-          //   // query for rules
-          //   const results = await db.query(aql`FOR c IN ruleConfiguration FILTER c.id == ${rule.id} RETURN c`)
-          //   // loop through array cursor and push results in array
-          //   for await (let rule of results) {
-          //     result.push(rule)
-
-          //     if (result.length > 0) {
-          //       // result.forEach((rule) => {
-          //       //   newRule.ruleDescription = rule.desc
-          //       //   rule.config.bands.forEach((band) => {
-          //       //     let newBand = {
-          //       //       subRuleRef: band.subRuleRef,
-          //       //       lowerLimit: band.lowerLimit ? band.lowerLimit : null,
-          //       //       upperLimit: band.upperLimit ? band.upperLimit : null,
-          //       //       reason: band.reason,
-          //       //     }
-          //       //     newRule.bands.push(newBand)
-          //       //   })
-          //       // })
-          //       newRule.ruleDescription = result[0].desc
-          //       console.log("RULE ID: ", result[0].id)
-          //       if (result[0].config.hasOwnProperty("bands")) {
-          //         console.log("BANDS EXIST")
-          //         result[0].config.bands.forEach((band) => {
-          //           let newBand = {
-          //             subRuleRef: band.subRuleRef,
-          //             lowerLimit: band.lowerLimit ? band.lowerLimit : null,
-          //             upperLimit: band.upperLimit ? band.upperLimit : null,
-          //             reason: band.reason,
-          //           }
-          //           newRule.ruleBands.push(newBand)
-          //         })
-          //       } else if (result[0].config.hasOwnProperty("cases")) {
-          //         console.log("CASES EXIST")
-          //         result[0].config.cases.forEach((item) => {
-          //           let newBand = {
-          //             subRuleRef: item.subRuleRef,
-          //             lowerLimit: item.lowerLimit ? item.lowerLimit : null,
-          //             upperLimit: item.upperLimit ? item.upperLimit : null,
-          //             reason: item.reason,
-          //           }
-          //           newRule.ruleBands.push(newBand)
-          //         })
-          //       }
-          //       rulesRes.push(newRule)
-          //     }
 
           newTypology.linkedRules.push(newRule.title)
-          //     // if (!rules.includes(newRule)) {
-          //     //   console.log("Adding rule " + newRule)
-          //     //   rules.push(newRule)
-          //     // }
-          //   }
         })
         typologiesRes.push(newTypology)
       })
@@ -353,13 +310,26 @@ export const getNetworkMap = async () => {
           })
         }
 
-        typologiesRes.forEach((typology) => {
+        typologiesRes.forEach(async (typology) => {
           if (typology.linkedRules.includes(rule.title)) {
             rule.linkedTypologies.push(typology.title)
           }
         })
       }
     }
+  })
+  typologiesRes.forEach(async (typology) => {
+    let typo = await getTypologyDetails(typology.id)
+    console.log("TYPO CONFIG: ", typo[0])
+    typology.typoDescription = typo[0].desc
+
+    typology.workflow.interdictionThreshold = typo[0].workflow.hasOwnProperty("interdictionThreshold")
+      ? typo[0].workflow.interdictionThreshold
+      : null
+
+    typology.workflow.alertThreshold = typo[0].workflow.hasOwnProperty("alertThreshold")
+      ? typo[0].workflow.alertThreshold
+      : null
   })
 
   return {
