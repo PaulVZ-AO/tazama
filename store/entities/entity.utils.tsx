@@ -207,38 +207,43 @@ export const cloneCreditorToDebtor = (creditor: CreditorEntity): DebtorEntity =>
   }
 }
 
-export const cloneCreditorAccountToDebtorAccount = (creditorAccount: any): DebtorAccount => {
-  return {
+export const cloneCreditorAccountToDebtorAccount = (creditorAccount: any): DebtorAccount[] => {
+  const creditorAccountList  = creditorAccount.map((element: any) => ({
     DbtrAcct: {
       Id: {
         Othr: [
           {
-            Id: creditorAccount[0]?.CdtrAcct?.Id?.Othr[0]?.Id,
+            Id: element?.CdtrAcct?.Id?.Othr[0]?.Id,
             SchmeNm: {
-              Prtry: creditorAccount[0]?.CdtrAcct?.Id?.Othr[0]?.SchmeNm?.Prtry,
+              Prtry: element?.CdtrAcct?.Id?.Othr[0]?.SchmeNm?.Prtry,
             },
           },
         ] as [{ Id: string; SchmeNm: { Prtry: string } }],
       },
-      Nm: creditorAccount[0]?.CdtrAcct?.Nm,
+      Nm: element?.CdtrAcct?.Nm,
     },
-  }
+  }))
+
+  return creditorAccountList
 }
 
-export const cloneDebtorAccountToCreditorAccount = (debtorAccount: any): CreditorAccount => {
-  return {
-    CdtrAcct: {
-      Id: {
-        Othr: [
-          {
-            Id: debtorAccount[0]?.DbtrAcct?.Id?.Othr[0]?.Id,
-            SchmeNm: {
-              Prtry: debtorAccount[0]?.DbtrAcct?.Id?.Othr[0]?.SchmeNm?.Prtry,
+export const cloneDebtorAccountToCreditorAccount = (debtorAccount: any): CreditorAccount[] => {
+
+  return debtorAccount.map((element: any) => (
+    {
+      CdtrAcct: {
+        Id: {
+          Othr: [
+            {
+              Id: element?.DbtrAcct?.Id?.Othr[0]?.Id,
+              SchmeNm: {
+                Prtry: element?.DbtrAcct?.Id?.Othr[0]?.SchmeNm?.Prtry,
+              },
             },
-          },
-        ] as [{ Id: string; SchmeNm: { Prtry: string } }],
+          ] as [{ Id: string; SchmeNm: { Prtry: string } }],
+        },
+        Nm: element?.DbtrAcct?.Nm,
       },
-      Nm: debtorAccount[0]?.DbtrAcct?.Nm,
-    },
-  }
+    }
+  )) 
 }
