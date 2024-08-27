@@ -1,11 +1,12 @@
 import axios from "axios"
-import dotenv from "dotenv"
+import dotenv from "../../node_modules/dotenv/lib/main"
 import Image from "next/image"
-import { useContext } from "react"
+import React, { useContext, useState } from "react"
 import { TimeComponent } from "components/timeComponent/TimeComponent"
 import EntityContext from "store/entities/entity.context"
 import { sentanceCase } from "utils/helpers"
 import { DeviceInfo } from "./DeviceInfo"
+import ProcessorContext from "store/processors/processor.context"
 
 dotenv.config()
 
@@ -39,13 +40,22 @@ interface DebtorProps {
 }
 
 export function DebtorDevice(props: DebtorProps) {
-  const entityCtx = useContext(EntityContext)
+  const [tmsUrl, setTmsUrl] = useState(process.env.NEXT_PUBLIC_TMS_SERVER_URL)
+  const entityCtx: any = useContext(EntityContext)
+  const procCtx: any = useContext(ProcessorContext)
 
   const entity = entityCtx.entities
 
   const creditorEntity = entityCtx.creditorEntities
 
-  const tmsUrl = process.env.NEXT_PUBLIC_TMS_SERVER_URL
+  ;(async () => {
+    const cfg: any = await procCtx.getUIConfig()
+    console.log("-------------> CONFIG: ", JSON.parse(cfg))
+    const parsedConfig: any = JSON.parse(cfg)
+    setTmsUrl(parsedConfig.tmsServerUrl)
+  })()
+
+  // const tmsUrl = process.env.NEXT_PUBLIC_TMS_SERVER_URL
 
   const postPacs002 = async () => {
     try {

@@ -18,6 +18,7 @@ interface Context {
   updateTadpLights: (data: TADPROC) => void
   updateEDLights: (data: EDLightsManager) => void
   resetAllLights: () => void
+  getUIConfig: () => void
 }
 
 const ProcessorContext = createContext<Context>({
@@ -36,6 +37,7 @@ const ProcessorContext = createContext<Context>({
   updateEDLights: (data: EDLightsManager) => {},
   updateTadpLights: () => {},
   resetAllLights: () => {},
+  getUIConfig: () => {},
 })
 
 export default ProcessorContext

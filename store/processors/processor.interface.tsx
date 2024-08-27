@@ -29,7 +29,7 @@ export interface Typology {
   linkedRules: string[]
 }
 
-interface RuleResult {
+export interface RuleResult {
   id: string
   cfg: string
   subRuleRef: string
@@ -68,4 +68,22 @@ export interface RuleConfig {
   title: string
   description: string
   bands: RuleBand[]
+}
+
+export interface UI_CONFIG {
+  tmsServerUrl: string
+  tmsKey: string
+  cmsNatsHosting: string
+  natsUsername: string
+  natsPassword: string
+  arangoDBHosting: string
+  dbUser: string
+  dbPassword: string
+  dbName: string
+}
+
+export interface DBConfig {
+  url: string
+  databaseName: string
+  auth: { username: string; password: string }
 }

@@ -1,33 +1,51 @@
+import { config } from "./../middleware"
+import {
+  RuleResult,
+  RuleBand,
+  TADPROC_RESULT,
+  Typology,
+  RuleConfig,
+  TADPROC,
+  Rule,
+  DBConfig,
+} from "store/processors/processor.interface"
+
 const { Database, aql } = require("arangojs")
 require("dotenv").config()
 
 // PASS ALL .ENV VARIABLES INTO THE FUNCTIONS FROM THE FE THAT COMES FROM THE LOCAL STORAGE
 
-const getConfigConnection = () => {
+const getConfigConnection = (config: DBConfig) => {
   // establish database connection
+  // return new Database({
+  //   url: process.env.NEXT_PUBLIC_ARANGO_DB_HOSTING,
+  //   databaseName: "configuration",
+  //   auth: { username: process.env.NEXT_PUBLIC_DB_USER, password: process.env.NEXT_PUBLIC_DB_PASSWORD },
+  // })
+  console.log("-------------> config: ", config)
   return new Database({
-    url: process.env.NEXT_PUBLIC_ARANGO_DB_HOSTING,
+    url: config.url,
     databaseName: "configuration",
-    auth: { username: process.env.NEXT_PUBLIC_DB_USER, password: process.env.NEXT_PUBLIC_DB_PASSWORD },
+    auth: { username: config.auth.username, password: config.auth.password },
   })
 }
 
-const getTADPROCConnection = () => {
+const getTADPROCConnection = (config: DBConfig) => {
   // establish database connection
   return new Database({
-    url: process.env.NEXT_PUBLIC_ARANGO_DB_HOSTING,
+    url: config.url,
     databaseName: "evaluationResults",
-    auth: { username: process.env.NEXT_PUBLIC_DB_USER, password: process.env.NEXT_PUBLIC_DB_PASSWORD },
+    auth: { username: config.auth.username, password: config.auth.password },
   })
 }
 
-const getCollection = async (cName, db) => {
+const getCollection = async (cName: string, db: any) => {
   // get list of collections in database
   try {
     const collections = await db.collections()
 
     // check if collection exists, if so return collection, if not, create it
-    if (collections.find((c) => c._name === cName)) {
+    if (collections.find((c: any) => c._name === cName)) {
       return await db.collection(cName)
     } else {
       return db.createCollection(cName)
@@ -37,9 +55,9 @@ const getCollection = async (cName, db) => {
   }
 }
 
-export const getRulesDescriptions = async () => {
+export const getRulesDescriptions = async (config: DBConfig) => {
   // make connection
-  const db = getConfigConnection()
+  const db = getConfigConnection(config)
   // make sure rule collection exists
   await getCollection("ruleConfiguration", db)
   // declare array to hold rules
@@ -51,19 +69,19 @@ export const getRulesDescriptions = async () => {
     result.push(rule)
   }
 
-  const ruleConfig = []
+  const ruleConfig: any[] = []
 
   if (result.length > 0) {
     result.forEach((rule) => {
-      let newRule = {
+      let newRule: RuleConfig = {
         id: rule.id,
         title: rule.id.split("@")[0],
         description: rule.desc,
         bands: [],
       }
 
-      rule.config.bands.forEach((band) => {
-        let newBand = {
+      rule.config.bands.forEach((band: any) => {
+        let newBand: RuleBand = {
           subRuleRef: band.subRuleRef,
           lowerLimit: band.lowerLimit ? band.lowerLimit : null,
           upperLimit: band.upperLimit ? band.upperLimit : null,
@@ -82,15 +100,15 @@ export const getRulesDescriptions = async () => {
   return result
 }
 
-export const getTypologyDescriptions = async () => {
+export const getTypologyDescriptions = async (config: DBConfig) => {
   // make connection
-  const db = getConfigConnection()
+  const db: typeof Database = getConfigConnection(config)
   // make sure rule collection exists
   await getCollection("typologyConfiguration", db)
   // declare array to hold typologies
   let result = []
   // query for typologies
-  const results = await db.query(aql`FOR c IN typologyConfiguration RETURN c`)
+  const results: any = await db.query(aql`FOR c IN typologyConfiguration RETURN c`)
   // loop through array cursor and push results in array
   for await (let typology of results) {
     result.push(typology)
@@ -101,8 +119,8 @@ export const getTypologyDescriptions = async () => {
   return result
 }
 
-export const getTADPROCResult = async (transactionID) => {
-  const db = getTADPROCConnection()
+export const getTADPROCResult = async (transactionID: string, config: DBConfig) => {
+  const db = getTADPROCConnection(config)
   await getCollection("transactions", db)
 
   let result = []
@@ -113,7 +131,7 @@ export const getTADPROCResult = async (transactionID) => {
   }
 
   if (result.length > 0) {
-    let response = {
+    let response: TADPROC = {
       status: result[0]?.report?.status,
       stop: false,
       color: "n",
@@ -129,9 +147,9 @@ export const getTADPROCResult = async (transactionID) => {
     let tr = result[0]?.report?.tadpResult?.typologyResult
     // LOOP HERE
     if (tr.length > 0) {
-      tr.forEach((typoRes) => {
+      tr.forEach((typoRes: any) => {
         // new result object
-        let typoResult = {
+        let typoResult: TADPROC_RESULT = {
           cfg: typoRes.cfg,
           result: typoRes.result,
           workflow: {
@@ -142,7 +160,7 @@ export const getTADPROCResult = async (transactionID) => {
         }
 
         // modify result object
-        typoRes.ruleResults.forEach((result) => {
+        typoRes.ruleResults.forEach((result: RuleResult) => {
           typoResult.ruleResults.push(result)
         })
 
@@ -158,18 +176,7 @@ export const getTADPROCResult = async (transactionID) => {
             response.color = "r"
           }
         }
-        // } else if (typoResult.workflow.alertThreshold !== null && typoResult.workflow.interdictionThreshold !== null) {
-        //   if (typoRes.result <= typoResult.workflow.alertThreshold) {
-        //     response.color = "y"
-        //   } else if (
-        //     typoRes.result >= typoResult.workflow.alertThreshold &&
-        //     typoRes.result < typoResult.workflow.interdictionThreshold
-        //   ) {
-        //     response.color = "y"
-        //   }
-        // }
 
-        // push result object
         response.results.push(typoResult)
       })
     }
@@ -178,8 +185,8 @@ export const getTADPROCResult = async (transactionID) => {
   }
 }
 
-const getTypologyDetails = async (cfg) => {
-  const db = getConfigConnection()
+const getTypologyDetails = async (cfg: string, config: DBConfig) => {
+  const db = getConfigConnection(config)
   await getCollection("typologyConfiguration", db)
   let result = []
   const results = await db.query(aql`FOR typo IN typologyConfiguration FILTER typo.cfg == ${cfg} RETURN typo`)
@@ -193,8 +200,8 @@ const getTypologyDetails = async (cfg) => {
   return result
 }
 
-export const getNetworkMap = async () => {
-  const db = getConfigConnection()
+export const getNetworkMap = async (config: DBConfig) => {
+  const db = await getConfigConnection(config)
   await getCollection("networkConfiguration", db)
   await getCollection("ruleConfiguration", db)
 
@@ -205,15 +212,15 @@ export const getNetworkMap = async () => {
     result.push(config)
   }
 
-  const typologiesRes = []
-  const rulesRes = []
+  const typologiesRes: any[] = []
+  const rulesRes: any[] = []
 
   if (result.length > 0) {
-    result[0].messages.forEach((element) => {
-      element.typologies.forEach((typology) => {
+    result[0].messages.forEach((element: any) => {
+      element.typologies.forEach((typology: any) => {
         // console.log("TYPO DESC: ", typo[0].desc)
 
-        let newTypology = {
+        let newTypology: Typology = {
           id: typology.cfg,
           title: typology.cfg.split("@")[0],
           color: "n",
@@ -222,11 +229,12 @@ export const getNetworkMap = async () => {
           workflow: { interdictionThreshold: null, alertThreshold: null },
           linkedRules: [],
         }
-        typology.rules.forEach(async (rule) => {
-          let newRule = {
-            id: parseInt(rule.id.split("@")[0]),
-            title: rule.id.split("@")[0],
-            rule: rule.id,
+        typology.rules.forEach(async (rule: Rule) => {
+          let ruleId: any = rule.id.toString().split("@")[0]
+          let newRule: Rule = {
+            id: parseFloat(ruleId),
+            title: ruleId,
+            rule: rule.id.toString(),
             ruleDescription: "",
             color: "n",
             result: null,
@@ -277,7 +285,7 @@ export const getNetworkMap = async () => {
         console.log("RULE ID: ", result[0].id)
         if (result[0].config.hasOwnProperty("bands")) {
           console.log("BANDS EXIST")
-          result[0].config.bands.forEach((band) => {
+          result[0].config.bands.forEach((band: RuleBand) => {
             let newBand = {
               subRuleRef: band.subRuleRef,
               lowerLimit: band.lowerLimit ? band.lowerLimit : null,
@@ -288,8 +296,8 @@ export const getNetworkMap = async () => {
           })
         } else if (result[0].config.hasOwnProperty("cases")) {
           console.log("CASES EXIST")
-          result[0].config.cases.forEach((item) => {
-            let newBand = {
+          result[0].config.cases.forEach((item: RuleBand) => {
+            let newBand: RuleBand = {
               subRuleRef: item.subRuleRef,
               lowerLimit: item.lowerLimit ? item.lowerLimit : null,
               upperLimit: item.upperLimit ? item.upperLimit : null,
@@ -299,8 +307,8 @@ export const getNetworkMap = async () => {
           })
         } else if (result[0].config.hasOwnProperty("exitConditions")) {
           console.log("EXIT CONDITIONS EXIST")
-          result[0].config.exitConditions.forEach((item) => {
-            let newCondition = {
+          result[0].config.exitConditions.forEach((item: RuleBand) => {
+            let newCondition: RuleBand = {
               subRuleRef: item.subRuleRef,
               lowerLimit: item.lowerLimit ? item.lowerLimit : null,
               upperLimit: item.upperLimit ? item.upperLimit : null,
@@ -319,7 +327,7 @@ export const getNetworkMap = async () => {
     }
   })
   typologiesRes.forEach(async (typology) => {
-    let typo = await getTypologyDetails(typology.id)
+    let typo = await getTypologyDetails(typology.id, config)
     console.log("TYPO CONFIG: ", typo[0])
     typology.typoDescription = typo[0].desc
 

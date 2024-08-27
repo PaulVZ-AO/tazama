@@ -9,7 +9,8 @@ const { parse } = require("url")
 
 const app = next({ dev: process.env.NODE_ENV !== "production" })
 
-const natsUrl = process.env.NEXT_PUBLIC_CMS_NATS_HOSTING
+// const natsUrl = process.env.NEXT_PUBLIC_CMS_NATS_HOSTING
+let natsUrl = process.env.NEXT_PUBLIC_CMS_NATS_HOSTING
 
 const port = process.env.PORT
 
@@ -55,6 +56,7 @@ app.prepare().then(() => {
     "typoResponse",
     "tadProc",
     "stream",
+    "ui_config",
   ]
 
   io.on("connection", async (socket) => {
@@ -64,6 +66,13 @@ app.prepare().then(() => {
 
     socket.on("confirmation", (message) => {
       console.log("Confirmed:", message)
+    })
+
+    socket.on("uiconfig", (config) => {
+      console.log("UI Config:", config)
+      if (config !== null && config !== undefined) {
+        natsUrl = config.cmsNatsHosting
+      }
     })
 
     socket.on("subscriptions", (message) => {

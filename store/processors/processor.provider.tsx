@@ -1,8 +1,8 @@
 "use client"
 import axios, { AxiosResponse } from "axios"
-import dotenv from "dotenv"
-import React, { ReactNode, useEffect, useReducer } from "react"
-import { io } from "socket.io-client"
+import dotenv from "../../node_modules/dotenv/lib/main"
+import React, { ReactNode, useEffect, useReducer, useState } from "react"
+import { io } from "../../node_modules/socket.io-client/build/cjs/index"
 import { getNetworkMap, getTADPROCResult } from "utils/db"
 import { ACTIONS } from "./processor.actions"
 import ProcessorContext from "./processor.context"
@@ -12,7 +12,16 @@ import {
   ruleInitialState,
   typologiesInitialState,
 } from "./processor.initialState"
-import { EDLightsManager, Rule, RuleBand, TADPROC, TADPROC_RESULT, Typology } from "./processor.interface"
+import {
+  DBConfig,
+  EDLightsManager,
+  Rule,
+  RuleBand,
+  TADPROC,
+  TADPROC_RESULT,
+  Typology,
+  UI_CONFIG,
+} from "./processor.interface"
 import ProcessorReducer from "./processor.reducer"
 
 dotenv.config()
@@ -35,6 +44,33 @@ const ProcessorProvider = ({ children }: Props) => {
   }
   const [state, dispatch] = useReducer(ProcessorReducer, initialProcessorState)
 
+  const [uiConfig, setUiConfig] = useState<any>(null)
+
+  const getUIConfig = async () => {
+    if (localStorage.getItem("UI_CONFIG") !== null) {
+      const config: any = await localStorage.getItem("UI_CONFIG")
+
+      return config
+
+      // setUiConfig(config)
+      // console.log("Settings: ", uiConfig)
+    }
+  }
+
+  useEffect(() => {
+    ;(async () => {
+      let config = JSON.parse(await getUIConfig())
+      console.log("UI_CONFIG: ", config)
+      setUiConfig(config)
+    })()
+  }, [])
+
+  useEffect(() => {
+    if (uiConfig !== null) {
+      console.log("UI_CONFIG STATE: ", uiConfig)
+    }
+  }, [uiConfig])
+
   //---> UNCOMMENT THIS USE_EFFECT IF YOU WANT THE HARD CODED DATA IN THE API SECTION<---//
   // useEffect(() => {
   //   createRules()
@@ -44,7 +80,14 @@ const ProcessorProvider = ({ children }: Props) => {
   //---> COMMENT THIS USE_EFFECT OUT IF YOU WANT THE DYNAMICALLY BUILT DATA<---//
   useEffect(() => {
     ;(async () => {
-      const configData = await getNetworkMap()
+      let conf: any = await localStorage.getItem("UI_CONFIG")
+      let con: any = JSON.parse(conf)
+      const config: any = {
+        url: con.arangoDBHosting,
+        databaseName: "configuration",
+        auth: { username: con.dbUser, password: con.dbPassword },
+      }
+      const configData = await getNetworkMap(config)
       // console.log("RULES - TYPOLOGY CONFIG: ", configData)
       if (configData.rules) {
         dispatch({ type: ACTIONS.CREATE_RULES_SUCCESS, payload: configData.rules })
@@ -66,15 +109,19 @@ const ProcessorProvider = ({ children }: Props) => {
       transports: ["websocket"],
     })
 
-    socket.on("connection", (msg) => {
+    socket.on("connection", (msg: any) => {
       console.log("Connected to WebSocket server", msg)
+      console.log("SENDING SETTINGS")
     })
+    socket.emit("uiconfig", uiConfig)
+
     socket.emit("subscriptions", { subscriptions: ["connection", ">", "typology-processor@1.0.0", "cms"] })
 
-    socket.on("welcome", (msg) => {
+    socket.on("welcome", (msg: any) => {
       console.log("Received Message from the welcome: ", msg)
       socket.emit("confirmation", msg)
     })
+
     // socket.on("ruleRequest", (msg) => {
     //   console.log("Received Message from the RULE REQUEST: ", msg)
     // })
@@ -103,11 +150,19 @@ const ProcessorProvider = ({ children }: Props) => {
     //   console.log("Received Message from the Stream: ", msg)
     // })
 
-    socket.on("tadProc", async (msg) => {
+    socket.on("tadProc", async (msg: any) => {
       console.log("Received Message from the TADPROC: ", msg)
       // if (msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId !== undefined) {
       setTimeout(async () => {
-        const results: any = await getTADPROCResult(msg)
+        let conf: any = await localStorage.getItem("UI_CONFIG")
+        let con: any = JSON.parse(conf)
+        const config: any = {
+          url: con.arangoDBHosting,
+          databaseName: "configuration",
+          auth: { username: con.dbUser, password: con.dbPassword },
+        }
+
+        const results: any = await getTADPROCResult(msg, config)
         await updateTadpLights(results)
       }, 1000)
       // setTimeout(async () => await updateTadpLights(results), 200)
@@ -115,10 +170,11 @@ const ProcessorProvider = ({ children }: Props) => {
       // }
     })
 
-    socket.on("subscriptions", (msg) => {
+    socket.on("subscriptions", (msg: any) => {
       console.log(msg)
     })
-    socket.onAny((event, ...args) => {
+
+    socket.onAny((event: any, ...args: any) => {
       console.log(`got ${event}`)
       console.log(args)
 
@@ -142,7 +198,7 @@ const ProcessorProvider = ({ children }: Props) => {
     return () => {
       socket.disconnect()
     }
-  }, [state.rules, state.typologies])
+  }, [state.rules, state.typologies, uiConfig])
 
   const createRules = async () => {
     try {
@@ -361,6 +417,7 @@ const ProcessorProvider = ({ children }: Props) => {
         updateTadpLights,
         updateEDLights,
         resetAllLights,
+        getUIConfig,
       }}
     >
       {children}

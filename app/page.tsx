@@ -1,7 +1,7 @@
 "use client"
 
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd"
-import axios from "axios"
+
 import Image from "next/image"
 import { useContext, useEffect, useState } from "react"
 import { DebtorDevice } from "components/Device/Debtor"
@@ -14,7 +14,6 @@ import { StatusIndicator } from "components/StatusIndicator/StatusIndicator"
 import EntityContext from "store/entities/entity.context"
 import { CdtrEntity, Entity } from "store/entities/entity.interface"
 import ProcessorContext from "store/processors/processor.context"
-import { getTADPROCResult } from "utils/db"
 
 const Web = () => {
   // const [types, setTypes] = useState<any[] | null>(null)
@@ -205,15 +204,14 @@ const Web = () => {
   function TypeResult() {
     if (hoveredType === null && selectedType === null) return null
     return (
-      <div className="rounded-xl p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
+      <div className="mb-5 rounded-xl p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
         <h3 className="text-center uppercase">Type Results</h3>
-
         <div className="mb-2 p-2 text-center">
           {hoveredType && hoveredType.id ? hoveredType.id : selectedType ? selectedType.id : ""}
           {hoveredType ? ` = ${hoveredType.result}` : selectedType ? ` = ${selectedType.result}` : ""}
           {/* {hoveredType ? (hoveredType.s === "g" ? "true" : "false") : ""} 600 */}
         </div>
-        <div className="align-center flex grid grid-cols-4 justify-center">
+        <div className="align-center grid grid-cols-4 justify-center">
           <div className="col-span-1 flex flex-row justify-center text-center">
             <div className="p-4">
               {/* <StatusIndicator colour="y" /> */}
@@ -245,7 +243,7 @@ const Web = () => {
             </p>
           </div>
         </div>
-        <div className="align-center flex grid grid-cols-4 justify-center">
+        <div className="align-center grid grid-cols-4 justify-center">
           <div className="col-span-1 flex flex-row justify-center text-center">
             <div className="p-4">
               <svg
@@ -314,10 +312,10 @@ const Web = () => {
     setLoading(false)
   }, [])
 
-  const fetchResult = async (transactionID: string) => {
-    const result = await getTADPROCResult(transactionID)
-    return result
-  }
+  // const fetchResult = async (transactionID: string) => {
+  //   const result = await getTADPROCResult(transactionID)
+  //   return result
+  // }
 
   useEffect(() => {
     console.log("RULE DESCRIPTIONS: ", descriptions)
