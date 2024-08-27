@@ -5,6 +5,7 @@ import EntityContext from "store/entities/entity.context"
 import { UIConfiguration } from "store/entities/entity.interface"
 import ResetModal from "./ResetModal"
 import ConfigModal from "./ConfigModal"
+import { uiConfigInitialState } from "store/entities/entity.initialState"
 
 const Settings = () => {
   const entityCtx = useContext(EntityContext)
@@ -15,12 +16,21 @@ const Settings = () => {
   useEffect(() => {
     let lsConfig: string
     lsConfig = localStorage.getItem("UI_CONFIG") || ""
+    const backupConfig = localStorage.getItem("UI_CONFIG_BU")
 
     if (lsConfig !== "") {
       let updateConfig: any = JSON.parse(lsConfig)
       setConfig(updateConfig)
+
+      if (backupConfig) {
+        localStorage.setItem("UI_CONFIG_BU", backupConfig)
+      }
     }
   }, [entityCtx.uiConfig])
+
+  useEffect(() => {
+    console.log("CONFIG: ", entityCtx.uiConfig)
+  }, [config])
 
   useEffect(() => {
     console.log("CONFIG: ", config)
@@ -29,13 +39,29 @@ const Settings = () => {
   const handleReset = async () => {
     await entityCtx.reset()
     window.location.replace("/")
-    localStorage.setItem("UI_CONFIG", JSON.stringify(entityCtx.uiConfig))
+    localStorage.setItem("UI_CONFIG", JSON.stringify(uiConfigInitialState))
+    localStorage.removeItem("UI_CONFIG_BU")
   }
 
   const handleConfigUpdate = async (configData: any) => {
+    const currentConfig = localStorage.getItem("UI_CONFIG")
+    if (currentConfig) {
+      localStorage.setItem("UI_CONFIG_BU", currentConfig)
+    }
     if (config !== undefined) {
-      await entityCtx.setUiConfig(configData)
+      entityCtx.setUiConfig(configData)
       setShowConfigModal(false)
+      setConfig(configData)
+    }
+  }
+
+  const handleConfigUpdateCancel = async () => {
+    const backupConfig = localStorage.getItem("UI_CONFIG_BU")
+    if (backupConfig) {
+      const backup: any = JSON.parse(backupConfig)
+      setConfig(backup)
+      entityCtx.setUiConfig(backup)
+      localStorage.removeItem("UI_CONFIG_BU")
     }
   }
 
@@ -53,7 +79,7 @@ const Settings = () => {
                 id="tms_id"
                 type="text"
                 className="w-full rounded-lg p-2"
-                placeholder={config?.tmsServerUrl}
+                value={config?.tmsServerUrl || ""}
                 onChange={(e) => {
                   if (config !== undefined) {
                     setConfig({
@@ -84,7 +110,7 @@ const Settings = () => {
                 id="tms_key"
                 type="text"
                 className="w-full rounded-lg p-2"
-                placeholder={config?.cmsNatsHosting}
+                value={config?.cmsNatsHosting || ""}
                 onChange={(e) => {
                   if (config !== undefined) {
                     setConfig({
@@ -103,7 +129,7 @@ const Settings = () => {
                 id="tms_key"
                 type="text"
                 className="w-full rounded-lg p-2"
-                placeholder={config?.natsUsername}
+                value={config?.natsUsername || ""}
                 onChange={(e) => {
                   if (config !== undefined) {
                     setConfig({
@@ -122,7 +148,7 @@ const Settings = () => {
                 id="tms_key"
                 type="text"
                 className="w-full rounded-lg p-2"
-                placeholder={config?.natsPassword}
+                value={config?.natsPassword || ""}
                 onChange={(e) => {
                   if (config !== undefined) {
                     setConfig({
@@ -146,7 +172,7 @@ const Settings = () => {
                 id="tms_key"
                 type="text"
                 className="w-full rounded-lg p-2"
-                placeholder={config?.arangoDBHosting}
+                value={config?.arangoDBHosting || ""}
                 onChange={(e) => {
                   if (config !== undefined) {
                     setConfig({
@@ -165,7 +191,7 @@ const Settings = () => {
                 id="tms_key"
                 type="text"
                 className="w-full rounded-lg p-2"
-                placeholder={config?.dbUser}
+                value={config?.dbUser || ""}
                 onChange={(e) => {
                   if (config !== undefined) {
                     setConfig({
@@ -184,7 +210,7 @@ const Settings = () => {
                 id="tms_key"
                 type="text"
                 className="w-full rounded-lg p-2"
-                placeholder={config?.dbPassword}
+                value={config?.dbPassword || ""}
                 onChange={(e) => {
                   if (config !== undefined) {
                     setConfig({
@@ -203,7 +229,7 @@ const Settings = () => {
                 id="tms_key"
                 type="text"
                 className="w-full rounded-lg p-2"
-                placeholder={config?.dbName}
+                value={config?.dbName || ""}
                 onChange={(e) => {
                   if (config !== undefined) {
                     setConfig({
@@ -225,6 +251,7 @@ const Settings = () => {
             className="w-full rounded-lg py-3 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"
             type="button"
             value="Cancel Update"
+            onClick={handleConfigUpdateCancel}
           />
         </div>
         <div className="col-span-2">
