@@ -10,7 +10,7 @@ const { parse } = require("url")
 const app = next({ dev: process.env.NODE_ENV !== "production" })
 
 // const natsUrl = process.env.NEXT_PUBLIC_CMS_NATS_HOSTING
-let natsUrl = process.env.NEXT_PUBLIC_CMS_NATS_HOSTING
+let natsUrl
 
 const port = process.env.PORT
 
