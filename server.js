@@ -9,8 +9,7 @@ const { parse } = require("url")
 
 const app = next({ dev: process.env.NODE_ENV !== "production" })
 
-// const natsUrl = process.env.NEXT_PUBLIC_CMS_NATS_HOSTING
-let natsUrl
+let natsUrl = { url: null }
 
 const port = process.env.PORT
 
@@ -19,20 +18,16 @@ const handle = app.getRequestHandler()
 const sc = NATS.StringCodec()
 
 const handleMsg = async (msg, socket, room) => {
-  // let decodedMsg
-  const subject = sc.decode(msg._msg.subject)
-  console.log(subject)
-
   const decodedMessage = frms.default.decode(msg.data)
-  console.log(decodedMessage)
+
   await socket.to(room).emit(room, decodedMessage)
 }
 
-const messageListener = async (messages, socket) => {
-  ;(async () => {
-    for await (const msg of messages) await handleMsg(msg, socket)
-  })()
-}
+// const messageListener = async (messages, socket) => {
+//   ;(async () => {
+//     for await (const msg of messages) await handleMsg(msg, socket)
+//   })()
+// }
 
 app.prepare().then(() => {
   const server = createServer((req, res) => {
@@ -71,7 +66,7 @@ app.prepare().then(() => {
     socket.on("uiconfig", (config) => {
       console.log("UI Config:", config)
       if (config !== null && config !== undefined) {
-        natsUrl = config.cmsNatsHosting
+        natsUrl.url = config.cmsNatsHosting
       }
     })
 
@@ -80,21 +75,22 @@ app.prepare().then(() => {
 
       message.subscriptions.forEach((subscription) => {
         if (!NATSSubscriptions.includes(subscription)) {
-          console.log("Adding subscription:", subscription)
+          // console.log("Adding subscription:", subscription)
           NATSSubscriptions.push(subscription)
         }
       })
     })
 
     socket.on("tadProc", (message) => {
-      console.log("TADPROC Request:", message)
       // Emit message to all subscribed clients
       io.to("tadProc").emit("tadProc", message)
     })
 
     // Connect to NATS server
+
     const nc = await NATS.connect({
-      servers: natsUrl,
+      servers: natsUrl.url,
+      // ADD USER AND PASSWORD
     })
 
     let subscriptions = []
@@ -103,7 +99,6 @@ app.prepare().then(() => {
       let subscription = nc.subscribe(sub, { queue: "MONITORING" })
       subscriptions.push(subscription)
       if (sub === ">") {
-        console.log("Subscribed to all rules")
         socket.emit("subscriptions", `Subscribed to all rules`)
       } else {
         console.log("Subscribed to ", sub)
@@ -111,7 +106,7 @@ app.prepare().then(() => {
       }
     })
 
-    console.log(nc.info)
+    console.log("NATS Server Info: ", nc.info)
 
     const connected = nc.subscribe("connection")
     const all = nc.subscribe(">", { queue: "MONITORING1" })

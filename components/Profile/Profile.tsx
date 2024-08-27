@@ -1,6 +1,6 @@
 "use client"
 
-import { useContext, useState } from "react"
+import React, { useContext, useState } from "react"
 import EntityContext from "store/entities/entity.context"
 import { DebtorAccount, DebtorEntity } from "store/entities/entity.interface"
 
@@ -26,7 +26,7 @@ interface AccountProps {
 
 const AccountsComponent = ({ index, setSelected, selectedEntityIndex, setSelectedEntity }: AccountProps) => {
   let colour = ""
-  const entCtx = useContext(EntityContext)
+  const entCtx: any = useContext(EntityContext)
   const handleClick = async () => {
     console.log("############## DEBTOR SELECTION TEST START #############")
     await entCtx.selectDebtorEntity(selectedEntityIndex, index)
@@ -69,7 +69,7 @@ const AccountsComponent = ({ index, setSelected, selectedEntityIndex, setSelecte
 }
 
 export const Profile = ({ ...props }: ProfileProps) => {
-  const entityCtx = useContext(EntityContext)
+  const entityCtx: any = useContext(EntityContext)
   const [selectedAccountIndex, setSelectedAccountIndex] = useState(0)
 
   let reverse = ""
@@ -181,7 +181,7 @@ export const Profile = ({ ...props }: ProfileProps) => {
                   ? "stroke-yellow-400"
                   : props.colour === "text-orange-500"
                   ? "stroke-orange-500"
-                  : "text-gray-300"
+                  : "stroke-gray-300"
               }
             `}
             d="M430.786 34.8984L34.3731 237.425M430.786 34.8984L815.54 237.425M430.786 34.8984L424.956 237.425M34.3731 237.425V687.485L430.786 901.263M34.3731 237.425L197.602 619.976M34.3731 237.425H424.956M430.786 901.263L815.54 687.485M430.786 901.263L652.311 619.976M430.786 901.263L197.602 619.976M815.54 687.485V237.425M815.54 687.485L652.311 619.976M815.54 237.425L652.311 619.976M815.54 237.425H424.956M11.0547 687.485L197.602 619.976M197.602 619.976H652.311M197.602 619.976L424.956 237.425M652.311 619.976L424.956 237.425"
