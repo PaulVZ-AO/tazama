@@ -30,7 +30,7 @@ const getConfigConnection = (config: DBConfig) => {
   })
 }
 
-const getTADPROCConnection = (config: DBConfig) => {
+const getTADPROCConnection = (config: any) => {
   // establish database connection
   return new Database({
     url: config.url,
@@ -55,7 +55,7 @@ const getCollection = async (cName: string, db: any) => {
   }
 }
 
-export const getRulesDescriptions = async (config: DBConfig) => {
+export const getRulesDescriptions = async (config: any) => {
   // make connection
   const db = getConfigConnection(config)
   // make sure rule collection exists

@@ -102,7 +102,7 @@ const ProcessorProvider = ({ children }: Props) => {
   //   console.log(state.rules, state.typologies)
   // }, [state.rules, state.typologies])
 
-  const WS_URL = process.env.NEXT_PUBLIC_URL || "http://localhost:3001"
+  const WS_URL = process.env.NEXT_PUBLIC_URL || "http://demo:3001"
 
   useEffect(() => {
     const socket = io(WS_URL, {

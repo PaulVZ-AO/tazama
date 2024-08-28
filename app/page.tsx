@@ -1,9 +1,9 @@
 "use client"
 
-import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd"
+import { DragDropContext, Draggable, Droppable } from "../node_modules/@hello-pangea/dnd/dist/dnd"
 
 import Image from "next/image"
-import { useContext, useEffect, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { DebtorDevice } from "components/Device/Debtor"
 import CreditorModal from "components/Modal/CreditorsModal"
 import DebtorModal from "components/Modal/Modal"
@@ -14,6 +14,8 @@ import { StatusIndicator } from "components/StatusIndicator/StatusIndicator"
 import EntityContext from "store/entities/entity.context"
 import { CdtrEntity, Entity } from "store/entities/entity.interface"
 import ProcessorContext from "store/processors/processor.context"
+import { Rule, Typology } from "store/processors/processor.interface"
+import Loader from "./../components/Loader/Loader"
 
 const Web = () => {
   // const [types, setTypes] = useState<any[] | null>(null)
@@ -30,8 +32,8 @@ const Web = () => {
   const [showModal, setModal] = useState(false)
   const [started, setStarted] = useState(false)
   const [showCreditorModal, setShowCreditorModal] = useState(false)
-  const entityCtx = useContext(EntityContext)
-  const procCtx = useContext(ProcessorContext)
+  const entityCtx: any = useContext(EntityContext)
+  const procCtx: any = useContext(ProcessorContext)
 
   const handleRuleMouseEnter = (type: any) => {
     setHoveredType(null) // fallback if stats is stuck
@@ -144,7 +146,7 @@ const Web = () => {
   }
 
   const getRuleDescriptions = (result: string, rule_id: number) => {
-    const desc: any = procCtx.rules.find((rule) => rule.id === rule_id)
+    const desc: any = procCtx.rules.find((rule: Rule) => rule.id === rule_id)
     console.log("getRuleDescriptions", result, rule_id)
 
     console.log("HIT")
@@ -351,7 +353,8 @@ const Web = () => {
     console.log("CREDITORS: ", entityCtx.creditorEntities)
   }, [entityCtx.creditorEntities])
 
-  if (loading) return <p>Loading...</p>
+  // if (loading) return <p>Loading...</p>
+  if (loading) return <Loader />
   if (error) return <p>Error: {error}</p>
 
   const onDragEnd = async (result: { destination: any; source: any; draggableId: any }) => {
@@ -443,11 +446,11 @@ const Web = () => {
             <div className="flex flex-wrap justify-center rounded-lg p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
               <div className="mb-5 text-center text-xl">Debtors</div>
               <Droppable droppableId="debtorProfiles">
-                {(provided) => (
+                {(provided: any) => (
                   <div ref={provided.innerRef} {...provided.droppableProps} className="min-w-full space-y-2">
                     <>
                       <Draggable key={`debtor-0`} draggableId={`debtor-0`} index={0}>
-                        {(provided) => (
+                        {(provided: any) => (
                           <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                             <Profile
                               colour={!entityCtx.entities[0] ? "text-gray-300" : iconColour(0)}
@@ -467,7 +470,7 @@ const Web = () => {
                       </Draggable>
 
                       <Draggable key={`debtor-1`} draggableId={`debtor-1`} index={1}>
-                        {(provided: any, snapshot) => (
+                        {(provided: any, snapshot: any) => (
                           <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                             <Profile
                               colour={!entityCtx.entities[1] ? "text-gray-300" : iconColour(1)}
@@ -705,7 +708,7 @@ const Web = () => {
                           if (selectedRule === null) {
                             handleRuleClick(rule)
                             if (selectedType === null) {
-                              procCtx.typologies.forEach((t) => {
+                              procCtx.typologies.forEach((t: Typology) => {
                                 if (t.title === rule.linkedTypologies[0]) {
                                   setSelectedType(t)
                                 }
@@ -716,7 +719,7 @@ const Web = () => {
                                 // let idx = selectedTypes.indexOf(selectedRule.linkedTypologies[0])
                                 console.log("selected types: ", type)
                                 const updatedTypes: any[] = []
-                                procCtx.typologies.forEach((typo, idx) => {
+                                procCtx.typologies.forEach((typo: any, idx: number) => {
                                   if (type === typo.title) {
                                     console.log("type: ", typo.title, idx)
                                     if (!selectedTypes.includes(typo.title)) {
@@ -734,7 +737,7 @@ const Web = () => {
                               // let idx = selectedTypes.indexOf(selectedRule.linkedTypologies[0])
                               console.log("selected types: ", type)
                               const updatedTypes: any[] = []
-                              procCtx.typologies.forEach((typo, idx) => {
+                              procCtx.typologies.forEach((typo: Typology, idx: number) => {
                                 if (type === typo.title) {
                                   console.log("type: ", typo.title, idx)
                                   if (!selectedTypes.includes(typo.title)) {
