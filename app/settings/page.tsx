@@ -8,7 +8,7 @@ import ConfigModal from "./ConfigModal"
 import { uiConfigInitialState } from "store/entities/entity.initialState"
 
 const Settings = () => {
-  const entityCtx = useContext(EntityContext)
+  const entityCtx: any = useContext(EntityContext)
   const [config, setConfig] = useState<UIConfiguration>()
   const [showModal, setShowModal] = useState(false)
   const [showConfigModal, setShowConfigModal] = useState(false)
@@ -52,17 +52,19 @@ const Settings = () => {
       entityCtx.setUiConfig(configData)
       setShowConfigModal(false)
       setConfig(configData)
+      window.location.replace("/")
     }
   }
 
   const handleConfigUpdateCancel = async () => {
-    const backupConfig = localStorage.getItem("UI_CONFIG_BU")
-    if (backupConfig) {
-      const backup: any = JSON.parse(backupConfig)
-      setConfig(backup)
-      entityCtx.setUiConfig(backup)
-      localStorage.removeItem("UI_CONFIG_BU")
-    }
+    window.location.replace("/")
+    // const backupConfig = localStorage.getItem("UI_CONFIG_BU")
+    // if (backupConfig) {
+    //   const backup: any = JSON.parse(backupConfig)
+    //   setConfig(backup)
+    //   entityCtx.setUiConfig(backup)
+    //   localStorage.removeItem("UI_CONFIG_BU")
+    // }
   }
 
   return (
