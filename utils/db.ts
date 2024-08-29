@@ -181,6 +181,7 @@ export const getTADPROCResult = async (transactionID: string, config: DBConfig) 
       })
     }
     // return the list of typologies
+    console.log("TADPROC RESULT: ", response)
     return response
   }
 }

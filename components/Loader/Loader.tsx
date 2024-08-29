@@ -12,7 +12,7 @@ const Loader = () => {
           x="0px"
           y="0px"
           viewBox="0 0 277.04 260.26"
-          className="w-15"
+          className="w-15 ml-3"
         >
           <g>
             <g>
@@ -49,7 +49,8 @@ const Loader = () => {
             <circle className="st1" fill="#51BE99" cx="209.77" cy="164.85" r="11.03" />
           </g>
         </svg>
-        <p className="mb-5 mt-5 text-center font-mono text-lg text-gray-500">Loading...</p>
+        <h1 className="mt-5 text-center font-mono text-2xl font-black text-[#003C30]">Tazama Demo</h1>
+        <p className="mb-5 text-center font-mono text-lg text-gray-500">Loading</p>
       </div>
     </div>
   )
