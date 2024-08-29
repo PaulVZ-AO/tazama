@@ -66,9 +66,9 @@ const CreditorModal = ({ ...props }: Props) => {
   }
 
   // Set min and max age of Birth Date input
-  const today = new Date()
-  const minDate = new Date(today.getFullYear() - 60, today.getMonth(), today.getDate()).toISOString().split("T")[0]
-  const maxDate = new Date(today.getFullYear() - 20, today.getMonth(), today.getDate()).toISOString().split("T")[0]
+  const today = new Date();
+  const minDate = new Date(today.getFullYear() - 60, today.getMonth(), today.getDate()).toISOString().split("T")[0];
+  const maxDate = new Date(today.getFullYear() - 20, today.getMonth(), today.getDate()).toISOString().split("T")[0];
 
   // Swap between Entities and Accounts
   const handleSectionChange = (section: "Entity" | "Accounts") => {
@@ -160,15 +160,12 @@ const CreditorModal = ({ ...props }: Props) => {
                         maxLength={140}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
-                            setCustomEntity({
-                              ...customEntity,
-                              Cdtr: {
-                                ...customEntity.Cdtr,
-                                Nm: e.target.value,
-                              },
-                            })
-                          }
-                        }}
+                          setCustomEntity({
+                          ...customEntity,
+                          Cdtr: {
+                          ...customEntity.Cdtr,
+                          Nm: e.target.value,
+                        },});}}}
                       />
                       {errors.Nm && <p className="text-red-500">{errors.Nm}</p>}
                     </div>
@@ -183,24 +180,18 @@ const CreditorModal = ({ ...props }: Props) => {
                         max={maxDate}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
-                            setCustomEntity({
-                              ...customEntity,
-                              Cdtr: {
-                                ...customEntity?.Cdtr,
-                                ...customEntity?.Cdtr.Id,
-                                Id: {
-                                  PrvtId: {
-                                    ...customEntity?.Cdtr.Id.PrvtId,
-                                    DtAndPlcOfBirth: {
-                                      ...customEntity?.Cdtr.Id.PrvtId.DtAndPlcOfBirth,
-                                      BirthDt: e.target.value,
-                                    },
-                                  },
-                                },
-                              },
-                            })
-                          }
-                        }}
+                          setCustomEntity({
+                          ...customEntity,
+                          Cdtr: {
+                          ...customEntity?.Cdtr,
+                          ...customEntity?.Cdtr.Id,
+                          Id: {
+                          PrvtId: {
+                          ...customEntity?.Cdtr.Id.PrvtId,
+                          DtAndPlcOfBirth: {
+                          ...customEntity?.Cdtr.Id.PrvtId.DtAndPlcOfBirth,
+                          BirthDt: e.target.value,
+                        },},},},});}}}
                       />
                       {errors.BirthDt && <p className="text-red-500">{errors.BirthDt}</p>}
                     </div>
@@ -213,24 +204,18 @@ const CreditorModal = ({ ...props }: Props) => {
                         value={customEntity?.Cdtr.Id.PrvtId.DtAndPlcOfBirth.CityOfBirth || ""}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
-                            setCustomEntity({
-                              ...customEntity,
-                              Cdtr: {
-                                ...customEntity.Cdtr,
-                                ...customEntity.Cdtr.Id,
-                                Id: {
-                                  PrvtId: {
-                                    ...customEntity.Cdtr.Id.PrvtId,
-                                    DtAndPlcOfBirth: {
-                                      ...customEntity.Cdtr.Id.PrvtId.DtAndPlcOfBirth,
-                                      CityOfBirth: e.target.value,
-                                    },
-                                  },
-                                },
-                              },
-                            })
-                          }
-                        }}
+                          setCustomEntity({
+                          ...customEntity,
+                          Cdtr: {
+                          ...customEntity.Cdtr,
+                          ...customEntity.Cdtr.Id,
+                          Id: {
+                          PrvtId: {
+                          ...customEntity.Cdtr.Id.PrvtId,
+                          DtAndPlcOfBirth: {
+                          ...customEntity.Cdtr.Id.PrvtId.DtAndPlcOfBirth,
+                          CityOfBirth: e.target.value,
+                        },},},},});}}}
                       />
                       {errors.CityOfBirth && <p className="text-red-500">{errors.CityOfBirth}</p>}
                     </div>
@@ -243,24 +228,18 @@ const CreditorModal = ({ ...props }: Props) => {
                         value={customEntity?.Cdtr.Id.PrvtId.DtAndPlcOfBirth.CtryOfBirth || ""}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
-                            setCustomEntity({
-                              ...customEntity,
-                              Cdtr: {
-                                ...customEntity.Cdtr,
-                                ...customEntity.Cdtr.Id,
-                                Id: {
-                                  PrvtId: {
-                                    ...customEntity.Cdtr.Id.PrvtId,
-                                    DtAndPlcOfBirth: {
-                                      ...customEntity.Cdtr.Id.PrvtId.DtAndPlcOfBirth,
-                                      CtryOfBirth: e.target.value,
-                                    },
-                                  },
-                                },
-                              },
-                            })
-                          }
-                        }}
+                          setCustomEntity({
+                          ...customEntity,
+                          Cdtr: {
+                          ...customEntity.Cdtr,
+                          ...customEntity.Cdtr.Id,
+                          Id: {
+                          PrvtId: {
+                          ...customEntity.Cdtr.Id.PrvtId,
+                          DtAndPlcOfBirth: {
+                          ...customEntity.Cdtr.Id.PrvtId.DtAndPlcOfBirth,
+                          CtryOfBirth: e.target.value,
+                        },},},},});}}}
                       />
                       {errors.CtryOfBirth && <p className="text-red-500">{errors.CtryOfBirth}</p>}
                     </div>
@@ -273,26 +252,18 @@ const CreditorModal = ({ ...props }: Props) => {
                         maxLength={35}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
-                            setCustomEntity({
-                              ...customEntity,
-                              Cdtr: {
-                                ...customEntity.Cdtr,
-                                ...customEntity.Cdtr.Id,
-                                Id: {
-                                  PrvtId: {
-                                    ...customEntity.Cdtr.Id.PrvtId,
-                                    Othr: [
-                                      {
-                                        ...customEntity.Cdtr.Id.PrvtId.Othr[0],
-                                        Id: e.target.value,
-                                      },
-                                    ],
-                                  },
-                                },
-                              },
-                            })
-                          }
-                        }}
+                          setCustomEntity({
+                          ...customEntity,
+                          Cdtr: {
+                          ...customEntity.Cdtr,
+                          ...customEntity.Cdtr.Id,
+                          Id: {
+                          PrvtId: {
+                          ...customEntity.Cdtr.Id.PrvtId,
+                          Othr: [{
+                          ...customEntity.Cdtr.Id.PrvtId.Othr[0],
+                          Id: e.target.value,
+                        }],},},},});}}}
                         readOnly
                         type="text"
                       />
@@ -308,18 +279,14 @@ const CreditorModal = ({ ...props }: Props) => {
                         maxLength={35}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
-                            setCustomEntity({
-                              ...customEntity,
-                              Cdtr: {
-                                ...customEntity.Cdtr,
-                                ...customEntity.Cdtr.CtctDtls,
-                                CtctDtls: {
-                                  MobNb: e.target.value,
-                                },
-                              },
-                            })
-                          }
-                        }}
+                          setCustomEntity({
+                          ...customEntity,
+                          Cdtr: {
+                          ...customEntity.Cdtr,
+                          ...customEntity.Cdtr.CtctDtls,
+                          CtctDtls: {
+                          MobNb: e.target.value,
+                        },},});}}}
                       />
                       {errors.MobNb && <p className="text-red-500">{errors.MobNb}</p>}
                     </div>
@@ -384,17 +351,13 @@ const CreditorModal = ({ ...props }: Props) => {
                               maxLength={35}
                               onChange={(e) => {
                                 handleAccountChange(index, {
-                                  ...accountDetail,
-                                  CdtrAcct: {
-                                    ...accountDetail.CdtrAcct,
-                                    Nm: e.target.value,
-                                  },
-                                })
-                              }}
+                                ...accountDetail,
+                                CdtrAcct: {
+                                ...accountDetail.CdtrAcct,
+                                Nm: e.target.value,
+                              },})}}
                             />
-                            {errors[`accountName-${index}`] && (
-                              <p className="text-red-500">{errors[`accountName-${index}`]}</p>
-                            )}
+                            {errors[`accountName-${index}`] && <p className="text-red-500">{errors[`accountName-${index}`]}</p>}
                           </div>
                           <div>
                             <label htmlFor={`modal-Account-ID-${index}`}>ID number</label>
@@ -427,22 +390,12 @@ const CreditorModal = ({ ...props }: Props) => {
                     className="m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)] hover:shadow-inner"
                     onClick={async () => {
                       if (props.selectedEntity !== undefined) {
-                        if (validateForm()) {
-                          await entityCtx.updateCreditorAccounts(customAccounts, props.selectedEntity)
-                          handleClick()
-                        }
-                      }
-                    }}
-                  >
-                    Save
-                  </button>
-                  <button
-                    type="button"
-                    className="m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-inner"
-                    onClick={handleClick}
-                  >
-                    Cancel
-                  </button>
+                      if (validateForm()) {
+                      await entityCtx.updateCreditorAccount(customAccounts, props.selectedEntity)
+                      handleClick();
+                    }}}}
+                  >Save</button>
+                  <button type="button" className="m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-inner" onClick={handleClick}>Cancel</button>
                 </div>
               </>
             )}
