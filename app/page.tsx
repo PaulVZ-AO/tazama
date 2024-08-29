@@ -336,7 +336,7 @@ const Web = () => {
         <div className="grid grid-cols-12 gap-5">
           {/* Debtors */}
           <div className="col-span-2">
-            <div className="flex flex-wrap flex-col justify-center rounded-lg p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
+            <div className="flex flex-wrap flex-col justify-center rounded-lg py-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
               <div className="mb-5 text-center text-xl">Debtors</div>
               <Droppable droppableId="debtorProfiles">
                 {(provided) => (
@@ -464,7 +464,7 @@ const Web = () => {
 
           {/* Creditors */}
           <div className="col-span-2">
-            <div className="flex flex-wrap flex-col justify-center rounded-lg p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
+            <div className="flex flex-wrap flex-col justify-center rounded-lg py-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
               <div className="mb-5 text-center text-xl">Creditors</div>
               <Droppable droppableId="creditorProfiles">
                 {(provided: any) => (
