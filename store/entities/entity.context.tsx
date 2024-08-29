@@ -22,10 +22,16 @@ import {
 interface Context {
   createEntityLoading: boolean
   updateEntityLoading: boolean
+  deleteEntityLoading: boolean
   createAccountLoading: boolean
-  updateAccountsLoading: boolean
+  updateAccountLoading: boolean
+  // deleteAccountLoading: boolean
+  createCreditorEntityLoading: boolean
+  updateCreditorEntityLoading: boolean
+  deleteCreditorEntityLoading: boolean
   createCreditorAccountLoading: boolean
-  updateCreditorAccountsLoading: boolean
+  updateCreditorAccountLoading: boolean
+  // deleteCreditorAccountLoading: boolean
   resetEntityLoading: boolean
   resetCreditorEntityLoading: boolean
   cloneEntityLoading: boolean
@@ -45,18 +51,22 @@ interface Context {
   selectCreditorEntity: (index: number, accountIndex: number) => void
   createEntity: () => void
   updateEntity: (entity: DebtorEntity, entityIndex: number) => void
+  deleteEntity: (entityIndex: number) => void
   createEntityAccount: (entityIndex: number) => void
   updateAccounts: (accounts: any, entityIndex: number) => void
+  // deleteAccount: (entityIndex: number) => void
   createCreditorEntity: () => void
   updateCreditorEntity: (entity: CreditorEntity, entityIndex: number) => void
+  deleteCreditorEntity: (entityIndex: number) => void
   createCreditorEntityAccount: (entityIndex: number) => void
-  updateCreditorAccounts: (creditorAccounts: any, entityIndex: number) => void
+  updateCreditorAccount: (creditorAccounts: any, entityIndex: number) => void
+  // deleteCreditorAccount: (entityIndex: number) => void
   setDebtorPacs008: (entityIndex: number) => void
   setDebtorAccountPacs008: (entityIndex: number, accountIndex: number) => void
   setCreditorPacs008: (entityIndex: number) => void
   setCreditorAccountPacs008: (entityIndex: number, accountIndex: number) => void
   generateTransaction: () => void
-  updateTransaction: (x: any) => void;
+  updateTransaction: (x: any) => void
   buildPacs002: () => void
   setRuleLights: (lights: Array<any>) => void
   reset: () => void
@@ -70,10 +80,16 @@ interface Context {
 const EntityContext = createContext<Context>({
   createEntityLoading: false,
   updateEntityLoading: false,
+  deleteEntityLoading: false,
   createAccountLoading: false,
-  updateAccountsLoading: false,
+  updateAccountLoading: false,
+  // deleteAccountLoading: false,
+  createCreditorEntityLoading: false,
+  updateCreditorEntityLoading: false,
+  deleteCreditorEntityLoading: false,
   createCreditorAccountLoading: false,
-  updateCreditorAccountsLoading: false,
+  updateCreditorAccountLoading: false,
+  // deleteCreditorAccountLoading: false,
   resetEntityLoading: false,
   resetCreditorEntityLoading: false,
   cloneEntityLoading: false,
@@ -93,12 +109,16 @@ const EntityContext = createContext<Context>({
   selectCreditorEntity: () => {},
   createEntity: () => {},
   updateEntity: () => {},
+  deleteEntity: () => {},
   createEntityAccount: () => {},
   updateAccounts: () => {},
+  // deleteAccount: () => {},
   createCreditorEntity: () => {},
   updateCreditorEntity: () => {},
+  deleteCreditorEntity: () => {},
   createCreditorEntityAccount: () => {},
-  updateCreditorAccounts: () => {},
+  updateCreditorAccount: () => {},
+  // deleteCreditorAccount: () => {},
   setDebtorPacs008: () => {},
   setDebtorAccountPacs008: () => {},
   setCreditorPacs008: () => {},
