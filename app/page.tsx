@@ -1,50 +1,90 @@
 "use client"
 
-import axios from "axios"
-import { useContext, useEffect, useState } from "react"
+import { DragDropContext, Draggable, Droppable } from "../node_modules/@hello-pangea/dnd/dist/dnd"
+
 import Image from "next/image"
+import React, { useContext, useEffect, useState } from "react"
 import { DebtorDevice } from "components/Device/Debtor"
+import CreditorModal from "components/Modal/CreditorsModal"
+import DebtorModal from "components/Modal/Modal"
 import { ProcessIndicator } from "components/ProcessIndicator/ProcessIndicator"
 import { Profile } from "components/Profile/Profile"
 import { CreditorProfile } from "components/ProfileCreditor/ProfileCreditor"
 import { StatusIndicator } from "components/StatusIndicator/StatusIndicator"
 import EntityContext from "store/entities/entity.context"
-import ProcessorContext from "store/processors/processor.context"
-import { getTADPROCResult } from "utils/db"
-import DebtorModal from "components/Modal/Modal"
-import CreditorModal from "components/Modal/CreditorsModal"
-import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
 import { CdtrEntity, Entity } from "store/entities/entity.interface"
+import ProcessorContext from "store/processors/processor.context"
+import { Rule, Typology } from "store/processors/processor.interface"
+import Loader from "./../components/Loader/Loader"
 
 const Web = () => {
   // const [types, setTypes] = useState<any[] | null>(null)
   const [descriptions, setDescriptions] = useState<any[] | null>(null)
+  const [isHoverRule, setIsHoverRule] = useState<boolean>(false)
   const [hoveredRule, setHoveredRule] = useState<any>(null)
+  const [hoverRules, setHoverRules] = useState<any[]>([])
+  const [selectedRules, setSelectedRules] = useState<any[]>([])
+  const [selectedRule, setSelectedRule] = useState<any>(null)
   const [hoveredType, setHoveredType] = useState<any>(null)
+  const [hoverTypes, setHoverTypes] = useState<any[]>([])
+  const [selectedTypes, setSelectedTypes] = useState<any[]>([])
+  const [selectedType, setSelectedType] = useState<any>(null)
   const [showModal, setModal] = useState(false)
   const [started, setStarted] = useState(false)
   const [showCreditorModal, setShowCreditorModal] = useState(false)
-  const entityCtx = useContext(EntityContext)
-  const procCtx = useContext(ProcessorContext)
+  const entityCtx: any = useContext(EntityContext)
+  const procCtx: any = useContext(ProcessorContext)
 
   const handleRuleMouseEnter = (type: any) => {
     setHoveredType(null) // fallback if stats is stuck
     setHoveredRule(type)
+    setIsHoverRule(true)
+    setHoverTypes([...type.linkedTypologies])
   }
 
   const handleRuleMouseLeave = () => {
     setHoveredRule(null)
     setHoveredType(null) // fallback if stats is stuck
+    setIsHoverRule(false)
+    setHoverTypes([])
+  }
+
+  const handleRuleClick = (type: any) => {
+    setHoveredType(null) // fallback if stats is stuck
+    setSelectedRule(type)
+    setSelectedRules([type.title])
+  }
+
+  const handleRuleClickClose = () => {
+    setHoveredType(null) // fallback if stats is stuck
+    setSelectedRule(null)
+    setSelectedTypes([])
   }
 
   const handleTypeMouseEnter = (type: any) => {
     setHoveredRule(null) // fallback if stats is stuck
     setHoveredType(type)
+    setHoverRules([...type.linkedRules])
   }
 
   const handleTypeMouseLeave = () => {
     setHoveredRule(null) // fallback if stats is stuck
     setHoveredType(null)
+    setHoverRules([])
+  }
+
+  const handleTypeClick = (type: any) => {
+    setHoveredType(null) // fallback if stats is stuck
+    setSelectedType(type)
+    setSelectedRules([...type.linkedRules])
+    setSelectedTypes([type.title])
+  }
+
+  const handleTypeClickClose = () => {
+    setHoveredType(null) // fallback if stats is stuck
+    setSelectedType(null)
+    setSelectedTypes([])
+    setSelectedRules([])
   }
 
   function RuleRow(props: any) {
@@ -105,28 +145,58 @@ const Web = () => {
     )
   }
 
-  const getRuleDescriptions = (result: string) => {
-    const description: any = descriptions!.find((item) => item.subRuleRef === result)
-    return description.reason
+  const getRuleDescriptions = (result: string, rule_id: number) => {
+    const desc: any = procCtx.rules.find((rule: Rule) => rule.id === rule_id)
+    console.log("getRuleDescriptions", result, rule_id)
+
+    console.log("HIT")
+    const description = desc.ruleBands.find((item: any) => item.subRuleRef === result)
+    console.log("description: ", description?.reason)
+    return description?.reason
+
+    // const description: any = descriptions!.find((item) => item.subRuleRef === result)
   }
 
+  useEffect(() => {
+    console.log(selectedRule)
+  }, [selectedRule])
+
   function RuleResult() {
-    if (hoveredRule === null) return null
+    if (hoveredRule === null && selectedRule === null) return null
     return (
-      <div className="rounded-xl p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
+      <div
+        className="cursor-pointer rounded-xl p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"
+        onClick={() => {
+          setSelectedRule(null)
+        }}
+      >
         <h3 className="text-center uppercase">Rule Results</h3>
 
-        <div className="p-5">
-          <div className="mb-2 p-2 text-center">
-            {hoveredRule?.title} {/* {hoveredRule.title} {hoveredRule && hoveredRule.r ? hoveredRule.r : ""}= */}
-            {hoveredRule ? (hoveredRule.color === "g" ? "= False" : "= True") : ""}
+        <div className="flex flex-col p-1">
+          <div className="mb-2 flex w-full flex-col items-center justify-center text-center">
+            {/* {hoveredRule?.title} {hoveredRule.title} {hoveredRule && hoveredRule.r ? hoveredRule.r : ""}= */}
+            <p className="align-center m-2 flex w-full justify-center border-2 border-black px-5 py-2 text-center">
+              {hoveredRule ? hoveredRule?.rule : selectedRule && selectedRule.rule}
+            </p>
+            <p className="align-center m-1 flex w-full justify-center border-2 border-black px-5 py-2 text-center text-xs">
+              {hoveredRule ? hoveredRule?.ruleDescription : selectedRule.ruleDescription}
+            </p>
           </div>
           <hr className="mb-2 border-black" />
-          <div className="mb-2 p-2 text-center">
+          <div className="align-center mb-2 grid w-full grid-cols-4 justify-center gap-4 text-center">
             {/* Creditor account is less than 1 day old. */}
-            {hoveredRule && hoveredRule.color !== "g" && hoveredRule.result
-              ? getRuleDescriptions(hoveredRule.result)
-              : ""}
+            <p className="align-center col-span-1 flex h-8 w-full flex-row justify-center border-2 border-black px-4 py-2 text-center text-xs">
+              {hoveredRule ? hoveredRule.result : selectedRule && selectedRule.result}
+            </p>
+            <p className="align-center col-span-3 flex size-full flex-row justify-center border-2 border-black px-4 py-2 text-center text-xs">
+              {hoveredRule
+                ? hoveredRule.result
+                  ? getRuleDescriptions(hoveredRule.result, hoveredRule.id)
+                  : ""
+                : selectedRule && selectedRule?.result
+                ? getRuleDescriptions(selectedRule.result, selectedRule.id)
+                : ""}
+            </p>
           </div>
         </div>
       </div>
@@ -134,49 +204,84 @@ const Web = () => {
   }
 
   function TypeResult() {
+    if (hoveredType === null && selectedType === null) return null
     return (
-      <div className="rounded-xl p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
+      <div className="mb-5 rounded-xl p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
         <h3 className="text-center uppercase">Type Results</h3>
-
         <div className="mb-2 p-2 text-center">
-          105 {hoveredType && hoveredType.t ? hoveredType.t : ""}=
-          {hoveredType ? (hoveredType.s === "g" ? "true" : "false") : ""} 600
+          {hoveredType && hoveredType.id ? hoveredType.id : selectedType ? selectedType.id : ""}
+          {hoveredType ? ` = ${hoveredType.result}` : selectedType ? ` = ${selectedType.result}` : ""}
+          {/* {hoveredType ? (hoveredType.s === "g" ? "true" : "false") : ""} 600 */}
         </div>
-        <div className="mb-2 flex p-2">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth="1.5"
-            stroke="currentColor"
-            className="size-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"
-            />
-          </svg>
-          500
+        <div className="align-center grid grid-cols-4 justify-center">
+          <div className="col-span-1 flex flex-row justify-center text-center">
+            <div className="p-4">
+              {/* <StatusIndicator colour="y" /> */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="size-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"
+                />
+              </svg>
+            </div>
+          </div>
+          <div className="col-span-3 mb-2 flex gap-5 p-2">
+            <p className="align-center col-span-2 flex size-full flex-row justify-center border-2 border-black px-4 py-2 text-center">
+              {hoveredType
+                ? hoveredType.workflow.alertThreshold
+                  ? hoveredType.workflow.alertThreshold
+                  : "None"
+                : selectedType && selectedType.workflow.alertThreshold
+                ? selectedType.workflow.alertThreshold
+                : "None"}
+            </p>
+          </div>
         </div>
-        <div className="mb-2 flex p-2">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth="1.5"
-            stroke="currentColor"
-            className="size-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M10.05 4.575a1.575 1.575 0 1 0-3.15 0v3m3.15-3v-1.5a1.575 1.575 0 0 1 3.15 0v1.5m-3.15 0 .075 5.925m3.075.75V4.575m0 0a1.575 1.575 0 0 1 3.15 0V15M6.9 7.575a1.575 1.575 0 1 0-3.15 0v8.175a6.75 6.75 0 0 0 6.75 6.75h2.018a5.25 5.25 0 0 0 3.712-1.538l1.732-1.732a5.25 5.25 0 0 0 1.538-3.712l.003-2.024a.668.668 0 0 1 .198-.471 1.575 1.575 0 1 0-2.228-2.228 3.818 3.818 0 0 0-1.12 2.687M6.9 7.575V12m6.27 4.318A4.49 4.49 0 0 1 16.35 15m.002 0h-.002"
-            />
-          </svg>
-          none
+        <div className="align-center grid grid-cols-4 justify-center">
+          <div className="col-span-1 flex flex-row justify-center text-center">
+            <div className="p-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="size-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M10.05 4.575a1.575 1.575 0 1 0-3.15 0v3m3.15-3v-1.5a1.575 1.575 0 0 1 3.15 0v1.5m-3.15 0 .075 5.925m3.075.75V4.575m0 0a1.575 1.575 0 0 1 3.15 0V15M6.9 7.575a1.575 1.575 0 1 0-3.15 0v8.175a6.75 6.75 0 0 0 6.75 6.75h2.018a5.25 5.25 0 0 0 3.712-1.538l1.732-1.732a5.25 5.25 0 0 0 1.538-3.712l.003-2.024a.668.668 0 0 1 .198-.471 1.575 1.575 0 1 0-2.228-2.228 3.818 3.818 0 0 0-1.12 2.687M6.9 7.575V12m6.27 4.318A4.49 4.49 0 0 1 16.35 15m.002 0h-.002"
+                />
+              </svg>
+              {/* <StatusIndicator colour="r" /> */}
+            </div>
+          </div>
+          <div className="col-span-3 mb-2 flex gap-5 p-2">
+            <p className="align-center col-span-2 flex size-full flex-row justify-center border-2 border-black px-4 py-2 text-center">
+              {hoveredType
+                ? hoveredType.workflow.interdictionThreshold
+                  ? hoveredType.workflow.interdictionThreshold
+                  : "None"
+                : selectedType && selectedType.workflow.interdictionThreshold
+                ? selectedType.workflow.interdictionThreshold
+                : "None"}
+            </p>
+          </div>
         </div>
-        <div className="mb-2 p-2 text-center">Description on the hover code</div>
+        <div className="mb-2 p-2 text-center">
+          <p className="align-center col-span-2 flex size-full flex-row justify-center border-2 border-black px-4 py-2 text-center text-xs">
+            {hoveredType ? hoveredType.typoDescription : selectedType && selectedType.typoDescription}
+          </p>
+        </div>
       </div>
     )
   }
@@ -209,13 +314,14 @@ const Web = () => {
     setLoading(false)
   }, [])
 
-  const fetchResult = async (transactionID: string) => {
-    const result = await getTADPROCResult(transactionID)
-    return result
-  }
+  // const fetchResult = async (transactionID: string) => {
+  //   const result = await getTADPROCResult(transactionID)
+  //   return result
+  // }
 
   useEffect(() => {
     console.log("RULE DESCRIPTIONS: ", descriptions)
+    setLoading(false)
   }, [descriptions])
 
   // useEffect(() => {
@@ -247,7 +353,8 @@ const Web = () => {
     console.log("CREDITORS: ", entityCtx.creditorEntities)
   }, [entityCtx.creditorEntities])
 
-  if (loading) return <p>Loading...</p>
+  // if (loading) return <p>Loading...</p>
+  if (loading) return <Loader />
   if (error) return <p>Error: {error}</p>
 
   const onDragEnd = async (result: { destination: any; source: any; draggableId: any }) => {
@@ -339,11 +446,11 @@ const Web = () => {
             <div className="flex flex-wrap justify-center rounded-lg p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
               <div className="mb-5 text-center text-xl">Debtors</div>
               <Droppable droppableId="debtorProfiles">
-                {(provided) => (
-                  <div ref={provided.innerRef} {...provided.droppableProps} className="space-y-2">
+                {(provided: any) => (
+                  <div ref={provided.innerRef} {...provided.droppableProps} className="min-w-full space-y-2">
                     <>
                       <Draggable key={`debtor-0`} draggableId={`debtor-0`} index={0}>
-                        {(provided) => (
+                        {(provided: any) => (
                           <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                             <Profile
                               colour={!entityCtx.entities[0] ? "text-gray-300" : iconColour(0)}
@@ -363,7 +470,7 @@ const Web = () => {
                       </Draggable>
 
                       <Draggable key={`debtor-1`} draggableId={`debtor-1`} index={1}>
-                        {(provided: any, snapshot) => (
+                        {(provided: any, snapshot: any) => (
                           <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                             <Profile
                               colour={!entityCtx.entities[1] ? "text-gray-300" : iconColour(1)}
@@ -445,7 +552,7 @@ const Web = () => {
                 />
               </div>
               <div className="col-span-4 flex items-center justify-between px-5">
-                <ProcessIndicator started={started} stop={procCtx.tadpLights.TADPROC.stop} />
+                <ProcessIndicator started={started} stop={procCtx.tadpLights.stop} />
               </div>
               <div className="col-span-4">
                 <DebtorDevice
@@ -468,7 +575,7 @@ const Web = () => {
               <div className="mb-5 text-center text-xl">Creditors</div>
               <Droppable droppableId="creditorProfiles">
                 {(provided: any) => (
-                  <div ref={provided.innerRef} {...provided.droppableProps} className="space-y-2">
+                  <div ref={provided.innerRef} {...provided.droppableProps} className="min-w-full space-y-2">
                     <>
                       <Draggable key={`creditor-0`} draggableId={`creditor-0`} index={0}>
                         {(provided: any) => (
@@ -580,20 +687,81 @@ const Web = () => {
             </h2>
             <div className="grid grid-cols-12">
               <div className="col-span-6">
-                <div className="grid grid-cols-3 px-5">
+                <div className="grid grid-cols-3 gap-1 px-5">
                   {procCtx.rulesLoading ? (
                     <p className="mb-5 w-80 rounded-t-lg py-5 text-center">Loading</p>
                   ) : (
                     procCtx.rules?.map((rule: any) => (
                       <div
-                        className={`mb-1 flex rounded-md px-2 hover:bg-gray-200 hover:shadow`}
+                        className={`mb-1  flex cursor-pointer rounded-md px-2 ${
+                          hoverRules && hoverRules.includes(rule.title) && "bg-gray-200 shadow"
+                        } ${
+                          selectedRules ? selectedRules.includes(rule.title) && "bg-gray-400 shadow" : null
+                        } hover:bg-gray-200 hover:shadow`}
                         key={`r-${rule.id}`}
                         onMouseEnter={() => {
                           handleRuleMouseEnter(rule)
                           console.log(rule)
                         }}
+                        onMouseLeave={() => handleRuleMouseLeave()}
                         onClick={() => {
-                          handleRuleMouseLeave()
+                          if (selectedRule === null) {
+                            handleRuleClick(rule)
+                            if (selectedType === null) {
+                              procCtx.typologies.forEach((t: Typology) => {
+                                if (t.title === rule.linkedTypologies[0]) {
+                                  setSelectedType(t)
+                                }
+                              })
+                            } else {
+                              setSelectedTypes([])
+                              for (const type of rule.linkedTypologies) {
+                                // let idx = selectedTypes.indexOf(selectedRule.linkedTypologies[0])
+                                console.log("selected types: ", type)
+                                const updatedTypes: any[] = []
+                                procCtx.typologies.forEach((typo: any, idx: number) => {
+                                  if (type === typo.title) {
+                                    console.log("type: ", typo.title, idx)
+                                    if (!selectedTypes.includes(typo.title)) {
+                                      updatedTypes.push(typo.title)
+                                      setSelectedType(typo)
+                                    }
+                                  }
+                                })
+                                console.log(updatedTypes.length)
+                                setSelectedTypes([...updatedTypes.reverse()])
+                              }
+                            }
+                          } else if (selectedRule === rule) {
+                            for (const type of rule.linkedTypologies) {
+                              // let idx = selectedTypes.indexOf(selectedRule.linkedTypologies[0])
+                              console.log("selected types: ", type)
+                              const updatedTypes: any[] = []
+                              procCtx.typologies.forEach((typo: Typology, idx: number) => {
+                                if (type === typo.title) {
+                                  console.log("type: ", typo.title, idx)
+                                  if (!selectedTypes.includes(typo.title)) {
+                                    updatedTypes.push(typo.title)
+                                    setSelectedType(typo)
+                                  }
+                                }
+                              })
+                              console.log(updatedTypes.length)
+                              setSelectedTypes([...updatedTypes])
+                            }
+                          } else {
+                            // handleRuleClickClose()
+                            handleRuleClick(rule)
+                          }
+
+                          if (selectedRules.length > 0) {
+                            if (selectedRules.includes(rule.title)) {
+                              let idx = selectedRules.indexOf(rule.title)
+                              selectedRules.splice(idx, 1)
+                            }
+                            if (selectedTypes.length > 0) {
+                            }
+                          }
                           console.log(rule)
                         }}
                       >
@@ -622,10 +790,33 @@ const Web = () => {
             </h2>
             <div className="grid grid-cols-12">
               <div className="col-span-6">
-                <div className="grid grid-cols-3 px-5">
+                <div className="grid grid-cols-3 gap-1 px-5">
                   {procCtx.typologies &&
                     procCtx.typologies.map((type: any) => (
-                      <div className={`mb-1 flex rounded-md px-2 hover:bg-gray-200 hover:shadow`} key={`r-${type.id}`}>
+                      <div
+                        className={`mb-1 flex cursor-pointer rounded-md px-2 ${
+                          hoverTypes && hoverTypes.includes(type.title) && "bg-gray-200 shadow"
+                        } ${
+                          selectedTypes ? selectedTypes.includes(type.title) && "bg-gray-400 shadow" : null
+                        } hover:bg-gray-200 hover:shadow`}
+                        key={`r-${type.id}`}
+                        onMouseEnter={() => {
+                          handleTypeMouseEnter(type)
+                          console.log(type)
+                        }}
+                        onMouseLeave={() => handleTypeMouseLeave()}
+                        onClick={() => {
+                          if (selectedType === null) {
+                            handleTypeClick(type)
+                          } else if (selectedType === type) {
+                            handleTypeClickClose()
+                          } else {
+                            handleTypeClick(type)
+                          }
+
+                          console.log(type)
+                        }}
+                      >
                         <StatusIndicator colour={type.color} /> &nbsp;
                         {type.title}
                       </div>
@@ -645,16 +836,16 @@ const Web = () => {
             </h2>
 
             <div className="flex min-h-80 items-center justify-center">
-              <StatusIndicator large={true} colour={procCtx.tadpLights.TADPROC.color} />
+              <StatusIndicator large={true} colour={procCtx.tadpLights.color} />
             </div>
           </div>
         </div>
-        {procCtx.tadpLights.TADPROC.stop && (
+        {procCtx.tadpLights.stop && (
           <Image
             src="/stop.png"
             width="250"
             height="250"
-            className="absolute inset-x-0 inset-y-0 mx-auto my-auto"
+            className="absolute inset-0 m-auto"
             style={{
               position: "absolute",
               top: -355,

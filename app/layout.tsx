@@ -1,6 +1,5 @@
 import "styles/tailwind.css"
 import { Metadata } from "next"
-import Head from "next/head"
 import Image from "next/image"
 import Link from "next/link"
 import EntityProvider from "store/entities/entity.provider"
@@ -8,6 +7,10 @@ import ProcessorProvider from "store/processors/processor.provider"
 
 export const metadata: Metadata = {
   title: "Tazama Demo",
+  description: "A Frontend Demo Platform for Tazama",
+  icons: {
+    icon: "/favicon.ico",
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -15,11 +18,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <EntityProvider>
       <ProcessorProvider>
         <html lang="en">
-          <Head>
-            <title>Tazama | Debt Management</title>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-            <link rel="icon" href="/favicon.ico" />
-          </Head>
           <body>
             <div className="flex rounded-t-lg bg-gradient-to-b from-gray-100 to-gray-200 px-10 py-5 shadow-lg">
               <Link href={"/"}>

@@ -1,10 +1,12 @@
 import axios from "axios"
-import dotenv from "dotenv"
+import dotenv from "../../node_modules/dotenv/lib/main"
 import Image from "next/image"
-import { useContext } from "react"
+import React, { useContext, useState } from "react"
 import { TimeComponent } from "components/timeComponent/TimeComponent"
 import EntityContext from "store/entities/entity.context"
+import { sentanceCase } from "utils/helpers"
 import { DeviceInfo } from "./DeviceInfo"
+import ProcessorContext from "store/processors/processor.context"
 
 dotenv.config()
 
@@ -12,6 +14,7 @@ interface EDLights {
   pacs008: boolean
   pacs002: boolean
   color: "r" | "g" | "y" | "n"
+  error: string
 }
 interface LightsManager {
   ED: EDLights
@@ -37,13 +40,22 @@ interface DebtorProps {
 }
 
 export function DebtorDevice(props: DebtorProps) {
-  const entityCtx = useContext(EntityContext)
+  const [tmsUrl, setTmsUrl] = useState(process.env.NEXT_PUBLIC_TMS_SERVER_URL)
+  const entityCtx: any = useContext(EntityContext)
+  const procCtx: any = useContext(ProcessorContext)
 
   const entity = entityCtx.entities
 
   const creditorEntity = entityCtx.creditorEntities
 
-  const tmsUrl = process.env.NEXT_PUBLIC_TMS_SERVER_URL
+  ;(async () => {
+    const cfg: any = await procCtx.getUIConfig()
+    console.log("-------------> CONFIG: ", JSON.parse(cfg))
+    const parsedConfig: any = JSON.parse(cfg)
+    setTmsUrl(parsedConfig.tmsServerUrl)
+  })()
+
+  // const tmsUrl = process.env.NEXT_PUBLIC_TMS_SERVER_URL
 
   const postPacs002 = async () => {
     try {
@@ -55,6 +67,7 @@ export function DebtorDevice(props: DebtorProps) {
           pacs008: true,
           pacs002: true,
           color: "g",
+          error: "",
         }
         let newData: any = {
           ED: data,
@@ -68,6 +81,7 @@ export function DebtorDevice(props: DebtorProps) {
           pacs008: true,
           pacs002: false,
           color: "r",
+          error: "",
         }
         let newData: LightsManager = {
           ED: data,
@@ -78,12 +92,13 @@ export function DebtorDevice(props: DebtorProps) {
         }, 1000)
       }
       console.log("Test POST PACS002 response: ", response.data)
-    } catch (error) {
-      console.log(error)
+    } catch (error: any) {
+      const errMsg: any = JSON.parse(error.response.data.split("\n").slice(1).join("\n"))
       let data: EDLights = {
         pacs008: true,
         pacs002: false,
         color: "r",
+        error: `PACS002: ${sentanceCase(errMsg.errorMessage.split("-")[0])}`,
       }
       let newData: LightsManager = {
         ED: data,
@@ -108,6 +123,7 @@ export function DebtorDevice(props: DebtorProps) {
             pacs008: true,
             pacs002: false,
             color: "y", // orange
+            error: "",
           }
           let newData: LightsManager = {
             ED: data,
@@ -121,11 +137,12 @@ export function DebtorDevice(props: DebtorProps) {
       console.log("Test POST PACS008 response: ", response.data)
     } catch (error: any) {
       const errMsg: any = JSON.parse(error.response.data.split("\n").slice(1).join("\n"))
-      console.log(JSON.parse(error.response.data.split("\n").slice(1).join("\n")))
+      console.log("PACS008 ERROR: ")
       let data: any = {
         pacs008: props.lights.ED.pacs008,
         pacs002: false,
         color: "r",
+        error: `PACS008: ${sentanceCase(errMsg.errorMessage.split("-")[0])}`,
       }
       let newData: LightsManager = {
         ED: data,
@@ -172,6 +189,7 @@ export function DebtorDevice(props: DebtorProps) {
                     pacs008: false,
                     pacs002: false,
                     color: "n",
+                    error: "",
                   },
                 })
                 props.resetLights(true)

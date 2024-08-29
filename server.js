@@ -9,7 +9,7 @@ const { parse } = require("url")
 
 const app = next({ dev: process.env.NODE_ENV !== "production" })
 
-const natsUrl = process.env.NEXT_PUBLIC_CMS_NATS_HOSTING
+let natsUrl = { url: null }
 
 const port = process.env.PORT
 
@@ -18,20 +18,16 @@ const handle = app.getRequestHandler()
 const sc = NATS.StringCodec()
 
 const handleMsg = async (msg, socket, room) => {
-  // let decodedMsg
-  const subject = sc.decode(msg._msg.subject)
-  console.log(subject)
-
   const decodedMessage = frms.default.decode(msg.data)
-  console.log(decodedMessage)
+
   await socket.to(room).emit(room, decodedMessage)
 }
 
-const messageListener = async (messages, socket) => {
-  ;(async () => {
-    for await (const msg of messages) await handleMsg(msg, socket)
-  })()
-}
+// const messageListener = async (messages, socket) => {
+//   ;(async () => {
+//     for await (const msg of messages) await handleMsg(msg, socket)
+//   })()
+// }
 
 app.prepare().then(() => {
   const server = createServer((req, res) => {
@@ -55,6 +51,7 @@ app.prepare().then(() => {
     "typoResponse",
     "tadProc",
     "stream",
+    "ui_config",
   ]
 
   io.on("connection", async (socket) => {
@@ -66,26 +63,34 @@ app.prepare().then(() => {
       console.log("Confirmed:", message)
     })
 
+    socket.on("uiconfig", (config) => {
+      console.log("UI Config:", config)
+      if (config !== null && config !== undefined) {
+        natsUrl.url = config.cmsNatsHosting
+      }
+    })
+
     socket.on("subscriptions", (message) => {
       console.log("Subscriptions:", message)
 
       message.subscriptions.forEach((subscription) => {
         if (!NATSSubscriptions.includes(subscription)) {
-          console.log("Adding subscription:", subscription)
+          // console.log("Adding subscription:", subscription)
           NATSSubscriptions.push(subscription)
         }
       })
     })
 
     socket.on("tadProc", (message) => {
-      console.log("TADPROC Request:", message)
       // Emit message to all subscribed clients
       io.to("tadProc").emit("tadProc", message)
     })
 
     // Connect to NATS server
+
     const nc = await NATS.connect({
-      servers: natsUrl,
+      servers: natsUrl.url,
+      // ADD USER AND PASSWORD
     })
 
     let subscriptions = []
@@ -94,7 +99,6 @@ app.prepare().then(() => {
       let subscription = nc.subscribe(sub, { queue: "MONITORING" })
       subscriptions.push(subscription)
       if (sub === ">") {
-        console.log("Subscribed to all rules")
         socket.emit("subscriptions", `Subscribed to all rules`)
       } else {
         console.log("Subscribed to ", sub)
@@ -102,12 +106,12 @@ app.prepare().then(() => {
       }
     })
 
-    console.log(nc.info)
+    console.log("NATS Server Info: ", nc.info)
 
     const connected = nc.subscribe("connection")
-    // const all = nc.subscribe(">", { queue: "MONITORING1" })
-    const pubRule901 = nc.subscribe("pub-rule-901@1.0.0", { queue: "MONITORING_RULE_PUBLISHER" })
-    const subRule901 = nc.subscribe("sub-rule-901@1.0.0", { queue: "MONITORING_RULE_SUBSCRIBER" })
+    const all = nc.subscribe(">", { queue: "MONITORING1" })
+    // const pubRule901 = nc.subscribe("pub-rule-016@1.0.0", { queue: "MONITORING_RULE_PUBLISHER" })
+    // const subRule901 = nc.subscribe("sub-rule-016@1.0.0", { queue: "MONITORING_RULE_SUBSCRIBER" })
     const type001 = nc.subscribe("typology-999@1.0.0", { queue: "MONITORING_TYPOLOGY" })
     const cms = nc.subscribe("cms", { queue: "MONITORING_CMS" })
 
@@ -125,19 +129,18 @@ app.prepare().then(() => {
     ;(async () => {
       for await (const msg of connected) await handleMsg(msg, io, "connection")
     })()
-
+    ;(async () => {
+      for await (const msg of all) await handleMsg(msg, io, "stream")
+    })()
     // ;(async () => {
-    //   for await (const msg of all) await handleMsg(msg, io, 'stream')
+    //   for await (const msg of type001) await handleMsg(msg, io, "typoResponse")
     // })()
-    ;(async () => {
-      for await (const msg of type001) await handleMsg(msg, io, "typoResponse")
-    })()
-    ;(async () => {
-      for await (const msg of pubRule901) await handleMsg(msg, io, "ruleResponse")
-    })()
-    ;(async () => {
-      for await (const msg of subRule901) await handleMsg(msg, io, "ruleRequest")
-    })()
+    // ;(async () => {
+    //   for await (const msg of pubRule901) await handleMsg(msg, io, "ruleResponse")
+    // })()
+    // ;(async () => {
+    //   for await (const msg of subRule901) await handleMsg(msg, io, "ruleRequest")
+    // })()
     ;(async () => {
       for await (const msg of cms) await handleMsg(msg, io, "tadProc")
     })()
@@ -149,7 +152,7 @@ app.prepare().then(() => {
     })
   })
 
-  server.listen(3001, (err) => {
+  server.listen(port, (err) => {
     if (err) throw err
     console.log(`> Ready on http://localhost:${port}`)
   })
