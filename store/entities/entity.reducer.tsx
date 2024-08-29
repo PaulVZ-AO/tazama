@@ -33,6 +33,25 @@ const EntityReducer = (state: any, action: any) => {
         entities: [],
       }
 
+    case ACTIONS.DELETE_DEBTOR_ENTITY_LOADING:
+      return {
+        ...state,
+        deleteEntityLoading: true,
+        entities: [],
+      }
+    case ACTIONS.DELETE_DEBTOR_ENTITY_SUCCESS:
+      return {
+        ...state,
+        deleteEntityLoading: false,
+        entities: action.payload,
+      }
+    case ACTIONS.DELETE_DEBTOR_ENTITY_FAIL:
+      return {
+        ...state,
+        deleteEntityLoading: false,
+        entities: [],
+      }
+
     case ACTIONS.UPDATE_ENTITY_LOADING:
       return {
         ...state,
@@ -52,24 +71,43 @@ const EntityReducer = (state: any, action: any) => {
         entities: [],
       }
 
-    case ACTIONS.UPDATE_ACCOUNTS_LOADING:
+    case ACTIONS.UPDATE_DEBTOR_ACCOUNT_LOADING:
       return {
         ...state,
-        updateAccountsLoading: true,
+        updateAccountLoading: true,
         entities: [],
       }
-    case ACTIONS.UPDATE_ACCOUNTS_SUCCESS:
+    case ACTIONS.UPDATE_DEBTOR_ACCOUNT_SUCCESS:
       return {
         ...state,
-        updateAccountsLoading: false,
+        updateAccountLoading: false,
         entities: action.payload,
       }
-    case ACTIONS.UPDATE_ACCOUNTS_FAIL:
+    case ACTIONS.UPDATE_DEBTOR_ACCOUNT_FAIL:
       return {
         ...state,
-        updateAccountsLoading: false,
+        updateAccountLoading: false,
         entities: [],
       }
+
+    // case ACTIONS.DELETE_DEBTOR_ACCOUNT_LOADING:
+    //   return {
+    //     ...state,
+    //     deleteAccountLoading: true,
+    //     entities: [],
+    //   }
+    // case ACTIONS.DELETE_DEBTOR_ACCOUNT_SUCCESS:
+    //   return {
+    //     ...state,
+    //     deleteAccountLoading: false,
+    //     entities: action.payload,
+    //   }
+    // case ACTIONS.DELETE_DEBTOR_ACCOUNT_FAIL:
+    //   return {
+    //     ...state,
+    //     deleteAccountLoading: false,
+    //     entities: [],
+    //   }
 
     case ACTIONS.RESET_ENTITY_LOADING:
       return {
@@ -109,42 +147,23 @@ const EntityReducer = (state: any, action: any) => {
         creditorEntities: [],
       }
 
-    case ACTIONS.CREATE_ENTITY_ACCOUNT_LOADING:
+    case ACTIONS.CREATE_DEBTOR_ACCOUNT_LOADING:
       return {
         ...state,
         createAccountLoading: true,
         entities: [],
       }
-    case ACTIONS.CREATE_ENTITY_ACCOUNT_SUCCESS:
+    case ACTIONS.CREATE_DEBTOR_ACCOUNT_SUCCESS:
       return {
         ...state,
         createAccountLoading: false,
         entities: action.payload,
       }
-    case ACTIONS.CREATE_ENTITY_ACCOUNT_FAIL:
+    case ACTIONS.CREATE_DEBTOR_ACCOUNT_FAIL:
       return {
         ...state,
         createAccountLoading: false,
         entities: [],
-      }
-
-    case ACTIONS.UPDATE_CREDITOR_ACCOUNTS_LOADING:
-      return {
-        ...state,
-        updateCreditorAccountsLoading: true,
-        creditorEntities: [],
-      }
-    case ACTIONS.UPDATE_CREDITOR_ACCOUNTS_SUCCESS:
-      return {
-        ...state,
-        updateCreditorAccountsLoading: false,
-        creditorEntities: action.payload,
-      }
-    case ACTIONS.UPDATE_CREDITOR_ACCOUNTS_FAIL:
-      return {
-        ...state,
-        updateCreditorAccountsLoading: false,
-        creditorEntities: [],
       }
 
     case ACTIONS.CREATE_CREDITOR_ENTITY_LOADING:
@@ -185,24 +204,81 @@ const EntityReducer = (state: any, action: any) => {
         creditorEntities: [],
       }
 
-    case ACTIONS.CREATE_CREDITOR_ENTITY_ACCOUNT_LOADING:
+    case ACTIONS.DELETE_CREDITOR_ENTITY_LOADING:
+      return {
+        ...state,
+        deleteCreditorEntityLoading: true,
+        creditorEntities: [],
+      }
+    case ACTIONS.DELETE_CREDITOR_ENTITY_SUCCESS:
+      return {
+        ...state,
+        deleteCreditorEntityLoading: false,
+        creditorEntities: action.payload,
+      }
+    case ACTIONS.DELETE_CREDITOR_ENTITY_FAIL:
+      return {
+        ...state,
+        deleteCreditorEntityLoading: false,
+        creditorEntities: [],
+      }
+
+    case ACTIONS.CREATE_CREDITOR_ACCOUNT_LOADING:
       return {
         ...state,
         createCreditorAccountLoading: true,
         creditorEntities: [],
       }
-    case ACTIONS.CREATE_CREDITOR_ENTITY_ACCOUNT_SUCCESS:
+    case ACTIONS.CREATE_CREDITOR_ACCOUNT_SUCCESS:
       return {
         ...state,
         createCreditorAccountLoading: false,
         creditorEntities: action.payload,
       }
-    case ACTIONS.CREATE_CREDITOR_ENTITY_ACCOUNT_FAIL:
+    case ACTIONS.CREATE_CREDITOR_ACCOUNT_FAIL:
       return {
         ...state,
         createCreditorAccountLoading: false,
         creditorEntities: [],
       }
+
+    case ACTIONS.UPDATE_CREDITOR_ACCOUNT_LOADING:
+      return {
+        ...state,
+        updateCreditorAccountLoading: true,
+        creditorEntities: [],
+      }
+    case ACTIONS.UPDATE_CREDITOR_ACCOUNT_SUCCESS:
+      return {
+        ...state,
+        updateCreditorAccountLoading: false,
+        creditorEntities: action.payload,
+      }
+    case ACTIONS.UPDATE_CREDITOR_ACCOUNT_FAIL:
+      return {
+        ...state,
+        updateCreditorAccountLoading: false,
+        creditorEntities: [],
+      }
+
+    // case ACTIONS.DELETE_CREDITOR_ACCOUNT_LOADING:
+    //   return {
+    //     ...state,
+    //     deleteCreditorAccountLoading: true,
+    //     creditorEntities: [],
+    //   }
+    // case ACTIONS.DELETE_CREDITOR_ACCOUNT_SUCCESS:
+    //   return {
+    //     ...state,
+    //     deleteCreditorAccountLoading: false,
+    //     creditorEntities: action.payload,
+    //   }
+    // case ACTIONS.DELETE_CREDITOR_ACCOUNT_FAIL:
+    //   return {
+    //     ...state,
+    //     deleteCreditorAccountLoading: false,
+    //     creditorEntities: [],
+    //   }
 
     case ACTIONS.SET_DEBTOR_PACS008_LOADING:
       return {
