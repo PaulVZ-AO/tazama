@@ -74,7 +74,9 @@ export const CreditorProfile = ({ ...props }: ProfileProps) => {
   const [isHovered, setIsHovered] = useState(false);
 
   let reverse = ""
-  if (props.reverse) {reverse = "flex-row-reverse text-right"}
+  if (props.reverse) {
+    reverse = "flex-row-reverse text-right"
+  }
 
   const handleDeleteEntity = async () => {
     await entityCtx.selectCreditorEntity(props.index, 0);
@@ -130,27 +132,43 @@ export const CreditorProfile = ({ ...props }: ProfileProps) => {
 
         {/* D6 button */}
         <button
-          onClick={async () => {
-            // Ensure the correct entity is selected
-            props.setSelectedEntity(props.index);
-            if (!props.entity && entityCtx.creditorEntities?.length < 4) {
-              // Create a new entity and select it
-              await entityCtx.createCreditorEntity()
-              await entityCtx.selectCreditorEntity(props.index, 0)
-              await entityCtx.setCreditorPacs008(props.index)
-            } else if (props.entity) {
-              // Reset the selected entity
-              await entityCtx.resetCreditorEntity(props.index)
-              await entityCtx.selectCreditorEntity(props.index, 0)
-            }
-          }}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
-            <path fillRule="evenodd" d="M14.615 1.595a.75.75 0 0 1 .359.852L12.982 9.75h7.268a.75.75 0 0 1 .548 1.262l-10.5 11.25a.75.75 0 0 1-1.272-.71l1.992-7.302H3.75a.75.75 0 0 1-.548-1.262l10.5-11.25a.75.75 0 0 1 .913-.143Z" clipRule="evenodd" />
-          </svg>
+        onClick={async () => {
+          // Ensure the correct entity is selected
+          props.setSelectedEntity(props.index)
+          if (!props.entity && entityCtx.creditorEntities?.length < 4) {
+            // Create a new entity and select it
+            await entityCtx.createCreditorEntity()
+            await entityCtx.selectCreditorEntity(props.index, 0)
+            await entityCtx.setCreditorPacs008(props.index)
+          } else if (props.entity) {
+            // Reset the selected entity
+            await entityCtx.resetCreditorEntity(props.index)
+            await entityCtx.selectCreditorEntity(props.index, 0)
+          }
+        }}
+      >
+        <svg width="27" height="31" viewBox="0 0 847 937" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            className={`
+              ${
+                props.colour === "text-gray-300"
+                  ? "stroke-gray-300"
+                  : props.colour === "text-blue-500"
+                  ? "stroke-blue-500"
+                  : props.colour === "text-green-500"
+                  ? "stroke-green-500"
+                  : props.colour === "text-yellow-400"
+                  ? "stroke-yellow-400"
+                  : props.colour === "text-orange-500"
+                  ? "stroke-orange-500"
+                  : "text-gray-300"
+              }
+            `}
+            d="M430.786 34.8984L34.3731 237.425M430.786 34.8984L815.54 237.425M430.786 34.8984L424.956 237.425M34.3731 237.425V687.485L430.786 901.263M34.3731 237.425L197.602 619.976M34.3731 237.425H424.956M430.786 901.263L815.54 687.485M430.786 901.263L652.311 619.976M430.786 901.263L197.602 619.976M815.54 687.485V237.425M815.54 687.485L652.311 619.976M815.54 237.425L652.311 619.976M815.54 237.425H424.956M11.0547 687.485L197.602 619.976M197.602 619.976H652.311M197.602 619.976L424.956 237.425M652.311 619.976L424.956 237.425"
+            strokeWidth="35.8834"
+          />
+        </svg>
         </button>
-
-
       </div>
 
       {isHovered && (

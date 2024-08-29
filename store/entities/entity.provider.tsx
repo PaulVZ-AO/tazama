@@ -7,8 +7,8 @@ import {
   debtorInitialState,
   pacs002InitialState,
   pacs008InitialState,
-  uiConfigInitialState,
   rulesLightsInitialState,
+  uiConfigInitialState,
 } from "./entity.initialState"
 import {
   CdtrEntity,
@@ -26,17 +26,17 @@ import {
 } from "./entity.interface"
 import EntityReducer from "./entity.reducer"
 import {
+  cloneCreditorAccountToDebtorAccount,
+  cloneCreditorToDebtor,
+  cloneDebtorAccountToCreditorAccount,
+  cloneDebtorToCreditor,
+  createAnCreditorEntity,
+  createAnEntity,
   GenerateBirthDate,
   RandomCellNumber,
   RandomName,
   RandomNumbers,
   RandomSurname,
-  createAnEntity,
-  createAnCreditorEntity,
-  cloneCreditorToDebtor,
-  cloneCreditorAccountToDebtorAccount,
-  cloneDebtorAccountToCreditorAccount,
-  cloneDebtorToCreditor,
 } from "./entity.utils"
 
 interface Props {
@@ -69,6 +69,7 @@ const EntityProvider = ({ children }: Props) => {
     let selectedCreditor: string
     let pacs008: string
     let pacs002: string
+    // let uiConfig: string
 
     entities = localStorage.getItem("DEBTOR_ENTITIES") || "[]"
     creditorEntities = localStorage.getItem("CREDITOR_ENTITIES") || "[]"
@@ -78,6 +79,8 @@ const EntityProvider = ({ children }: Props) => {
 
     pacs008 = localStorage.getItem("PACS008") || ""
     pacs002 = localStorage.getItem("PACS002") || ""
+
+    // uiConfig = localStorage.getItem("UI_CONFIG") || ""
 
     if (JSON.parse(entities) !== "") {
       dispatch({ type: ACTIONS.UPDATE_ENTITY_SUCCESS, payload: JSON.parse(entities) })
@@ -112,15 +115,21 @@ const EntityProvider = ({ children }: Props) => {
       dispatch({ type: ACTIONS.GENERATE_PACS002_SUCCESS, payload: JSON.parse(pacs002) })
       console.log("PACS002 FROM LS: ", JSON.parse(pacs002))
     }
+
+    // if (uiConfig !== "") {
+    //   dispatch({ type: ACTIONS.SET_UI_CONFIG_SUCCESS, payload: JSON.parse(uiConfig) })
+    //   console.log("UI CONFIG FROM LS: ", JSON.parse(uiConfig))
+    // }
   }, [])
 
-  useEffect(() => {
-    console.log("UI CONFIG: ", state.uiConfig)
-    localStorage.setItem("UI_CONFIG", JSON.stringify(state.uiConfig))
-  }, [])
+  // useEffect(() => {
+  //   console.log("UI CONFIG: ", state.uiConfig)
+  //   localStorage.setItem("UI_CONFIG", JSON.stringify(state.uiConfig))
+  // }, [state.uiConfig])
 
   const reset = async () => {
     localStorage.clear()
+   
   }
 
   const setRuleLights = async (rules: any[]) => {
@@ -608,7 +617,8 @@ const EntityProvider = ({ children }: Props) => {
       const mergedCdtrAccounts = currentCdtrAccounts.map((cdtrAccount: any) => {
         return (
           updatedCreditorAccounts.find(
-            (updatedCreditorAccount) => updatedCreditorAccount.CdtrAcct.Id.Othr[0].Id === cdtrAccount.CdtrAcct.Id.Othr[0].Id
+            (updatedCreditorAccount) =>
+              updatedCreditorAccount.CdtrAcct.Id.Othr[0].Id === cdtrAccount.CdtrAcct.Id.Othr[0].Id
           ) || cdtrAccount
         )
       })
@@ -801,7 +811,7 @@ const EntityProvider = ({ children }: Props) => {
       setPacs008.FIToFICstmrCdtTrf.RmtInf.Ustrd = crypto.randomUUID().replaceAll("-", "")
       setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt = RandomNumbers()
       setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.InstdAmt.Amt.Amt =
-      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt
+        setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt
       setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.InstrId = crypto.randomUUID().replaceAll("-", "")
       setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.EndToEndId = crypto.randomUUID().replaceAll("-", "")
 
@@ -818,35 +828,43 @@ const EntityProvider = ({ children }: Props) => {
 
   const updateTransaction = async (updates: Partial<PACS008>) => {
     try {
-      dispatch({ type: ACTIONS.UPDATE_TRANSACTION_LOADING });
-  
-      const updatedPacs008: PACS008 = { ...state.pacs008 };
-  
-      updatedPacs008.FIToFICstmrCdtTrf.GrpHdr.MsgId = crypto.randomUUID().replaceAll("-", "");
-      updatedPacs008.FIToFICstmrCdtTrf.GrpHdr.CreDtTm = new Date().toISOString();
-  
-      updatedPacs008.FIToFICstmrCdtTrf.RmtInf.Ustrd = updates.FIToFICstmrCdtTrf?.RmtInf?.Ustrd || crypto.randomUUID().replaceAll("-", "");
-      updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt = updates.FIToFICstmrCdtTrf?.CdtTrfTxInf?.IntrBkSttlmAmt?.Amt?.Amt || RandomNumbers();
-      updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.InstdAmt.Amt.Amt = updates.FIToFICstmrCdtTrf?.CdtTrfTxInf?.InstdAmt?.Amt?.Amt || updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt;
-      updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.InstrId = updates.FIToFICstmrCdtTrf?.CdtTrfTxInf?.PmtId?.InstrId || crypto.randomUUID().replaceAll("-", "");
-      updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.EndToEndId = updates.FIToFICstmrCdtTrf?.CdtTrfTxInf?.PmtId?.EndToEndId || crypto.randomUUID().replaceAll("-", "");
-      updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.Purp.Cd = updates.FIToFICstmrCdtTrf?.CdtTrfTxInf?.Purp?.Cd || "";
-      updatedPacs008.FIToFICstmrCdtTrf.SplmtryData.Envlp.Doc.InitgPty.Glctn.Lat = updates.FIToFICstmrCdtTrf?.SplmtryData?.Envlp?.Doc?.InitgPty?.Glctn?.Lat || "";
-      updatedPacs008.FIToFICstmrCdtTrf.SplmtryData.Envlp.Doc.InitgPty.Glctn.Long = updates.FIToFICstmrCdtTrf?.SplmtryData?.Envlp?.Doc?.InitgPty?.Glctn?.Long || "";
-  
-      await buildPacs002();
-  
-      dispatch({ type: ACTIONS.UPDATE_TRANSACTION_SUCCESS, payload: updatedPacs008 });
-  
-      localStorage.setItem("PACS008", JSON.stringify(updatedPacs008));
-  
-      console.log("PACS008 UPDATED: ", updatedPacs008);
+      dispatch({ type: ACTIONS.UPDATE_TRANSACTION_LOADING })
+
+      const updatedPacs008: PACS008 = { ...state.pacs008 }
+
+      updatedPacs008.FIToFICstmrCdtTrf.GrpHdr.MsgId = crypto.randomUUID().replaceAll("-", "")
+      updatedPacs008.FIToFICstmrCdtTrf.GrpHdr.CreDtTm = new Date().toISOString()
+
+      updatedPacs008.FIToFICstmrCdtTrf.RmtInf.Ustrd =
+        updates.FIToFICstmrCdtTrf?.RmtInf?.Ustrd || crypto.randomUUID().replaceAll("-", "")
+      updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt =
+        updates.FIToFICstmrCdtTrf?.CdtTrfTxInf?.IntrBkSttlmAmt?.Amt?.Amt || RandomNumbers()
+      updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.InstdAmt.Amt.Amt =
+        updates.FIToFICstmrCdtTrf?.CdtTrfTxInf?.InstdAmt?.Amt?.Amt ||
+        updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt
+      updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.InstrId =
+        updates.FIToFICstmrCdtTrf?.CdtTrfTxInf?.PmtId?.InstrId || crypto.randomUUID().replaceAll("-", "")
+      updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.EndToEndId =
+        updates.FIToFICstmrCdtTrf?.CdtTrfTxInf?.PmtId?.EndToEndId || crypto.randomUUID().replaceAll("-", "")
+      updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.Purp.Cd = updates.FIToFICstmrCdtTrf?.CdtTrfTxInf?.Purp?.Cd || ""
+      updatedPacs008.FIToFICstmrCdtTrf.SplmtryData.Envlp.Doc.InitgPty.Glctn.Lat =
+        updates.FIToFICstmrCdtTrf?.SplmtryData?.Envlp?.Doc?.InitgPty?.Glctn?.Lat || ""
+      updatedPacs008.FIToFICstmrCdtTrf.SplmtryData.Envlp.Doc.InitgPty.Glctn.Long =
+        updates.FIToFICstmrCdtTrf?.SplmtryData?.Envlp?.Doc?.InitgPty?.Glctn?.Long || ""
+
+      await buildPacs002()
+
+      dispatch({ type: ACTIONS.UPDATE_TRANSACTION_SUCCESS, payload: updatedPacs008 })
+
+      localStorage.setItem("PACS008", JSON.stringify(updatedPacs008))
+
+      console.log("PACS008 UPDATED: ", updatedPacs008)
     } catch (error) {
-      dispatch({ type: ACTIONS.UPDATE_TRANSACTION_FAIL });
-      console.log("ERROR UPDATING TRANSACTION PACS008: ", error);
+      dispatch({ type: ACTIONS.UPDATE_TRANSACTION_FAIL })
+      console.log("ERROR UPDATING TRANSACTION PACS008: ", error)
     }
-  };
-  
+  }
+
   const resetEntity = async (entityIndex: number) => {
     try {
       dispatch({ type: ACTIONS.RESET_ENTITY_LOADING })
@@ -896,18 +914,16 @@ const EntityProvider = ({ children }: Props) => {
       const newEntity = cloneDebtorToCreditor(entity)
       const newAccount = cloneDebtorAccountToCreditorAccount(account)
 
-
       const payload: CdtrEntity = {
         CreditorEntity: newEntity,
-        CreditorAccounts: [newAccount],
+        CreditorAccounts: newAccount,
       }
 
       let entitiesList: Array<CdtrEntity> = state.creditorEntities
 
-      if (state.creditorEntities.length < 4){
+      if (state.creditorEntities.length < 4) {
         entitiesList.push(payload)
       }
-
 
       dispatch({ type: ACTIONS.CLONE_ENTITY_SUCCESS, payload: [...entitiesList] })
       localStorage.setItem("CREDITOR_ENTITIES", JSON.stringify(state.creditorEntities))
@@ -923,21 +939,35 @@ const EntityProvider = ({ children }: Props) => {
       const newEntity = cloneCreditorToDebtor(entity)
       const newAccount = cloneCreditorAccountToDebtorAccount(account)
 
+      console.log(newAccount, "<====")
+
       const payload: Entity = {
         Entity: newEntity,
-        Accounts: [newAccount],
+        Accounts: newAccount,
       }
 
-        let entitiesList: Array<Entity> = state.entities
+      let entitiesList: Array<Entity> = state.entities
 
-        if (state.entities.length < 4){
-          entitiesList.push(payload)
-        }
+      if (state.entities.length < 4) {
+        entitiesList.push(payload)
+      }
 
       dispatch({ type: ACTIONS.CLONE_CREDITOR_ENTITY_SUCCESS, payload: [...entitiesList] })
       localStorage.setItem("DEBTOR_ENTITIES", JSON.stringify(state.entities))
     } catch (error) {
       dispatch({ type: ACTIONS.CLONE_CREDITOR_ENTITY_FAIL })
+    }
+  }
+
+  const setUiConfig = async (uiConfig: UIConfiguration) => {
+    try {
+      dispatch({ type: ACTIONS.SET_UI_CONFIG_LOADING })
+
+      dispatch({ type: ACTIONS.SET_UI_CONFIG_SUCCESS, payload: uiConfig })
+
+      localStorage.setItem("UI_CONFIG", JSON.stringify(uiConfig))
+    } catch (error) {
+      dispatch({ type: ACTIONS.SET_UI_CONFIG_FAIL })
     }
   }
 
@@ -960,6 +990,7 @@ const EntityProvider = ({ children }: Props) => {
         resetCreditorEntityLoading: state.resetCreditorEntityLoading,
         cloneEntityLoading: state.cloneEntityLoading,
         cloneCreditorEntityLoading: state.cloneCreditorEntityLoading,
+        setUiConfigLoading: state.setUiConfigLoading,
         pacs008Loading: state.pacs008Loading,
         pacs002Loading: state.pacs002Loading,
         creditorEntities: state.creditorEntities,
@@ -997,6 +1028,7 @@ const EntityProvider = ({ children }: Props) => {
         resetCreditorEntity,
         cloneEntity,
         cloneCreditorEntity,
+        setUiConfig,
       }}
     >
       {children}
