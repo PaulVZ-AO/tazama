@@ -406,45 +406,45 @@ const EntityProvider = ({ children }: Props) => {
     }
   }
 
-  const deleteAccount = async (entityIndex: number) => {
-    try {
-      dispatch({ type: ACTIONS.DELETE_DEBTOR_ACCOUNT_LOADING });
+  // const deleteAccount = async (entityIndex: number) => {
+  //   try {
+  //     dispatch({ type: ACTIONS.DELETE_DEBTOR_ACCOUNT_LOADING });
   
-      // Retrieve the list of accounts for the specified entity
-      let accountsList: Array<DebtorAccount> = state.entities[entityIndex].Accounts;
+  //     // Retrieve the list of accounts for the specified entity
+  //     let accountsList: Array<DebtorAccount> = state.entities[entityIndex].Accounts;
   
-      // Proceed if there are accounts to delete
-      if (accountsList.length > 0) {
-        // Remove the last account from the list
-        accountsList.pop();
+  //     // Proceed if there are accounts to delete
+  //     if (accountsList.length > 0) {
+  //       // Remove the last account from the list
+  //       accountsList.pop();
   
-        if (accountsList.length === 0) {
-          // If all accounts are deleted, call deleteEntity to remove the entire entity
-          await deleteEntity(entityIndex);
-        } else {
-          // Update the entity's account list after deletion
-          let updatedEntityAccounts: Entity = {
-            Entity: state.entities[entityIndex]?.Entity,
-            Accounts: accountsList,
-          };
+  //       if (accountsList.length === 0) {
+  //         // If all accounts are deleted, call deleteEntity to remove the entire entity
+  //         await deleteEntity(entityIndex);
+  //       } else {
+  //         // Update the entity's account list after deletion
+  //         let updatedEntityAccounts: Entity = {
+  //           Entity: state.entities[entityIndex]?.Entity,
+  //           Accounts: accountsList,
+  //         };
   
-          // Update the entities list with the modified entity
-          let entitiesList: Array<Entity> = [...state.entities];
-          entitiesList[entityIndex] = updatedEntityAccounts;
+  //         // Update the entities list with the modified entity
+  //         let entitiesList: Array<Entity> = [...state.entities];
+  //         entitiesList[entityIndex] = updatedEntityAccounts;
   
-          // Dispatch success action with the updated entities list
-          dispatch({ type: ACTIONS.DELETE_DEBTOR_ACCOUNT_SUCCESS, payload: entitiesList });
+  //         // Dispatch success action with the updated entities list
+  //         dispatch({ type: ACTIONS.DELETE_DEBTOR_ACCOUNT_SUCCESS, payload: entitiesList });
   
-          // Persist the updated entities list to localStorage
-          localStorage.setItem("DEBTOR_ENTITIES", JSON.stringify(entitiesList));
-        }
-      }
+  //         // Persist the updated entities list to localStorage
+  //         localStorage.setItem("DEBTOR_ENTITIES", JSON.stringify(entitiesList));
+  //       }
+  //     }
   
-    } catch (error) {
-      // Dispatch failure action if an error occurs
-      dispatch({ type: ACTIONS.DELETE_DEBTOR_ACCOUNT_FAIL });
-    }
-  };
+  //   } catch (error) {
+  //     // Dispatch failure action if an error occurs
+  //     dispatch({ type: ACTIONS.DELETE_DEBTOR_ACCOUNT_FAIL });
+  //   }
+  // };
   
   const createCreditorEntity = async () => {
     try {
@@ -630,38 +630,38 @@ const EntityProvider = ({ children }: Props) => {
     }
   }
 
-  const deleteCreditorAccount = async (entityIndex: number) => {
-    try {
-      dispatch({ type: ACTIONS.DELETE_CREDITOR_ACCOUNT_LOADING });
+  // const deleteCreditorAccount = async (entityIndex: number) => {
+  //   try {
+  //     dispatch({ type: ACTIONS.DELETE_CREDITOR_ACCOUNT_LOADING });
   
-      let accountsList: Array<CreditorAccount> = state.creditorEntities[entityIndex].CreditorAccounts;
+  //     let accountsList: Array<CreditorAccount> = state.creditorEntities[entityIndex].CreditorAccounts;
   
-      if (accountsList.length > 0) {
-        accountsList.pop();
+  //     if (accountsList.length > 0) {
+  //       accountsList.pop();
   
-        if (accountsList.length === 0) {
-          await deleteCreditorEntity(entityIndex);
-        } else {
+  //       if (accountsList.length === 0) {
+  //         await deleteCreditorEntity(entityIndex);
+  //       } else {
 
-          let updatedEntityAccounts: CdtrEntity = {
-            CreditorEntity: state.creditorEntities[entityIndex]?.CreditorEntity,
-            CreditorAccounts: accountsList,
-          };
+  //         let updatedEntityAccounts: CdtrEntity = {
+  //           CreditorEntity: state.creditorEntities[entityIndex]?.CreditorEntity,
+  //           CreditorAccounts: accountsList,
+  //         };
 
-          let entitiesList: Array<CdtrEntity> = [...state.creditorEntities];
-          entitiesList[entityIndex] = updatedEntityAccounts;
+  //         let entitiesList: Array<CdtrEntity> = [...state.creditorEntities];
+  //         entitiesList[entityIndex] = updatedEntityAccounts;
 
-          dispatch({ type: ACTIONS.DELETE_CREDITOR_ACCOUNT_SUCCESS, payload: entitiesList });
+  //         dispatch({ type: ACTIONS.DELETE_CREDITOR_ACCOUNT_SUCCESS, payload: entitiesList });
 
-          localStorage.setItem("CREDITOR_ENTITIES", JSON.stringify(entitiesList));
-        }
-      }
+  //         localStorage.setItem("CREDITOR_ENTITIES", JSON.stringify(entitiesList));
+  //       }
+  //     }
   
-    } catch (error) {
-      // Dispatch failure action if an error occurs
-      dispatch({ type: ACTIONS.DELETE_CREDITOR_ACCOUNT_FAIL });
-    }
-  };
+  //   } catch (error) {
+  //     // Dispatch failure action if an error occurs
+  //     dispatch({ type: ACTIONS.DELETE_CREDITOR_ACCOUNT_FAIL });
+  //   }
+  // };
 
   const setDebtorPacs008 = async (entityIndex: number) => {
     try {
@@ -952,10 +952,10 @@ const EntityProvider = ({ children }: Props) => {
         deleteCreditorEntityLoading: state.deleteCreditorEntityLoading,
         createAccountLoading: state.createAccountLoading,
         updateAccountLoading: state.updateAccountLoading,
-        deleteAccountLoading: state.deleteAccountLoading,
+        // deleteAccountLoading: state.deleteAccountLoading,
         createCreditorAccountLoading: state.createCreditorAccountLoading,
         updateCreditorAccountLoading: state.updateCreditorAccountLoading,
-        deleteCreditorAccountLoading: state.deleteCreditorAccountLoading,
+        // deleteCreditorAccountLoading: state.deleteCreditorAccountLoading,
         resetEntityLoading: state.resetEntityLoading,
         resetCreditorEntityLoading: state.resetCreditorEntityLoading,
         cloneEntityLoading: state.cloneEntityLoading,
@@ -980,10 +980,10 @@ const EntityProvider = ({ children }: Props) => {
         createCreditorEntity,
         updateCreditorEntity,
         deleteCreditorEntity,
-        deleteAccount,
+        // deleteAccount,
         createCreditorEntityAccount,
         updateCreditorAccount,
-        deleteCreditorAccount,
+        // deleteCreditorAccount,
         setDebtorPacs008,
         setDebtorAccountPacs008,
         setCreditorPacs008,
