@@ -7,8 +7,8 @@ import {
   debtorInitialState,
   pacs002InitialState,
   pacs008InitialState,
-  uiConfigInitialState,
   rulesLightsInitialState,
+  uiConfigInitialState,
 } from "./entity.initialState"
 import {
   CdtrEntity,
@@ -26,17 +26,17 @@ import {
 } from "./entity.interface"
 import EntityReducer from "./entity.reducer"
 import {
+  cloneCreditorAccountToDebtorAccount,
+  cloneCreditorToDebtor,
+  cloneDebtorAccountToCreditorAccount,
+  cloneDebtorToCreditor,
+  createAnCreditorEntity,
+  createAnEntity,
   GenerateBirthDate,
   RandomCellNumber,
   RandomName,
   RandomNumbers,
   RandomSurname,
-  createAnEntity,
-  createAnCreditorEntity,
-  cloneCreditorToDebtor,
-  cloneCreditorAccountToDebtorAccount,
-  cloneDebtorAccountToCreditorAccount,
-  cloneDebtorToCreditor,
 } from "./entity.utils"
 
 interface Props {

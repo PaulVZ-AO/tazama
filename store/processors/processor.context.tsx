@@ -1,6 +1,6 @@
 import { createContext } from "react"
-import { ruleInitialState, defaultTadProcLights, defaultEDLights } from "./processor.initialState"
-import { EDLightsManager, Rule, TadProcLightsManager, Typology } from "./processor.interface"
+import { defaultEDLights, defaultTadProcLights, ruleInitialState } from "./processor.initialState"
+import { EDLightsManager, Rule, TADPROC, Typology } from "./processor.interface"
 
 interface Context {
   rulesLoading: boolean
@@ -10,14 +10,15 @@ interface Context {
   typologies: Typology[]
   edLights: EDLightsManager
   rules: Rule[]
-  tadpLights: TadProcLightsManager
+  tadpLights: TADPROC
   createRules: () => void
   createTypologies: () => void
   updateRules: (rules: Rule[]) => void
   updateTypologies: (typologies: Typology[]) => void
-  updateTadpLights: (data: TadProcLightsManager) => void
+  updateTadpLights: (data: TADPROC) => void
   updateEDLights: (data: EDLightsManager) => void
   resetAllLights: () => void
+  getUIConfig: () => void
 }
 
 const ProcessorContext = createContext<Context>({
@@ -36,6 +37,7 @@ const ProcessorContext = createContext<Context>({
   updateEDLights: (data: EDLightsManager) => {},
   updateTadpLights: () => {},
   resetAllLights: () => {},
+  getUIConfig: () => {},
 })
 
 export default ProcessorContext
