@@ -443,7 +443,7 @@ const Web = () => {
         <div className="grid grid-cols-12 gap-5">
           {/* Debtors */}
           <div className="col-span-2">
-            <div className="flex flex-wrap flex-col justify-center rounded-lg py-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
+            <div className="flex flex-col flex-wrap justify-center rounded-lg py-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
               <div className="mb-5 text-center text-xl">Debtors</div>
               <Droppable droppableId="debtorProfiles">
                 {(provided: any) => (
@@ -571,7 +571,7 @@ const Web = () => {
 
           {/* Creditors */}
           <div className="col-span-2">
-            <div className="flex flex-wrap flex-col justify-center rounded-lg py-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
+            <div className="flex flex-col flex-wrap justify-center rounded-lg py-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
               <div className="mb-5 text-center text-xl">Creditors</div>
               <Droppable droppableId="creditorProfiles">
                 {(provided: any) => (
@@ -675,8 +675,15 @@ const Web = () => {
               Event director
             </h2>
 
-            <div className="flex min-h-80 items-center justify-center">
+            <div className="relative flex min-h-80 items-center justify-center">
               <StatusIndicator large={true} colour={procCtx.edLights.ED.color} />
+              {procCtx.edLights.ED.error !== "" && (
+                <div className="absolute bottom-16 flex items-center justify-center text-center">
+                  <p className="mb-5 w-3/4 rounded-lg bg-gradient-to-r from-gray-100 to-gray-200 p-2 text-center text-xs uppercase shadow-lg">
+                    {procCtx.edLights.ED.error}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 

@@ -32,14 +32,7 @@ const updatePackageFile = async () => {
       let newLine
       let oldVersion = line.split(" ")
       oldVersion = oldVersion[oldVersion.length - 1]
-      let tmpVersion = oldVersion.split('"')
-      // tmpVersion.forEach((item) => {
-      //   if (item.includes(".")) {
-      //     newLine = line.replace(item, `${parseInt(item) + 1}`)
-      //   } else {
-      //     newLine = line
-      //   }
-      // })
+
       let currentVersion = oldVersion.split('"')[1].split(".")
 
       const newVersion = []

@@ -137,7 +137,7 @@ export function DebtorDevice(props: DebtorProps) {
       console.log("Test POST PACS008 response: ", response.data)
     } catch (error: any) {
       const errMsg: any = JSON.parse(error.response.data.split("\n").slice(1).join("\n"))
-      console.log("PACS008 ERROR: ")
+      console.log("PACS008 ERROR: ", errMsg.code, errMsg.errorMessage.split("-")[0].trim())
       let data: any = {
         pacs008: props.lights.ED.pacs008,
         pacs002: false,
