@@ -1,7 +1,7 @@
 services:
   app:
     container_name: tazama-demo
-    image: ruhfuskdev/tazama-demo:v1.0.2
+    image: ruhfuskdev/tazama-demo:v1.0.3
     build:
       context: ./
       target: dev
