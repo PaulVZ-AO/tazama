@@ -366,7 +366,6 @@ export interface UIConfiguration {
   arangoDBHosting: string
   dbUser: string
   dbPassword: string
-  dbName: string
 }
 
 export interface UIConfigs {

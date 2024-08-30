@@ -1,14 +1,13 @@
 import { PACS002, PACS008, SelectedCreditor, SelectedDebtor, UIConfiguration } from "./entity.interface"
 
-const TMS_SERVER_URL = process.env.NEXT_PUBLIC_TMS_SERVER_URL || "http://localhost:5000"
+const TMS_SERVER_URL = process.env.NEXT_PUBLIC_TMS_SERVER_URL || "http://localhost:5001"
 const TMS_KEY = process.env.NEXT_PUBLIC_TMS_KEY || "no key set"
-const CMS_NATS_HOSTING = process.env.NEXT_PUBLIC_CMS_NATS_HOSTING || "nats://localhost:4222"
+const CMS_NATS_HOSTING = process.env.NEXT_PUBLIC_CMS_NATS_HOSTING || "nats://localhost:14222"
 const NATS_USERNAME = process.env.NEXT_PUBLIC_NATS_USERNAME || "nats_username"
 const NATS_PASSWORD = process.env.NEXT_PUBLIC_NATS_PASSWORD || "nats_password"
-const ARANGO_DB_HOSTING = process.env.NEXT_PUBLIC_ARANGO_DB_HOSTING || "http://localhost:8529"
+const ARANGO_DB_HOSTING = process.env.NEXT_PUBLIC_ARANGO_DB_HOSTING || "http://localhost:18529"
 const DB_USER = process.env.NEXT_PUBLIC_DB_USER || "root"
 const DB_PASSWORD = process.env.NEXT_PUBLIC_DB_PASSWORD || "root_password"
-const DB_NAME = process.env.NEXT_PUBLIC_DB_NAME || "tms_db"
 
 export const creditorInitialState: SelectedCreditor = {
   creditorSelectedIndex: undefined,
@@ -230,7 +229,6 @@ export const uiConfigInitialState: UIConfiguration = {
   arangoDBHosting: ARANGO_DB_HOSTING,
   dbUser: DB_USER,
   dbPassword: DB_PASSWORD,
-  dbName: DB_NAME,
 }
 
 export const rulesLightsInitialState = []

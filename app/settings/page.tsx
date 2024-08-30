@@ -224,25 +224,6 @@ const Settings = () => {
               />
             </div>
           </div>
-          <div className="col-span-full">
-            <label htmlFor="argo_db">Data Base Name</label>
-            <div className="my-2">
-              <input
-                id="tms_key"
-                type="text"
-                className="w-full rounded-lg p-2"
-                value={config?.dbName || ""}
-                onChange={(e) => {
-                  if (config !== undefined) {
-                    setConfig({
-                      ...config,
-                      dbName: e.target.value,
-                    })
-                  }
-                }}
-              />
-            </div>
-          </div>
         </div>
 
         <div className="col-span-4"></div>

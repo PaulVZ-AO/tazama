@@ -1,14 +1,14 @@
-import { config } from "./../middleware"
 import {
-  RuleResult,
+  DBConfig,
+  Rule,
   RuleBand,
+  RuleConfig,
+  RuleResult,
+  TADPROC,
   TADPROC_RESULT,
   Typology,
-  RuleConfig,
-  TADPROC,
-  Rule,
-  DBConfig,
 } from "store/processors/processor.interface"
+import { config } from "./../middleware"
 
 const { Database, aql } = require("arangojs")
 require("dotenv").config()
