@@ -69,7 +69,7 @@ const EntityProvider = ({ children }: Props) => {
     let selectedCreditor: string
     let pacs008: string
     let pacs002: string
-    // let uiConfig: string
+
 
     entities = localStorage.getItem("DEBTOR_ENTITIES") || "[]"
     creditorEntities = localStorage.getItem("CREDITOR_ENTITIES") || "[]"
@@ -80,7 +80,7 @@ const EntityProvider = ({ children }: Props) => {
     pacs008 = localStorage.getItem("PACS008") || ""
     pacs002 = localStorage.getItem("PACS002") || ""
 
-    // uiConfig = localStorage.getItem("UI_CONFIG") || ""
+
 
     if (JSON.parse(entities) !== "") {
       dispatch({ type: ACTIONS.UPDATE_ENTITY_SUCCESS, payload: JSON.parse(entities) })
@@ -116,16 +116,8 @@ const EntityProvider = ({ children }: Props) => {
       console.log("PACS002 FROM LS: ", JSON.parse(pacs002))
     }
 
-    // if (uiConfig !== "") {
-    //   dispatch({ type: ACTIONS.SET_UI_CONFIG_SUCCESS, payload: JSON.parse(uiConfig) })
-    //   console.log("UI CONFIG FROM LS: ", JSON.parse(uiConfig))
-    // }
   }, [])
 
-  // useEffect(() => {
-  //   console.log("UI CONFIG: ", state.uiConfig)
-  //   localStorage.setItem("UI_CONFIG", JSON.stringify(state.uiConfig))
-  // }, [state.uiConfig])
 
   const reset = async () => {
     localStorage.clear()
