@@ -300,42 +300,14 @@ const Web = () => {
   }, [entityCtx.selectedCreditorEntity.creditorSelectedIndex])
 
   useEffect(() => {
-    // axios
-    //   .get("api/configs")
-    //   .then((response) => {
-    //     console.log(response)
-    //     setDescriptions(response.data.rules[0].config.bands)
-    //     setLoading(false)
-    //   })
-    //   .catch((error) => {
-    //     setError(error)
-    //     setLoading(false)
-    //   })
     setLoading(false)
   }, [])
-
-  // const fetchResult = async (transactionID: string) => {
-  //   const result = await getTADPROCResult(transactionID)
-  //   return result
-  // }
 
   useEffect(() => {
     console.log("RULE DESCRIPTIONS: ", descriptions)
     setLoading(false)
   }, [descriptions])
 
-  // useEffect(() => {
-  //   axios
-  //     .get("api/typologies")
-  //     .then((response) => {
-  //       setTypes(response.data.types.type)
-  //       setLoading(false)
-  //     })
-  //     .catch((error) => {
-  //       setError(error)
-  //       setLoading(false)
-  //     })
-  // }, [])
   useEffect(() => {
     console.log("SELECTED ENTITY: ", selectedEntity)
   }, [selectedEntity])
@@ -374,7 +346,6 @@ const Web = () => {
       const exists = entityCtx.creditorEntities.some(
         (element: CdtrEntity) => element.CreditorEntity.Cdtr.Nm === clonedEntity?.Entity?.Dbtr?.Nm
       )
-      console.log(exists)
       if (!exists) {
         entityCtx.cloneEntity(clonedEntity?.Entity, clonedEntity?.Accounts)
         entityCtx.selectCreditorEntity(destination.index, 0)
@@ -406,8 +377,6 @@ const Web = () => {
       }
       return
     }
-
-    console.log("Dropped from", source.droppableId, "to", destination.droppableId)
   }
 
   const iconColour = (index: number) => {
@@ -416,29 +385,24 @@ const Web = () => {
     switch (index) {
       case 0: {
         return (fillColour = "text-blue-500")
-        break
       }
       case 1: {
         return (fillColour = "text-green-500")
-        break
       }
       case 2: {
         return (fillColour = "text-yellow-400")
-        break
       }
       case 3: {
         return (fillColour = "text-orange-500")
-        break
       }
       default: {
         return (fillColour = "text-blue-500")
-        break
       }
     }
   }
 
   return (
-    <div className="bg-slate-300/25 px-5 pt-10">
+    <div className="min-h-screen bg-slate-300/25 px-5 pt-10">
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="grid grid-cols-12 gap-5">
           {/* Debtors */}
@@ -470,7 +434,7 @@ const Web = () => {
                       </Draggable>
 
                       <Draggable key={`debtor-1`} draggableId={`debtor-1`} index={1}>
-                        {(provided: any, snapshot: any) => (
+                        {(provided: any) => (
                           <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                             <Profile
                               colour={!entityCtx.entities[1] ? "text-gray-300" : iconColour(1)}
@@ -489,7 +453,6 @@ const Web = () => {
                         )}
                       </Draggable>
 
-                      {/* Repeat for other slots as needed */}
                       <Draggable key={`debtor-2`} draggableId={`debtor-2`} index={2}>
                         {(provided: any) => (
                           <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
@@ -530,7 +493,6 @@ const Web = () => {
                         )}
                       </Draggable>
                     </>
-                    {provided.placeholder}
                   </div>
                 )}
               </Droppable>
@@ -660,7 +622,6 @@ const Web = () => {
                         )}
                       </Draggable>
                     </>
-                    {provided.placeholder}
                   </div>
                 )}
               </Droppable>
