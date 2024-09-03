@@ -70,7 +70,6 @@ const EntityProvider = ({ children }: Props) => {
     let selectedCreditor: string
     let pacs008: string
     let pacs002: string
-    // let uiConfig: string
 
     entities = localStorage.getItem("DEBTOR_ENTITIES") || "[]"
     creditorEntities = localStorage.getItem("CREDITOR_ENTITIES") || "[]"
@@ -80,8 +79,6 @@ const EntityProvider = ({ children }: Props) => {
 
     pacs008 = localStorage.getItem("PACS008") || ""
     pacs002 = localStorage.getItem("PACS002") || ""
-
-    // uiConfig = localStorage.getItem("UI_CONFIG") || ""
 
     if (JSON.parse(entities) !== "") {
       dispatch({ type: ACTIONS.UPDATE_ENTITY_SUCCESS, payload: JSON.parse(entities) })

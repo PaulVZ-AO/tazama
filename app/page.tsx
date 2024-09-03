@@ -359,29 +359,24 @@ const Web = () => {
     switch (index) {
       case 0: {
         return (fillColour = "text-blue-500")
-        break
       }
       case 1: {
         return (fillColour = "text-green-500")
-        break
       }
       case 2: {
         return (fillColour = "text-yellow-400")
-        break
       }
       case 3: {
         return (fillColour = "text-orange-500")
-        break
       }
       default: {
         return (fillColour = "text-blue-500")
-        break
       }
     }
   }
 
   return (
-    <div className="bg-slate-300/25 px-5 pt-10">
+    <div className="min-h-screen bg-slate-300/25 px-5 pt-10">
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="grid grid-cols-12 gap-5">
           {/* Debtors */}
@@ -413,7 +408,7 @@ const Web = () => {
                       </Draggable>
 
                       <Draggable key={`debtor-1`} draggableId={`debtor-1`} index={1}>
-                        {(provided: any, snapshot: any) => (
+                        {(provided: any) => (
                           <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                             <Profile
                               colour={!entityCtx.entities[1] ? "text-gray-300" : iconColour(1)}
@@ -432,7 +427,6 @@ const Web = () => {
                         )}
                       </Draggable>
 
-                      {/* Repeat for other slots as needed */}
                       <Draggable key={`debtor-2`} draggableId={`debtor-2`} index={2}>
                         {(provided: any) => (
                           <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
@@ -473,7 +467,6 @@ const Web = () => {
                         )}
                       </Draggable>
                     </>
-                    {provided.placeholder}
                   </div>
                 )}
               </Droppable>
@@ -602,7 +595,6 @@ const Web = () => {
                         )}
                       </Draggable>
                     </>
-                    {provided.placeholder}
                   </div>
                 )}
               </Droppable>

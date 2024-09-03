@@ -7,6 +7,7 @@ import { UIConfiguration } from "store/entities/entity.interface"
 import ResetModal from "./ResetModal"
 import ConfigModal from "./ConfigModal"
 import { uiConfigInitialState } from "store/entities/entity.initialState"
+import Image from "next/image"
 
 const Settings = () => {
   const entityCtx: any = useContext(EntityContext)
@@ -54,7 +55,7 @@ const Settings = () => {
   }
 
   return (
-    <div className="bg-slate-300/25 p-10">
+    <div className=" bg-slate-300/25 p-10" style={{ minHeight: `calc(100vh - 81px)` }}>
       <div className="grid grid-cols-12 gap-5">
         <div className="col-span-4"></div>
         <div className="col-span-4">
@@ -79,13 +80,6 @@ const Settings = () => {
               />
             </div>
           </div>
-
-          {/* <div className="col-span-full">
-            <label htmlFor="tms_key">Key / Token</label>
-            <div className="my-2">
-              <input id="tms_key" type="text" className="w-full rounded-lg p-2" placeholder={config?.tmsKey} />
-            </div>
-          </div> */}
 
           <div className="col-span-full">
             <hr className="mb-2 border-black" />
@@ -264,34 +258,14 @@ const Settings = () => {
           </button>
         </div>
       </div>
-      <Link href={"https://weareao.group/"} target="_blank">
-        <div className="absolute bottom-[2%] flex flex-row items-center justify-center">
-          <p className="text-xs">Powered by:</p>
-          <svg version="1.1" viewBox="0 0 2048 1637" width="80" height="80" xmlns="http://www.w3.org/2000/svg">
-            <path transform="translate(0)" d="m0 0h2048v1637h-2048z" fill="none" />
-            <path
-              transform="translate(1290,498)"
-              d="m0 0h33l32 3 30 5 20 5 31 11 25 12 15 8 17 11 19 14 14 12 10 9 15 14 7 8 12 13 15 20 14 21 9 16 8 16 10 23 8 25 6 27 4 25 2 24v31l-2 24-5 31-7 29-6 16h-135l1-4 12-23 10-28 5-22 2-15 1-15v-19l-2-22-5-25-9-26-9-19-11-18-10-13-12-14-10-10-11-9-10-8-15-10-20-11-26-10-19-5-20-3-14-1h-22l-23 2-20 4-20 6-15 6-21 11-12 8-14 11-10 9-11 10-7 8-11 14-11 17-10 19-8 21-5 19-4 23-1 10v34l4 28 6 23 8 21 10 20 2 3v3l-132 1-3-4-9-31-5-25-3-25-1-20v-28l3-34 4-23 10-36 10-25 11-23 13-22 13-18 11-14 12-14 30-30 11-9 14-11 17-12 19-11 26-13 30-11 22-6 34-6z"
-              fill="#00000030"
-            />
-            <path
-              transform="translate(681,500)"
-              d="m0 0 3 1 225 450v2l-2 1h-131l-4-4-14-28-10-21-10-19-9-19-10-19-8-17-8-16-11-23-8-16v-2l-5 5-52 104-9 17-11 23-39 78-9 17-11 23-14 28-10 19-27 54-17 33-1 1h-133l1-5 333-666z"
-              fill="#00000030"
-            />
-            <path
-              transform="translate(1052,1051)"
-              d="m0 0h513l-1 4-14 15-15 15-8 7-14 12-18 13-17 11-24 13-28 12-25 8-25 6-24 4-22 2h-42l-31-3-26-5-26-7-25-9-26-12-24-14-16-11-14-11-13-11-13-12-23-23z"
-              fill="#00000060"
-            />
-            <path
-              transform="translate(953,1051)"
-              d="m0 0 6 2 6 10 28 56 9 17 8 16 9 17v3l-8 1h-125l-4-4-8-15-11-23-34-68-4-10 1-1z"
-              fill="#00000060"
-            />
-          </svg>
-        </div>
-      </Link>
+
+      <div className=" mt-5 flex h-full  justify-start gap-2 opacity-70">
+        <span style={{ textShadow: "1px 1px white" }}> Powered by</span>
+
+        <Link href="https://weareao.group/" rel="noopener noreferrer" target="_blank">
+          <Image src="/image.png" alt="AO logo" width={45} height={45} className=" grayscale" />
+        </Link>
+      </div>
 
       <ResetModal show={showModal} onClose={() => setShowModal(false)} onConfirm={handleReset} />
       <ConfigModal
