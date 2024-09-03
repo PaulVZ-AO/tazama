@@ -8,7 +8,6 @@ import {
   TADPROC_RESULT,
   Typology,
 } from "store/processors/processor.interface"
-import { config } from "./../middleware"
 
 const { Database, aql } = require("arangojs")
 require("dotenv").config()
@@ -16,13 +15,6 @@ require("dotenv").config()
 // PASS ALL .ENV VARIABLES INTO THE FUNCTIONS FROM THE FE THAT COMES FROM THE LOCAL STORAGE
 
 const getConfigConnection = (config: DBConfig) => {
-  // establish database connection
-  // return new Database({
-  //   url: process.env.NEXT_PUBLIC_ARANGO_DB_HOSTING,
-  //   databaseName: "configuration",
-  //   auth: { username: process.env.NEXT_PUBLIC_DB_USER, password: process.env.NEXT_PUBLIC_DB_PASSWORD },
-  // })
-  console.log("-------------> config: ", config)
   return new Database({
     url: config.url,
     databaseName: "configuration",
@@ -91,12 +83,11 @@ export const getRulesDescriptions = async (config: any) => {
       })
 
       ruleConfig.push(newRule)
-      // console.log(newRule)
     })
   }
-  // log results
-  console.log("RULE DESCR: ", ruleConfig)
-  // return the list of rules
+
+  db.close()
+
   return result
 }
 
@@ -113,9 +104,9 @@ export const getTypologyDescriptions = async (config: DBConfig) => {
   for await (let typology of results) {
     result.push(typology)
   }
-  // log results
-  console.log("TYPO DESCR: ", result)
-  // return the list of typologies
+
+  db.close()
+
   return result
 }
 
@@ -180,8 +171,9 @@ export const getTADPROCResult = async (transactionID: string, config: DBConfig) 
         response.results.push(typoResult)
       })
     }
-    // return the list of typologies
-    console.log("TADPROC RESULT: ", response)
+
+    db.close()
+
     return response
   }
 }
@@ -280,12 +272,9 @@ export const getNetworkMap = async (config: DBConfig) => {
     // loop through array cursor and push results in array
     for await (let r of results) {
       result.push(r)
-
       if (result.length > 0) {
         rule.ruleDescription = result[0].desc
-        console.log("RULE ID: ", result[0].id)
         if (result[0].config.hasOwnProperty("bands")) {
-          console.log("BANDS EXIST")
           result[0].config.bands.forEach((band: RuleBand) => {
             let newBand = {
               subRuleRef: band.subRuleRef,
@@ -296,7 +285,6 @@ export const getNetworkMap = async (config: DBConfig) => {
             rule.ruleBands.push(newBand)
           })
         } else if (result[0].config.hasOwnProperty("cases")) {
-          console.log("CASES EXIST")
           result[0].config.cases.forEach((item: RuleBand) => {
             let newBand: RuleBand = {
               subRuleRef: item.subRuleRef,
@@ -307,7 +295,6 @@ export const getNetworkMap = async (config: DBConfig) => {
             rule.ruleBands.push(newBand)
           })
         } else if (result[0].config.hasOwnProperty("exitConditions")) {
-          console.log("EXIT CONDITIONS EXIST")
           result[0].config.exitConditions.forEach((item: RuleBand) => {
             let newCondition: RuleBand = {
               subRuleRef: item.subRuleRef,
@@ -329,18 +316,14 @@ export const getNetworkMap = async (config: DBConfig) => {
   })
   typologiesRes.forEach(async (typology) => {
     let typo = await getTypologyDetails(typology.id, config)
-    console.log("TYPO CONFIG: ", typo[0])
     typology.typoDescription = typo[0].desc
-
     typology.workflow.interdictionThreshold = typo[0].workflow.hasOwnProperty("interdictionThreshold")
       ? typo[0].workflow.interdictionThreshold
       : null
-
     typology.workflow.alertThreshold = typo[0].workflow.hasOwnProperty("alertThreshold")
       ? typo[0].workflow.alertThreshold
       : null
   })
-
   finalRules.sort((a, b) => a.title - b.title)
   typologiesRes.sort((a, b) => a.title - b.title)
 

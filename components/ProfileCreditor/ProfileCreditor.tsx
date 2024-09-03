@@ -29,11 +29,8 @@ const CreditorAccountsComponent = ({ index, setSelected, selectedEntityIndex, se
   let colour = ""
   const entCtx = useContext(EntityContext)
   const handleClick = async () => {
-    console.log("############## CREDITOR SELECTION TEST START #############")
     await entCtx.selectCreditorEntity(selectedEntityIndex, index)
-    console.log("############### CREDITOR SELECTION TEST END ##############")
     setSelectedEntity(selectedEntityIndex)
-    console.log("ACCOUNT INDEX CLICKED: ", index)
     setSelected(index)
   }
 

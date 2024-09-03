@@ -1,7 +1,7 @@
 "use client"
 
 import axios, { AxiosResponse } from "axios"
-import dotenv from "dotenv"
+import dotenv, { config } from "dotenv"
 import React, { ReactNode, useEffect, useReducer, useState } from "react"
 import { io } from "socket.io-client"
 import { uiConfigInitialState } from "store/entities/entity.initialState"
@@ -52,11 +52,7 @@ const ProcessorProvider = ({ children }: Props) => {
   const getUIConfig = async () => {
     if (localStorage.getItem("UI_CONFIG") !== null) {
       const config: any = await localStorage.getItem("UI_CONFIG")
-
       return config
-
-      // setUiConfig(config)
-      // console.log("Settings: ", uiConfig)
     } else {
       await localStorage.setItem("UI_CONFIG", JSON.stringify(uiConfigInitialState))
       return JSON.stringify(uiConfigInitialState)
@@ -67,50 +63,33 @@ const ProcessorProvider = ({ children }: Props) => {
     ;(async () => {
       if (wsAddress === null) {
         if (uiConfig !== null) {
-          console.log("IP", uiConfig.wsIpAddress)
           setWsAddress(uiConfig.wsIpAddress)
         }
       }
-      // setIp(ipAddress.ip)
-      // console.log("IP", ipAddress.ip)
     })()
   }, [uiConfig])
 
   useEffect(() => {
-    ;(async () => {
-      let config = await getUIConfig()
-
-      if (uiConfig !== undefined) {
-        setUiConfig(JSON.parse(config))
-      }
-    })()
-  }, [])
-
-  useEffect(() => {
-    if (uiConfig !== null) {
-      console.log("UI_CONFIG STATE: ", uiConfig)
+    if (uiConfig === null) {
+      ;(async () => {
+        let config = await getUIConfig()
+        if (uiConfig !== undefined) {
+          setUiConfig(JSON.parse(config))
+        }
+      })()
     }
   }, [uiConfig])
 
-  //---> UNCOMMENT THIS USE_EFFECT IF YOU WANT THE HARD CODED DATA IN THE API SECTION<---//
-  // useEffect(() => {
-  //   createRules()
-  //   createTypologies()
-  // }, [])
-
-  //---> COMMENT THIS USE_EFFECT OUT IF YOU WANT THE DYNAMICALLY BUILT DATA<---//
   useEffect(() => {
     ;(async () => {
       let conf: any = await getUIConfig()
       let con: any = JSON.parse(conf)
-      console.log("UI", con, conf)
       const config: any = {
         url: con.arangoDBHosting,
         databaseName: "configuration",
         auth: { username: con.dbUser, password: con.dbPassword },
       }
       const configData = await getNetworkMap(config)
-      // console.log("RULES - TYPOLOGY CONFIG: ", configData)
       if (configData.rules) {
         dispatch({ type: ACTIONS.CREATE_RULES_SUCCESS, payload: configData.rules })
       }
@@ -120,11 +99,6 @@ const ProcessorProvider = ({ children }: Props) => {
     })()
   }, [])
 
-  // useEffect(() => {
-  //   console.log(state.rules, state.typologies)
-  // }, [state.rules, state.typologies])
-
-  // const WS_URL = process.env.NEXT_PUBLIC_URL
   const WS_URL = wsAddress
 
   useEffect(() => {
@@ -134,15 +108,15 @@ const ProcessorProvider = ({ children }: Props) => {
       })
 
       socket.on("connection", (msg: any) => {
-        console.log("Connected to WebSocket server", msg)
-        console.log("SENDING SETTINGS")
+        // console.log("Connected to WebSocket server", msg)
+        // console.log("SENDING SETTINGS")
       })
       socket.emit("uiconfig", uiConfig)
 
       socket.emit("subscriptions", { subscriptions: ["connection", ">", "typology-processor@1.0.0", "cms"] })
 
       socket.on("welcome", (msg: any) => {
-        console.log("Received Message from the welcome: ", msg)
+        // console.log("Received Message from the welcome: ", msg)
         socket.emit("confirmation", msg)
       })
 
@@ -175,7 +149,7 @@ const ProcessorProvider = ({ children }: Props) => {
       // })
 
       socket.on("tadProc", async (msg: any) => {
-        console.log("Received Message from the TADPROC: ", msg)
+        // console.log("Received Message from the TADPROC: ", msg)
         // if (msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId !== undefined) {
         setTimeout(async () => {
           let conf: any = await localStorage.getItem("UI_CONFIG")
@@ -195,13 +169,10 @@ const ProcessorProvider = ({ children }: Props) => {
       })
 
       socket.on("subscriptions", (msg: any) => {
-        console.log(msg)
+        // console.log(msg)
       })
 
       socket.onAny((event: any, ...args: any) => {
-        console.log(`got ${event}`)
-        console.log(args)
-
         const ruleResult = Object.keys(args[0]).includes("ruleResult")
         const typoResult = Object.keys(args[0]).includes("typologyResult")
 
@@ -219,8 +190,15 @@ const ProcessorProvider = ({ children }: Props) => {
         }
       })
 
+      socket.on("disconnect", () => {
+        // console.log("Disconnected from WebSocket server")
+      })
+
       return () => {
-        socket.disconnect()
+        if (socket.disconnected) {
+          socket.active
+        }
+        socket.close()
       }
     }
   }, [state.rules, state.typologies, uiConfig])
@@ -306,7 +284,6 @@ const ProcessorProvider = ({ children }: Props) => {
   const updateTypologies = async (msg: any) => {
     try {
       dispatch({ type: ACTIONS.UPDATE_TYPO_LOADING })
-      console.log("TYPOLOGY RESULT: ", msg)
       const index: number = state.typologies.findIndex(
         (r: Typology) => r.title === msg.typologyResult.cfg.split("@")[0]
       )
@@ -335,10 +312,7 @@ const ProcessorProvider = ({ children }: Props) => {
 
       updatedTypo[index].color = "g"
 
-      console.log("THRESHOLDS: ", msg.typologyResult.cfg.split("@")[0], alertThreshold, interThreshold)
-
       if (alertThreshold !== null && interThreshold !== null) {
-        console.log("both thresholds")
         if (msg.typologyResult.result < alertThreshold) {
           updatedTypo[index].color = "g"
         } else if (msg.typologyResult.result >= alertThreshold && msg.typologyResult.result < interThreshold) {
@@ -348,7 +322,6 @@ const ProcessorProvider = ({ children }: Props) => {
           updatedTypo[index].stop = true
         }
       } else if (alertThreshold !== null && interThreshold === null) {
-        console.log("alertThreshold")
         if (msg.typologyResult.result < alertThreshold) {
           updatedTypo[index].color = "g"
         } else if (msg.typologyResult.result >= alertThreshold) {
@@ -362,11 +335,6 @@ const ProcessorProvider = ({ children }: Props) => {
       }
 
       dispatch({ type: ACTIONS.UPDATE_TYPO_SUCCESS, payload: updatedTypo })
-      // if (msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId !== undefined) {
-      //   const results: any = await getTADPROCResult(msg?.transaction?.FIToFIPmtSts?.GrpHdr?.MsgId)
-      //   console.log(results)
-      //   updateTadpLights(results)
-      // }
     } catch (error: any) {
       dispatch({ type: ACTIONS.UPDATE_TYPO_FAIL })
       console.error(error.message)
@@ -376,21 +344,13 @@ const ProcessorProvider = ({ children }: Props) => {
   const validateResults = async (result: TADPROC_RESULT) => {
     try {
       dispatch({ type: ACTIONS.VALIDATE_RESULTS_LOADING })
-
-      // Perform validation logic here
-      console.log("VALIDATION STARTED: ", result)
-      // check weights
-      // if (result.TADPROC.result > 0) {
       result.ruleResults.forEach((ruleResult) => {
         const index: number = state.rules.findIndex((r: Rule) => r.title === ruleResult.id.split("@")[0])
-        console.log("INDEX: " + index)
         const updatedRules: any[] = [...state.rules]
         if (ruleResult.wght > 0) {
           updatedRules[index].color = "r"
-          console.log(updatedRules[index])
         }
       })
-      // }
 
       dispatch({ type: ACTIONS.VALIDATE_RESULTS_SUCCESS, payload: null })
     } catch (error) {

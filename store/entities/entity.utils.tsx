@@ -9,13 +9,11 @@ const randomDate = (start: Date, end: Date) => {
 export const RandomNumbers = () => {
   let randomNumber: number = Math.floor(Math.random() * 100000) + 10000
   let result: number = randomNumber / 100
-  console.log("GENERATED NUMBER: ", result)
   if (result > 1000) {
     let diff = result - 1000
     diff = Math.round(diff * 2)
     result = result - diff
   }
-  console.log("GENERATED NUMBER RESULT: ", result)
   return parseFloat(result.toPrecision(2))
 }
 

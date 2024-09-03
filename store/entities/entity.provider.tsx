@@ -85,36 +85,29 @@ const EntityProvider = ({ children }: Props) => {
 
     if (JSON.parse(entities) !== "") {
       dispatch({ type: ACTIONS.UPDATE_ENTITY_SUCCESS, payload: JSON.parse(entities) })
-      console.log("ENTITIES FROM LS: ", JSON.parse(entities))
     }
     if (JSON.parse(creditorEntities) !== "") {
       dispatch({ type: ACTIONS.UPDATE_CREDITOR_ENTITY_SUCCESS, payload: JSON.parse(creditorEntities) })
-      console.log("CREDITOR ENTITIES FROM LS: ", JSON.parse(creditorEntities))
     }
     if (selectedDebtor !== "") {
       dispatch({ type: ACTIONS.SELECT_DEBTOR_ENTITY, payload: JSON.parse(selectedDebtor) })
-      console.log("SELECTED DEBTOR FROM LS: ", JSON.parse(selectedDebtor))
     }
     if (selectedCreditor !== "") {
       dispatch({ type: ACTIONS.SELECT_CREDITOR_ENTITY, payload: JSON.parse(selectedCreditor) })
-      console.log("SELETED CREDITOR FROM LS: ", JSON.parse(selectedCreditor))
     }
 
     if (pacs008 !== "") {
       dispatch({ type: ACTIONS.SET_DEBTOR_PACS008_SUCCESS, payload: JSON.parse(pacs008) })
-      console.log("PACS008 FROM LS: ", JSON.parse(pacs008))
+
       if (JSON.parse(creditorEntities) !== "") {
-        console.log("PASSED PHASE 1")
         let parsedCreditor: any = JSON.parse(creditorEntities)
         if (parsedCreditor.length > 0) {
-          console.log("PASSED PHASE 2")
           buildPacs002()
         }
       }
     }
     if (pacs002 !== "") {
       dispatch({ type: ACTIONS.GENERATE_PACS002_SUCCESS, payload: JSON.parse(pacs002) })
-      console.log("PACS002 FROM LS: ", JSON.parse(pacs002))
     }
   }, [])
 
@@ -128,24 +121,22 @@ const EntityProvider = ({ children }: Props) => {
       const array: any[] = []
       rules.forEach((rule: any) => {
         let newRule = { id: rule.id, color: "n", title: rule.title, result: null }
-        console.log("CREATING RULE: ", newRule.title)
         array.push(newRule)
       })
       dispatch({ type: ACTIONS.SET_RULE_LIGHTS_SUCCESS, payload: array })
       return state.ruleLights
     } catch (err) {
       dispatch({ type: ACTIONS.SET_RULE_LIGHTS_FAIL })
+      console.log("Set Rule lights failed", err)
     }
   }
 
   const handleDebtorEntityChange = async (debtorIndex: number | undefined, accountIndex: number | undefined) => {
     try {
       if (debtorIndex !== undefined && accountIndex !== undefined) {
-        console.log("handleDebtorEntityChange Active")
         await setDebtorPacs008(debtorIndex)
         await setDebtorAccountPacs008(debtorIndex, accountIndex)
       } else {
-        console.log("handleDebtorEntityChange Active")
         await setDebtorPacs008(state.selectedDebtorEntity.debtorSelectedIndex)
         await setDebtorAccountPacs008(
           state.selectedDebtorEntity.debtorSelectedIndex,
@@ -154,33 +145,25 @@ const EntityProvider = ({ children }: Props) => {
       }
 
       // await generateTransaction()
-      console.log("handleDebtorEntityChange Done")
-      console.log("PACS008: ", state.pacs008)
     } catch (error) {
-      console.log("ERROR happened on Debtor Change")
+      console.log("ERROR happened on Debtor Change", error)
     }
   }
 
   const handleCreditorEntityChange = async (creditorIndex: number | undefined, accountIndex: number | undefined) => {
     if (creditorIndex !== undefined && accountIndex !== undefined) {
-      console.log("handleCreditorEntityChange Active")
       await setCreditorPacs008(creditorIndex)
       await setCreditorAccountPacs008(creditorIndex, accountIndex)
     }
-    console.log("handleCreditorEntityChange Active")
     await setCreditorPacs008(state.selectedCreditorEntity.creditorSelectedIndex)
     await setCreditorAccountPacs008(
       state.selectedCreditorEntity.creditorSelectedIndex,
       state.selectedCreditorEntity.creditorAccountSelectedIndex
     )
-    // await generateTransaction()
-    console.log("handleCreditorEntityChange Done")
-    console.log("PACS008: ", state.pacs008)
   }
 
   useEffect(() => {
     if (state.selectedDebtorEntity.debtorSelectedIndex !== undefined) {
-      console.log("Selected Debtor Changed: ", state.selectedDebtorEntity)
       if (state.entities.length > 0) {
         handleDebtorEntityChange(undefined, undefined)
         buildPacs002()
@@ -190,8 +173,6 @@ const EntityProvider = ({ children }: Props) => {
 
   useEffect(() => {
     if (state.selectedCreditorEntity.creditorSelectedIndex !== undefined) {
-      console.log("Selected Creditor Changed: ", state.selectedCreditorEntity)
-
       if (state.creditorEntities.length > 0) {
         handleCreditorEntityChange(undefined, undefined)
         buildPacs002()
@@ -216,7 +197,6 @@ const EntityProvider = ({ children }: Props) => {
       pacs002Payload.FIToFIPmtSts.TxInfAndSts.TxSts = "ACCC"
       pacs002Payload.FIToFIPmtSts.TxInfAndSts.AccptncDtTm = new Date().toISOString()
       dispatch({ type: ACTIONS.GENERATE_PACS002_SUCCESS, payload: pacs002Payload })
-      console.log("PACS002: ", state.pacs002)
       localStorage.setItem("PACS002", JSON.stringify(state.pacs002))
     } catch (error) {
       dispatch({ type: ACTIONS.GENERATE_PACS002_FAIL })
@@ -234,9 +214,6 @@ const EntityProvider = ({ children }: Props) => {
         selectedDebtor.debtorAccountsLength = accountsLength
         dispatch({ type: ACTIONS.SELECT_DEBTOR_ENTITY, payload: selectedDebtor })
         localStorage.setItem("SELECTED_DEBTOR", JSON.stringify(state.selectedDebtorEntity))
-        console.log("############# DEBTOR RESULT #############")
-        console.log("SELECTED DEBTOR: ", selectedDebtor)
-        console.log("############## END RESULT ##############")
       }
     } catch (error) {
       console.log("ERROR happened on Debtor")
@@ -292,7 +269,6 @@ const EntityProvider = ({ children }: Props) => {
       if (entitiesList[entityIndex]?.Entity && typeof entityIndex === "number") {
         entitiesList.splice(entityIndex, 1, updatedEntity)
       }
-      console.log(state.entities, "------??")
 
       dispatch({ type: ACTIONS.UPDATE_ENTITY_SUCCESS, payload: [...entitiesList] })
       localStorage.setItem("DEBTOR_ENTITIES", JSON.stringify(state.entities))
@@ -404,46 +380,6 @@ const EntityProvider = ({ children }: Props) => {
       dispatch({ type: ACTIONS.UPDATE_DEBTOR_ACCOUNT_FAIL })
     }
   }
-
-  // const deleteAccount = async (entityIndex: number) => {
-  //   try {
-  //     dispatch({ type: ACTIONS.DELETE_DEBTOR_ACCOUNT_LOADING });
-
-  //     // Retrieve the list of accounts for the specified entity
-  //     let accountsList: Array<DebtorAccount> = state.entities[entityIndex].Accounts;
-
-  //     // Proceed if there are accounts to delete
-  //     if (accountsList.length > 0) {
-  //       // Remove the last account from the list
-  //       accountsList.pop();
-
-  //       if (accountsList.length === 0) {
-  //         // If all accounts are deleted, call deleteEntity to remove the entire entity
-  //         await deleteEntity(entityIndex);
-  //       } else {
-  //         // Update the entity's account list after deletion
-  //         let updatedEntityAccounts: Entity = {
-  //           Entity: state.entities[entityIndex]?.Entity,
-  //           Accounts: accountsList,
-  //         };
-
-  //         // Update the entities list with the modified entity
-  //         let entitiesList: Array<Entity> = [...state.entities];
-  //         entitiesList[entityIndex] = updatedEntityAccounts;
-
-  //         // Dispatch success action with the updated entities list
-  //         dispatch({ type: ACTIONS.DELETE_DEBTOR_ACCOUNT_SUCCESS, payload: entitiesList });
-
-  //         // Persist the updated entities list to localStorage
-  //         localStorage.setItem("DEBTOR_ENTITIES", JSON.stringify(entitiesList));
-  //       }
-  //     }
-
-  //   } catch (error) {
-  //     // Dispatch failure action if an error occurs
-  //     dispatch({ type: ACTIONS.DELETE_DEBTOR_ACCOUNT_FAIL });
-  //   }
-  // };
 
   const createCreditorEntity = async () => {
     try {
@@ -717,17 +653,14 @@ const EntityProvider = ({ children }: Props) => {
       dispatch({ type: ACTIONS.SET_DEBTOR_ACCOUNT_PACS008_LOADING })
       const debtor: Entity = state.entities[entityIndex]
       const selectedDebtor: SelectedDebtor = state.selectedDebtorEntity
-      console.log("DEBTOR: ", debtor)
       const setPacs008: PACS008 = state.pacs008
       if (accountIndex !== undefined) {
         let idx = accountIndex
         let debtorAccount: any = { ...debtor.Accounts[idx]?.DbtrAcct }
         setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.DbtrAcct = { ...debtorAccount }
       }
-
       dispatch({ type: ACTIONS.SET_DEBTOR_ACCOUNT_PACS008_SUCCESS, payload: setPacs008 })
       dispatch({ type: ACTIONS.SELECT_DEBTOR_ENTITY, payload: selectedDebtor })
-      console.log("PACS008: ", setPacs008)
       selectedDebtor.debtorAccountSelectedIndex = accountIndex
       localStorage.setItem("SELECTED_DEBTOR", JSON.stringify(state.selectedDebtorEntity))
       localStorage.setItem("PACS008", JSON.stringify(state.pacs008))
@@ -741,10 +674,7 @@ const EntityProvider = ({ children }: Props) => {
     try {
       dispatch({ type: ACTIONS.SET_CREDITOR_PACS008_LOADING })
       const creditor: CdtrEntity = state.creditorEntities[entityIndex]
-      console.log("CREDITOR: ", creditor)
       const setPacs008: PACS008 = state.pacs008
-
-      console.log("PACS008 BEFORE: ", setPacs008)
 
       setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.Cdtr.Nm = creditor.CreditorEntity.Cdtr.Nm
       setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.Cdtr.Id.PrvtId = { ...creditor.CreditorEntity.Cdtr.Id.PrvtId }
@@ -757,7 +687,6 @@ const EntityProvider = ({ children }: Props) => {
       }
 
       dispatch({ type: ACTIONS.SET_CREDITOR_PACS008_SUCCESS, payload: setPacs008 })
-      console.log("PACS008: ", setPacs008)
       localStorage.setItem("PACS008", JSON.stringify(state.pacs008))
     } catch (error) {
       dispatch({ type: ACTIONS.SET_CREDITOR_PACS008_FAIL })
@@ -770,19 +699,16 @@ const EntityProvider = ({ children }: Props) => {
       dispatch({ type: ACTIONS.SET_CREDITOR_ACCOUNT_PACS008_LOADING })
       const creditor: CdtrEntity = state.creditorEntities[entityIndex]
       const selectedCreditor: SelectedCreditor = state.selectedCreditorEntity
-      console.log("CREDITOR: ", creditor, entityIndex, accountIndex)
       const setPacs008: PACS008 = state.pacs008
       if (accountIndex !== undefined) {
         let creditorAccount: any = { ...creditor.CreditorAccounts[accountIndex]?.CdtrAcct }
         setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.CdtrAcct = { ...creditorAccount }
       }
-      //   setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.CdtrAcct = { ...creditor.CreditorAccounts[accountIndex].CdtrAcct }
 
       dispatch({ type: ACTIONS.SET_CREDITOR_ACCOUNT_PACS008_SUCCESS, payload: setPacs008 })
       dispatch({ type: ACTIONS.SELECT_CREDITOR_ENTITY, payload: selectedCreditor })
 
       localStorage.setItem("SELECTED_CREDITOR", JSON.stringify(state.selectedCreditorEntity))
-      console.log("PACS008: ", setPacs008)
       localStorage.setItem("PACS008", JSON.stringify(state.pacs008))
     } catch (error) {
       dispatch({ type: ACTIONS.SET_CREDITOR_ACCOUNT_PACS008_FAIL })
@@ -808,7 +734,6 @@ const EntityProvider = ({ children }: Props) => {
       await buildPacs002()
 
       dispatch({ type: ACTIONS.GENERATE_TRANSACTION_PACS008_SUCCESS, payload: setPacs008 })
-      console.log("PACS008 NEW GENERATED: ", setPacs008)
       localStorage.setItem("PACS008", JSON.stringify(state.pacs008))
     } catch (error) {
       dispatch({ type: ACTIONS.GENERATE_TRANSACTION_PACS008_FAIL })
@@ -847,8 +772,6 @@ const EntityProvider = ({ children }: Props) => {
       dispatch({ type: ACTIONS.UPDATE_TRANSACTION_SUCCESS, payload: updatedPacs008 })
 
       localStorage.setItem("PACS008", JSON.stringify(updatedPacs008))
-
-      console.log("PACS008 UPDATED: ", updatedPacs008)
     } catch (error) {
       dispatch({ type: ACTIONS.UPDATE_TRANSACTION_FAIL })
       console.log("ERROR UPDATING TRANSACTION PACS008: ", error)
@@ -929,8 +852,6 @@ const EntityProvider = ({ children }: Props) => {
       const newEntity = cloneCreditorToDebtor(entity)
       const newAccount = cloneCreditorAccountToDebtorAccount(account)
 
-      console.log(newAccount, "<====")
-
       const payload: Entity = {
         Entity: newEntity,
         Accounts: newAccount,
@@ -972,10 +893,8 @@ const EntityProvider = ({ children }: Props) => {
         deleteCreditorEntityLoading: state.deleteCreditorEntityLoading,
         createAccountLoading: state.createAccountLoading,
         updateAccountLoading: state.updateAccountLoading,
-        // deleteAccountLoading: state.deleteAccountLoading,
         createCreditorAccountLoading: state.createCreditorAccountLoading,
         updateCreditorAccountLoading: state.updateCreditorAccountLoading,
-        // deleteCreditorAccountLoading: state.deleteCreditorAccountLoading,
         resetEntityLoading: state.resetEntityLoading,
         resetCreditorEntityLoading: state.resetCreditorEntityLoading,
         cloneEntityLoading: state.cloneEntityLoading,
@@ -1001,10 +920,8 @@ const EntityProvider = ({ children }: Props) => {
         createCreditorEntity,
         updateCreditorEntity,
         deleteCreditorEntity,
-        // deleteAccount,
         createCreditorEntityAccount,
         updateCreditorAccount,
-        // deleteCreditorAccount,
         setDebtorPacs008,
         setDebtorAccountPacs008,
         setCreditorPacs008,

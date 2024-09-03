@@ -29,14 +29,6 @@ const Settings = () => {
     }
   }, [entityCtx.uiConfig])
 
-  useEffect(() => {
-    console.log("CONFIG: ", entityCtx.uiConfig)
-  }, [config])
-
-  useEffect(() => {
-    console.log("CONFIG: ", config)
-  }, [config])
-
   const handleReset = async () => {
     await entityCtx.reset()
     window.location.replace("/")
@@ -59,13 +51,6 @@ const Settings = () => {
 
   const handleConfigUpdateCancel = async () => {
     window.location.replace("/")
-    // const backupConfig = localStorage.getItem("UI_CONFIG_BU")
-    // if (backupConfig) {
-    //   const backup: any = JSON.parse(backupConfig)
-    //   setConfig(backup)
-    //   entityCtx.setUiConfig(backup)
-    //   localStorage.removeItem("UI_CONFIG_BU")
-    // }
   }
 
   return (
@@ -280,9 +265,9 @@ const Settings = () => {
         </div>
       </div>
       <Link href={"https://weareao.group/"} target="_blank">
-        <div className="relative mb-10 mt-10 flex w-full flex-row items-center justify-center p-5">
-          <p className="absolute left-[45%] top-1/4 text-xs">Powered by:</p>
-          <svg version="1.1" viewBox="0 0 2048 1637" width="180" height="180" xmlns="http://www.w3.org/2000/svg">
+        <div className="absolute bottom-[2%] flex flex-row items-center justify-center">
+          <p className="text-xs">Powered by:</p>
+          <svg version="1.1" viewBox="0 0 2048 1637" width="80" height="80" xmlns="http://www.w3.org/2000/svg">
             <path transform="translate(0)" d="m0 0h2048v1637h-2048z" fill="none" />
             <path
               transform="translate(1290,498)"
