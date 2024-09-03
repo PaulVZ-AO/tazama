@@ -1,7 +1,7 @@
 import axios from "axios"
 import dotenv from "../../node_modules/dotenv/lib/main"
 import Image from "next/image"
-import React, { useContext, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { TimeComponent } from "components/timeComponent/TimeComponent"
 import EntityContext from "store/entities/entity.context"
 import { sentanceCase } from "utils/helpers"
@@ -48,12 +48,14 @@ export function DebtorDevice(props: DebtorProps) {
 
   const creditorEntity = entityCtx.creditorEntities
 
-  ;(async () => {
-    const cfg: any = await procCtx.getUIConfig()
-    console.log("-------------> CONFIG: ", JSON.parse(cfg))
-    const parsedConfig: any = JSON.parse(cfg)
-    setTmsUrl(parsedConfig.tmsServerUrl)
-  })()
+  useEffect(() => {
+    ;(async () => {
+      const cfg: any = await procCtx.getUIConfig()
+      console.log("-------------> CONFIG: ", JSON.parse(cfg))
+      const parsedConfig: any = JSON.parse(cfg)
+      setTmsUrl(parsedConfig.tmsServerUrl)
+    })()
+  }, [])
 
   // const tmsUrl = process.env.NEXT_PUBLIC_TMS_SERVER_URL
 

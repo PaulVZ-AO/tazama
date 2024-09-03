@@ -38,6 +38,7 @@ import {
   RandomNumbers,
   RandomSurname,
 } from "./entity.utils"
+import { v4 as uuidv4 } from "uuid"
 
 interface Props {
   children: ReactNode
@@ -205,7 +206,7 @@ const EntityProvider = ({ children }: Props) => {
       let pacs008Data: PACS008 = state.pacs008
 
       // GrpHdr
-      pacs002Payload.FIToFIPmtSts.GrpHdr.MsgId = crypto.randomUUID().replaceAll("-", "")
+      pacs002Payload.FIToFIPmtSts.GrpHdr.MsgId = uuidv4().replaceAll("-", "")
       pacs002Payload.FIToFIPmtSts.GrpHdr.CreDtTm = new Date().toISOString()
 
       // TxInfAndSts
@@ -340,7 +341,7 @@ const EntityProvider = ({ children }: Props) => {
           Id: {
             Othr: [
               {
-                Id: crypto.randomUUID().replaceAll("-", ""),
+                Id: uuidv4().replaceAll("-", ""),
 
                 SchmeNm: {
                   Prtry: "MSISDN",
@@ -460,7 +461,7 @@ const EntityProvider = ({ children }: Props) => {
               },
               Othr: [
                 {
-                  Id: crypto.randomUUID().replaceAll("-", ""),
+                  Id: uuidv4().replaceAll("-", ""),
                   SchmeNm: {
                     Prtry: "TAZAMA_EID",
                   },
@@ -477,7 +478,7 @@ const EntityProvider = ({ children }: Props) => {
           Id: {
             Othr: [
               {
-                Id: crypto.randomUUID().replaceAll("-", ""),
+                Id: uuidv4().replaceAll("-", ""),
 
                 SchmeNm: {
                   Prtry: "MSISDN",
@@ -566,7 +567,7 @@ const EntityProvider = ({ children }: Props) => {
           Id: {
             Othr: [
               {
-                Id: crypto.randomUUID().replaceAll("-", ""),
+                Id: uuidv4().replaceAll("-", ""),
 
                 SchmeNm: {
                   Prtry: "MSISDN",
@@ -670,7 +671,7 @@ const EntityProvider = ({ children }: Props) => {
 
       // TO BE SET WHEN THE BUTTON SEND IS CLICKED!!!
       // Move to a send function TODO!!!
-      setPacs008.FIToFICstmrCdtTrf.GrpHdr.MsgId = crypto.randomUUID().replaceAll("-", "")
+      setPacs008.FIToFICstmrCdtTrf.GrpHdr.MsgId = uuidv4().replaceAll("-", "")
       setPacs008.FIToFICstmrCdtTrf.GrpHdr.CreDtTm = new Date().toISOString()
 
       // Set Debtor Details
@@ -681,8 +682,8 @@ const EntityProvider = ({ children }: Props) => {
       setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.Dbtr.Nm = debtor.Entity.Dbtr.Nm
       setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.Dbtr.Id.PrvtId = { ...debtor.Entity.Dbtr.Id.PrvtId }
       setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.Dbtr.CtctDtls = { ...debtor.Entity.Dbtr.CtctDtls }
-      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.InstrId = crypto.randomUUID().replaceAll("-", "")
-      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.EndToEndId = crypto.randomUUID().replaceAll("-", "")
+      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.InstrId = uuidv4().replaceAll("-", "")
+      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.EndToEndId = uuidv4().replaceAll("-", "")
 
       // Set Debtor Account Details
 
@@ -691,7 +692,7 @@ const EntityProvider = ({ children }: Props) => {
       }
 
       // Set Random Details
-      setPacs008.FIToFICstmrCdtTrf.RmtInf.Ustrd = crypto.randomUUID().replaceAll("-", "")
+      setPacs008.FIToFICstmrCdtTrf.RmtInf.Ustrd = uuidv4().replaceAll("-", "")
       setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt = RandomNumbers()
       setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.InstdAmt.Amt.Amt =
         setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt
@@ -703,7 +704,7 @@ const EntityProvider = ({ children }: Props) => {
       setPacs008.FIToFICstmrCdtTrf.SplmtryData.Envlp.Doc.InitgPty.Glctn.Long = "37.3552"
 
       dispatch({ type: ACTIONS.SET_DEBTOR_PACS008_SUCCESS, payload: setPacs008 })
-      console.log("PACS008: ", setPacs008)
+
       localStorage.setItem("PACS008", JSON.stringify(state.pacs008))
     } catch (error) {
       dispatch({ type: ACTIONS.SET_DEBTOR_PACS008_FAIL })
@@ -794,15 +795,15 @@ const EntityProvider = ({ children }: Props) => {
       dispatch({ type: ACTIONS.GENERATE_TRANSACTION_PACS008_LOADING })
       const setPacs008: PACS008 = state.pacs008
 
-      setPacs008.FIToFICstmrCdtTrf.GrpHdr.MsgId = crypto.randomUUID().replaceAll("-", "")
+      setPacs008.FIToFICstmrCdtTrf.GrpHdr.MsgId = uuidv4().replaceAll("-", "")
       setPacs008.FIToFICstmrCdtTrf.GrpHdr.CreDtTm = new Date().toISOString()
       // Set Random Details
-      setPacs008.FIToFICstmrCdtTrf.RmtInf.Ustrd = crypto.randomUUID().replaceAll("-", "")
+      setPacs008.FIToFICstmrCdtTrf.RmtInf.Ustrd = uuidv4().replaceAll("-", "")
       setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt = RandomNumbers()
       setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.InstdAmt.Amt.Amt =
         setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt
-      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.InstrId = crypto.randomUUID().replaceAll("-", "")
-      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.EndToEndId = crypto.randomUUID().replaceAll("-", "")
+      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.InstrId = uuidv4().replaceAll("-", "")
+      setPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.EndToEndId = uuidv4().replaceAll("-", "")
 
       await buildPacs002()
 
@@ -821,20 +822,20 @@ const EntityProvider = ({ children }: Props) => {
 
       const updatedPacs008: PACS008 = { ...state.pacs008 }
 
-      updatedPacs008.FIToFICstmrCdtTrf.GrpHdr.MsgId = crypto.randomUUID().replaceAll("-", "")
+      updatedPacs008.FIToFICstmrCdtTrf.GrpHdr.MsgId = uuidv4().replaceAll("-", "")
       updatedPacs008.FIToFICstmrCdtTrf.GrpHdr.CreDtTm = new Date().toISOString()
 
       updatedPacs008.FIToFICstmrCdtTrf.RmtInf.Ustrd =
-        updates.FIToFICstmrCdtTrf?.RmtInf?.Ustrd || crypto.randomUUID().replaceAll("-", "")
+        updates.FIToFICstmrCdtTrf?.RmtInf?.Ustrd || uuidv4().replaceAll("-", "")
       updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt =
         updates.FIToFICstmrCdtTrf?.CdtTrfTxInf?.IntrBkSttlmAmt?.Amt?.Amt || RandomNumbers()
       updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.InstdAmt.Amt.Amt =
         updates.FIToFICstmrCdtTrf?.CdtTrfTxInf?.InstdAmt?.Amt?.Amt ||
         updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt.Amt
       updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.InstrId =
-        updates.FIToFICstmrCdtTrf?.CdtTrfTxInf?.PmtId?.InstrId || crypto.randomUUID().replaceAll("-", "")
+        updates.FIToFICstmrCdtTrf?.CdtTrfTxInf?.PmtId?.InstrId || uuidv4().replaceAll("-", "")
       updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.EndToEndId =
-        updates.FIToFICstmrCdtTrf?.CdtTrfTxInf?.PmtId?.EndToEndId || crypto.randomUUID().replaceAll("-", "")
+        updates.FIToFICstmrCdtTrf?.CdtTrfTxInf?.PmtId?.EndToEndId || uuidv4().replaceAll("-", "")
       updatedPacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.Purp.Cd = updates.FIToFICstmrCdtTrf?.CdtTrfTxInf?.Purp?.Cd || ""
       updatedPacs008.FIToFICstmrCdtTrf.SplmtryData.Envlp.Doc.InitgPty.Glctn.Lat =
         updates.FIToFICstmrCdtTrf?.SplmtryData?.Envlp?.Doc?.InitgPty?.Glctn?.Lat || ""

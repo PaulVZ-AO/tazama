@@ -1,7 +1,5 @@
 "use client"
 
-import { DragDropContext, Draggable, Droppable } from "../node_modules/@hello-pangea/dnd/dist/dnd"
-
 import Image from "next/image"
 import React, { useContext, useEffect, useState } from "react"
 import { DebtorDevice } from "components/Device/Debtor"
@@ -16,6 +14,7 @@ import { CdtrEntity, Entity } from "store/entities/entity.interface"
 import ProcessorContext from "store/processors/processor.context"
 import { Rule, Typology } from "store/processors/processor.interface"
 import Loader from "./../components/Loader/Loader"
+import { DragDropContext, Draggable, Droppable } from "../node_modules/@hello-pangea/dnd/dist/dnd"
 
 const Web = () => {
   // const [types, setTypes] = useState<any[] | null>(null)

@@ -1,5 +1,6 @@
 import { CdtrEntity, CreditorAccount, CreditorEntity, DebtorAccount, DebtorEntity, Entity } from "./entity.interface"
 import { countries, namesList, surnamesList } from "./mock.data"
+import { v4 as uuidv4 } from "uuid"
 
 const randomDate = (start: Date, end: Date) => {
   return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime())).toISOString().split("T")[0]
@@ -66,7 +67,7 @@ export const createAnEntity = async () => {
           },
           Othr: [
             {
-              Id: crypto.randomUUID().replaceAll("-", ""),
+              Id: uuidv4().replaceAll("-", ""),
               SchmeNm: {
                 Prtry: "TAZAMA_EID",
               },
@@ -82,7 +83,7 @@ export const createAnEntity = async () => {
       Id: {
         Othr: [
           {
-            Id: crypto.randomUUID().replaceAll("-", ""),
+            Id: uuidv4().replaceAll("-", ""),
 
             SchmeNm: {
               Prtry: "MSISDN",
@@ -114,7 +115,7 @@ export const createAnCreditorEntity = async () => {
           },
           Othr: [
             {
-              Id: crypto.randomUUID().replaceAll("-", ""),
+              Id: uuidv4().replaceAll("-", ""),
               SchmeNm: {
                 Prtry: "TAZAMA_EID",
               },
@@ -131,7 +132,7 @@ export const createAnCreditorEntity = async () => {
       Id: {
         Othr: [
           {
-            Id: crypto.randomUUID().replaceAll("-", ""),
+            Id: uuidv4().replaceAll("-", ""),
 
             SchmeNm: {
               Prtry: "MSISDN",
@@ -208,7 +209,7 @@ export const cloneCreditorToDebtor = (creditor: CreditorEntity): DebtorEntity =>
 }
 
 export const cloneCreditorAccountToDebtorAccount = (creditorAccount: any): DebtorAccount[] => {
-  const creditorAccountList  = creditorAccount.map((element: any) => ({
+  const creditorAccountList = creditorAccount.map((element: any) => ({
     DbtrAcct: {
       Id: {
         Othr: [
@@ -228,22 +229,19 @@ export const cloneCreditorAccountToDebtorAccount = (creditorAccount: any): Debto
 }
 
 export const cloneDebtorAccountToCreditorAccount = (debtorAccount: any): CreditorAccount[] => {
-
-  return debtorAccount.map((element: any) => (
-    {
-      CdtrAcct: {
-        Id: {
-          Othr: [
-            {
-              Id: element?.DbtrAcct?.Id?.Othr[0]?.Id,
-              SchmeNm: {
-                Prtry: element?.DbtrAcct?.Id?.Othr[0]?.SchmeNm?.Prtry,
-              },
+  return debtorAccount.map((element: any) => ({
+    CdtrAcct: {
+      Id: {
+        Othr: [
+          {
+            Id: element?.DbtrAcct?.Id?.Othr[0]?.Id,
+            SchmeNm: {
+              Prtry: element?.DbtrAcct?.Id?.Othr[0]?.SchmeNm?.Prtry,
             },
-          ] as [{ Id: string; SchmeNm: { Prtry: string } }],
-        },
-        Nm: element?.DbtrAcct?.Nm,
+          },
+        ] as [{ Id: string; SchmeNm: { Prtry: string } }],
       },
-    }
-  )) 
+      Nm: element?.DbtrAcct?.Nm,
+    },
+  }))
 }

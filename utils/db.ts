@@ -341,6 +341,9 @@ export const getNetworkMap = async (config: DBConfig) => {
       : null
   })
 
+  finalRules.sort((a, b) => a.title - b.title)
+  typologiesRes.sort((a, b) => a.title - b.title)
+
   return {
     rules: finalRules,
     typologies: typologiesRes,

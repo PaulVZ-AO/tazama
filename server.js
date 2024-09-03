@@ -7,7 +7,7 @@ const { Server } = require("socket.io")
 const { createServer } = require("http")
 const { parse } = require("url")
 
-const app = next({ dev: process.env.NODE_ENV !== "production" })
+const app = next({ dev: process.env.NODE_ENV !== "production", customServer: true, quiet: true, turbo: true })
 
 let natsUrl = { url: null }
 
@@ -15,7 +15,7 @@ const port = process.env.PORT
 
 const handle = app.getRequestHandler()
 
-const sc = NATS.StringCodec()
+// const sc = NATS.StringCodec()
 
 const handleMsg = async (msg, socket, room) => {
   const decodedMessage = frms.default.decode(msg.data)
@@ -112,7 +112,7 @@ app.prepare().then(() => {
     const all = nc.subscribe(">", { queue: "MONITORING1" })
     // const pubRule901 = nc.subscribe("pub-rule-016@1.0.0", { queue: "MONITORING_RULE_PUBLISHER" })
     // const subRule901 = nc.subscribe("sub-rule-016@1.0.0", { queue: "MONITORING_RULE_SUBSCRIBER" })
-    const type001 = nc.subscribe("typology-999@1.0.0", { queue: "MONITORING_TYPOLOGY" })
+    // const type001 = nc.subscribe("typology-999@1.0.0", { queue: "MONITORING_TYPOLOGY" })
     const cms = nc.subscribe("cms", { queue: "MONITORING_CMS" })
 
     // subscriptions.push(connected)
