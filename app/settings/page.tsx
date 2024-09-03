@@ -259,7 +259,7 @@ const Settings = () => {
         </div>
       </div>
 
-      <div className=" mt-5 flex h-full  justify-start gap-2 opacity-70">
+      <div className="absolute bottom-[2%] flex justify-start gap-2 opacity-70">
         <span style={{ textShadow: "1px 1px white" }}> Powered by</span>
 
         <Link href="https://weareao.group/" rel="noopener noreferrer" target="_blank">
