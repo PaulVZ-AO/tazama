@@ -303,13 +303,10 @@ const Web = () => {
     setLoading(false)
   }, [])
 
-
-
   useEffect(() => {
     console.log("RULE DESCRIPTIONS: ", descriptions)
     setLoading(false)
   }, [descriptions])
-
 
   useEffect(() => {
     console.log("SELECTED ENTITY: ", selectedEntity)
@@ -380,11 +377,9 @@ const Web = () => {
       }
       return
     }
-
   }
 
   const iconColour = (index: number) => {
-    
     let fillColour
 
     switch (index) {
@@ -407,7 +402,7 @@ const Web = () => {
   }
 
   return (
-    <div className="bg-slate-300/25 px-5 pt-10">
+    <div className="min-h-screen bg-slate-300/25 px-5 pt-10">
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="grid grid-cols-12 gap-5">
           {/* Debtors */}
