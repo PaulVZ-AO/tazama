@@ -34,6 +34,10 @@ const Web = () => {
   const entityCtx: any = useContext(EntityContext)
   const procCtx: any = useContext(ProcessorContext)
 
+  useEffect(() => {
+    console.log("useEffect", entityCtx.pacs008)
+  }, [entityCtx.pacs008])
+
   const handleRuleMouseEnter = (type: any) => {
     setHoveredType(null) // fallback if stats is stuck
     setHoveredRule(type)
@@ -196,7 +200,7 @@ const Web = () => {
     if (hoveredType === null && selectedType === null) return null
     return (
       <div className="mb-5 rounded-xl p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
-        <h3 className="text-center uppercase">Type Results</h3>
+        <h3 className="text-center uppercase">Typology Results</h3>
         <div className="mb-2 p-2 text-center">
           {hoveredType && hoveredType.id ? hoveredType.id : selectedType ? selectedType.id : ""}
           {hoveredType ? ` = ${hoveredType.result}` : selectedType ? ` = ${selectedType.result}` : ""}
