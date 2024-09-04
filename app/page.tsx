@@ -56,6 +56,7 @@ const Web = () => {
     setHoveredType(null) // fallback if stats is stuck
     setSelectedRule(type)
     setSelectedRules([type.title])
+    setSelectedTypes([...type.linkedTypologies])
   }
 
   const handleRuleClickClose = () => {
@@ -651,54 +652,57 @@ const Web = () => {
                         onClick={() => {
                           if (selectedRule === null) {
                             handleRuleClick(rule)
-                            if (selectedType === null) {
-                              procCtx.typologies.forEach((t: Typology) => {
-                                if (t.title === rule.linkedTypologies[0]) {
-                                  setSelectedType(t)
-                                }
-                              })
-                            } else {
-                              setSelectedTypes([])
-                              for (const type of rule.linkedTypologies) {
-                                const updatedTypes: any[] = []
-                                procCtx.typologies.forEach((typo: any, idx: number) => {
-                                  if (type === typo.title) {
-                                    if (!selectedTypes.includes(typo.title)) {
-                                      updatedTypes.push(typo.title)
-                                      setSelectedType(typo)
-                                    }
-                                  }
-                                })
+                            // if (selectedType === null) {
+                            //   procCtx.typologies.forEach((t: Typology) => {
+                            //     if (t.title === rule.linkedTypologies[0]) {
+                            //       setSelectedType(t)
+                            //     }
+                            //   })
+                            // } else {
+                            //   setSelectedTypes([])
+                            //   for (const type of rule.linkedTypologies) {
+                            //     const updatedTypes: any[] = []
+                            //     procCtx.typologies.forEach((typo: any, idx: number) => {
+                            //       if (type === typo.title) {
+                            //         if (!selectedTypes.includes(typo.title)) {
+                            //           updatedTypes.push(typo.title)
+                            //           setSelectedType(typo)
+                            //         }
+                            //       }
+                            //     })
 
-                                setSelectedTypes([...updatedTypes.reverse()])
-                              }
-                            }
+                            //     setSelectedTypes([...updatedTypes.reverse()])
+                            //   }
+                            // }
                           } else if (selectedRule === rule) {
-                            for (const type of rule.linkedTypologies) {
-                              const updatedTypes: any[] = []
-                              procCtx.typologies.forEach((typo: Typology, idx: number) => {
-                                if (type === typo.title) {
-                                  if (!selectedTypes.includes(typo.title)) {
-                                    updatedTypes.push(typo.title)
-                                    setSelectedType(typo)
-                                  }
-                                }
-                              })
+                            //   for (const type of rule.linkedTypologies) {
+                            //     const updatedTypes: any[] = []
+                            //     procCtx.typologies.forEach((typo: Typology, idx: number) => {
+                            //       if (type === typo.title) {
+                            //         if (!selectedTypes.includes(typo.title)) {
+                            //           updatedTypes.push(typo.title)
+                            //           setSelectedType(typo)
+                            //         }
+                            //       }
+                            //     })
 
-                              setSelectedTypes([...updatedTypes])
-                            }
-                          } else {
+                            //     setSelectedTypes([...updatedTypes])
+                            //   }
+                            // } else {
                             // handleRuleClickClose()
-                            handleRuleClick(rule)
+                            handleRuleClickClose()
                           }
 
                           if (selectedRules.length > 0) {
-                            if (selectedRules.includes(rule.title)) {
-                              let idx = selectedRules.indexOf(rule.title)
-                              selectedRules.splice(idx, 1)
-                            }
-                            if (selectedTypes.length > 0) {
-                            }
+                            // if (selectedRules.includes(rule.title)) {
+                            //   let idx = selectedRules.indexOf(rule.title)
+                            //   selectedRules.splice(idx, 1)
+                            // } else {
+                            handleRuleClickClose()
+                            handleRuleClick(rule)
+                            // }
+                            // if (selectedTypes.length > 0) {
+                            // }
                           }
                         }}
                       >
