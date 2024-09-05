@@ -1,7 +1,5 @@
 "use client"
 
-import { DragDropContext, Draggable, Droppable } from "../node_modules/@hello-pangea/dnd/dist/dnd"
-
 import Image from "next/image"
 import React, { useContext, useEffect, useState } from "react"
 import { DebtorDevice } from "components/Device/Debtor"
@@ -16,6 +14,7 @@ import { CdtrEntity, Entity } from "store/entities/entity.interface"
 import ProcessorContext from "store/processors/processor.context"
 import { Rule, Typology } from "store/processors/processor.interface"
 import Loader from "./../components/Loader/Loader"
+import { DragDropContext, Draggable, Droppable } from "../node_modules/@hello-pangea/dnd/dist/dnd"
 
 const Web = () => {
   // const [types, setTypes] = useState<any[] | null>(null)
@@ -35,6 +34,10 @@ const Web = () => {
   const entityCtx: any = useContext(EntityContext)
   const procCtx: any = useContext(ProcessorContext)
 
+  useEffect(() => {
+    console.log("useEffect", entityCtx.pacs008)
+  }, [entityCtx.pacs008])
+
   const handleRuleMouseEnter = (type: any) => {
     setHoveredType(null) // fallback if stats is stuck
     setHoveredRule(type)
@@ -53,6 +56,7 @@ const Web = () => {
     setHoveredType(null) // fallback if stats is stuck
     setSelectedRule(type)
     setSelectedRules([type.title])
+    setSelectedTypes([...type.linkedTypologies])
   }
 
   const handleRuleClickClose = () => {
@@ -147,19 +151,11 @@ const Web = () => {
 
   const getRuleDescriptions = (result: string, rule_id: number) => {
     const desc: any = procCtx.rules.find((rule: Rule) => rule.id === rule_id)
-    console.log("getRuleDescriptions", result, rule_id)
-
-    console.log("HIT")
     const description = desc.ruleBands.find((item: any) => item.subRuleRef === result)
-    console.log("description: ", description?.reason)
     return description?.reason
-
-    // const description: any = descriptions!.find((item) => item.subRuleRef === result)
   }
 
-  useEffect(() => {
-    console.log(selectedRule)
-  }, [selectedRule])
+  useEffect(() => {}, [selectedRule])
 
   function RuleResult() {
     if (hoveredRule === null && selectedRule === null) return null
@@ -174,7 +170,6 @@ const Web = () => {
 
         <div className="flex flex-col p-1">
           <div className="mb-2 flex w-full flex-col items-center justify-center text-center">
-            {/* {hoveredRule?.title} {hoveredRule.title} {hoveredRule && hoveredRule.r ? hoveredRule.r : ""}= */}
             <p className="align-center m-2 flex w-full justify-center border-2 border-black px-5 py-2 text-center">
               {hoveredRule ? hoveredRule?.rule : selectedRule && selectedRule.rule}
             </p>
@@ -184,7 +179,6 @@ const Web = () => {
           </div>
           <hr className="mb-2 border-black" />
           <div className="align-center mb-2 grid w-full grid-cols-4 justify-center gap-4 text-center">
-            {/* Creditor account is less than 1 day old. */}
             <p className="align-center col-span-1 flex h-8 w-full flex-row justify-center border-2 border-black px-4 py-2 text-center text-xs">
               {hoveredRule ? hoveredRule.result : selectedRule && selectedRule.result}
             </p>
@@ -207,7 +201,7 @@ const Web = () => {
     if (hoveredType === null && selectedType === null) return null
     return (
       <div className="mb-5 rounded-xl p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
-        <h3 className="text-center uppercase">Type Results</h3>
+        <h3 className="text-center uppercase">Typology Results</h3>
         <div className="mb-2 p-2 text-center">
           {hoveredType && hoveredType.id ? hoveredType.id : selectedType ? selectedType.id : ""}
           {hoveredType ? ` = ${hoveredType.result}` : selectedType ? ` = ${selectedType.result}` : ""}
@@ -300,32 +294,17 @@ const Web = () => {
   }, [entityCtx.selectedCreditorEntity.creditorSelectedIndex])
 
   useEffect(() => {
-    setLoading(false)
+    if (loading) {
+      setLoading(false)
+    }
   }, [])
 
-  useEffect(() => {
-    console.log("RULE DESCRIPTIONS: ", descriptions)
-    setLoading(false)
-  }, [descriptions])
+  useEffect(() => {}, [descriptions])
+  useEffect(() => {}, [selectedEntity])
+  useEffect(() => {}, [selectedCreditorEntity])
+  useEffect(() => {}, [entityCtx.entities])
+  useEffect(() => {}, [entityCtx.creditorEntities])
 
-  useEffect(() => {
-    console.log("SELECTED ENTITY: ", selectedEntity)
-  }, [selectedEntity])
-
-  useEffect(() => {
-    console.log("SELECTED ENTITY: ", selectedEntity)
-  }, [selectedEntity])
-  useEffect(() => {
-    console.log("SELECTED CREDITOR ENTITY: ", selectedCreditorEntity)
-  }, [selectedCreditorEntity])
-  useEffect(() => {
-    console.log("DEBTORS: ", entityCtx.entities)
-  }, [entityCtx.entities])
-  useEffect(() => {
-    console.log("CREDITORS: ", entityCtx.creditorEntities)
-  }, [entityCtx.creditorEntities])
-
-  // if (loading) return <p>Loading...</p>
   if (loading) return <Loader />
   if (error) return <p>Error: {error}</p>
 
@@ -407,7 +386,7 @@ const Web = () => {
         <div className="grid grid-cols-12 gap-5">
           {/* Debtors */}
           <div className="col-span-2">
-            <div className="flex flex-wrap flex-col justify-center rounded-lg py-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
+            <div className="flex flex-col flex-wrap justify-center rounded-lg py-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
               <div className="mb-5 text-center text-xl">Debtors</div>
               <Droppable droppableId="debtorProfiles">
                 {(provided: any) => (
@@ -526,14 +505,13 @@ const Web = () => {
                   setStarted={setStarted}
                   resetAllLights={() => procCtx.resetAllLights()}
                 />
-                {/* <Image src="/device.svg" height="200" width="200" className="text-center" alt="" priority={true} /> */}
               </div>
             </div>
           </div>
 
           {/* Creditors */}
           <div className="col-span-2">
-            <div className="flex flex-wrap flex-col justify-center rounded-lg py-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
+            <div className="flex flex-col flex-wrap justify-center rounded-lg py-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
               <div className="mb-5 text-center text-xl">Creditors</div>
               <Droppable droppableId="creditorProfiles">
                 {(provided: any) => (
@@ -636,8 +614,15 @@ const Web = () => {
               Event director
             </h2>
 
-            <div className="flex min-h-80 items-center justify-center">
+            <div className="relative flex min-h-80 items-center justify-center">
               <StatusIndicator large={true} colour={procCtx.edLights.ED.color} />
+              {procCtx.edLights.ED.error !== "" && (
+                <div className="absolute bottom-16 flex items-center justify-center text-center">
+                  <p className="mb-5 w-3/4 rounded-lg bg-gradient-to-r from-gray-100 to-gray-200 p-2 text-center text-xs uppercase shadow-lg">
+                    {procCtx.edLights.ED.error}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 
@@ -662,68 +647,63 @@ const Web = () => {
                         key={`r-${rule.id}`}
                         onMouseEnter={() => {
                           handleRuleMouseEnter(rule)
-                          console.log(rule)
                         }}
                         onMouseLeave={() => handleRuleMouseLeave()}
                         onClick={() => {
                           if (selectedRule === null) {
                             handleRuleClick(rule)
-                            if (selectedType === null) {
-                              procCtx.typologies.forEach((t: Typology) => {
-                                if (t.title === rule.linkedTypologies[0]) {
-                                  setSelectedType(t)
-                                }
-                              })
-                            } else {
-                              setSelectedTypes([])
-                              for (const type of rule.linkedTypologies) {
-                                // let idx = selectedTypes.indexOf(selectedRule.linkedTypologies[0])
-                                console.log("selected types: ", type)
-                                const updatedTypes: any[] = []
-                                procCtx.typologies.forEach((typo: any, idx: number) => {
-                                  if (type === typo.title) {
-                                    console.log("type: ", typo.title, idx)
-                                    if (!selectedTypes.includes(typo.title)) {
-                                      updatedTypes.push(typo.title)
-                                      setSelectedType(typo)
-                                    }
-                                  }
-                                })
-                                console.log(updatedTypes.length)
-                                setSelectedTypes([...updatedTypes.reverse()])
-                              }
-                            }
+                            // if (selectedType === null) {
+                            //   procCtx.typologies.forEach((t: Typology) => {
+                            //     if (t.title === rule.linkedTypologies[0]) {
+                            //       setSelectedType(t)
+                            //     }
+                            //   })
+                            // } else {
+                            //   setSelectedTypes([])
+                            //   for (const type of rule.linkedTypologies) {
+                            //     const updatedTypes: any[] = []
+                            //     procCtx.typologies.forEach((typo: any, idx: number) => {
+                            //       if (type === typo.title) {
+                            //         if (!selectedTypes.includes(typo.title)) {
+                            //           updatedTypes.push(typo.title)
+                            //           setSelectedType(typo)
+                            //         }
+                            //       }
+                            //     })
+
+                            //     setSelectedTypes([...updatedTypes.reverse()])
+                            //   }
+                            // }
                           } else if (selectedRule === rule) {
-                            for (const type of rule.linkedTypologies) {
-                              // let idx = selectedTypes.indexOf(selectedRule.linkedTypologies[0])
-                              console.log("selected types: ", type)
-                              const updatedTypes: any[] = []
-                              procCtx.typologies.forEach((typo: Typology, idx: number) => {
-                                if (type === typo.title) {
-                                  console.log("type: ", typo.title, idx)
-                                  if (!selectedTypes.includes(typo.title)) {
-                                    updatedTypes.push(typo.title)
-                                    setSelectedType(typo)
-                                  }
-                                }
-                              })
-                              console.log(updatedTypes.length)
-                              setSelectedTypes([...updatedTypes])
-                            }
-                          } else {
+                            //   for (const type of rule.linkedTypologies) {
+                            //     const updatedTypes: any[] = []
+                            //     procCtx.typologies.forEach((typo: Typology, idx: number) => {
+                            //       if (type === typo.title) {
+                            //         if (!selectedTypes.includes(typo.title)) {
+                            //           updatedTypes.push(typo.title)
+                            //           setSelectedType(typo)
+                            //         }
+                            //       }
+                            //     })
+
+                            //     setSelectedTypes([...updatedTypes])
+                            //   }
+                            // } else {
                             // handleRuleClickClose()
-                            handleRuleClick(rule)
+                            handleRuleClickClose()
                           }
 
                           if (selectedRules.length > 0) {
-                            if (selectedRules.includes(rule.title)) {
-                              let idx = selectedRules.indexOf(rule.title)
-                              selectedRules.splice(idx, 1)
-                            }
-                            if (selectedTypes.length > 0) {
-                            }
+                            // if (selectedRules.includes(rule.title)) {
+                            //   let idx = selectedRules.indexOf(rule.title)
+                            //   selectedRules.splice(idx, 1)
+                            // } else {
+                            handleRuleClickClose()
+                            handleRuleClick(rule)
+                            // }
+                            // if (selectedTypes.length > 0) {
+                            // }
                           }
-                          console.log(rule)
                         }}
                       >
                         <StatusIndicator colour={rule.color} /> &nbsp;
@@ -763,7 +743,6 @@ const Web = () => {
                         key={`r-${type.id}`}
                         onMouseEnter={() => {
                           handleTypeMouseEnter(type)
-                          console.log(type)
                         }}
                         onMouseLeave={() => handleTypeMouseLeave()}
                         onClick={() => {
@@ -774,8 +753,6 @@ const Web = () => {
                           } else {
                             handleTypeClick(type)
                           }
-
-                          console.log(type)
                         }}
                       >
                         <StatusIndicator colour={type.color} /> &nbsp;
