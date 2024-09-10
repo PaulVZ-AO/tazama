@@ -136,7 +136,7 @@ export const pacs008InitialState: PACS008 = {
       CdtrAgt: {
         FinInstnId: {
           ClrSysMmbId: {
-            MmbId: "fsp002",
+            MmbId: "fsp001",
           },
         },
       },
@@ -215,11 +215,11 @@ export const pacs002InitialState: PACS002 = {
       ChrgsInf: [
         { Amt: { Amt: 0, Ccy: "USD" }, Agt: { FinInstnId: { ClrSysMmbId: { MmbId: "fsp001" } } } },
         { Amt: { Amt: 0, Ccy: "USD" }, Agt: { FinInstnId: { ClrSysMmbId: { MmbId: "fsp001" } } } },
-        { Amt: { Amt: 0, Ccy: "USD" }, Agt: { FinInstnId: { ClrSysMmbId: { MmbId: "fsp002" } } } },
+        { Amt: { Amt: 0, Ccy: "USD" }, Agt: { FinInstnId: { ClrSysMmbId: { MmbId: "fsp001" } } } },
       ],
       AccptncDtTm: "",
       InstgAgt: { FinInstnId: { ClrSysMmbId: { MmbId: "fsp001" } } },
-      InstdAgt: { FinInstnId: { ClrSysMmbId: { MmbId: "fsp002" } } },
+      InstdAgt: { FinInstnId: { ClrSysMmbId: { MmbId: "fsp001" } } },
     },
   },
 }

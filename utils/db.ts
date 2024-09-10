@@ -86,7 +86,7 @@ export const getRulesDescriptions = async (config: any) => {
     })
   }
 
-  db.close()
+  await db.close()
 
   return result
 }
@@ -105,7 +105,7 @@ export const getTypologyDescriptions = async (config: DBConfig) => {
     result.push(typology)
   }
 
-  db.close()
+  await db.close()
 
   return result
 }
@@ -115,66 +115,70 @@ export const getTADPROCResult = async (transactionID: string, config: DBConfig) 
   await getCollection("transactions", db)
 
   let result = []
-  const results = await db.query(aql`FOR c IN transactions FILTER c.transactionID == ${transactionID} RETURN c`)
-
-  for await (let transaction of results) {
-    result.push(transaction)
-  }
-
-  if (result.length > 0) {
-    let response: TADPROC = {
-      status: result[0]?.report?.status,
-      stop: false,
-      color: "n",
-      results: [],
-    }
-    // DOUBLE CHECK THIS LOGIC
-    if (result[0]?.report?.status === "NALT") {
-      response.color = "g"
-    } else if (result[0]?.report?.status === "ALRT") {
-      response.color = "y"
+  try {
+    const results = await db.query(aql`FOR c IN transactions FILTER c.transactionID == ${transactionID} RETURN c`)
+    for await (let transaction of results) {
+      result.push(transaction)
     }
 
-    let tr = result[0]?.report?.tadpResult?.typologyResult
-    // LOOP HERE
-    if (tr.length > 0) {
-      tr.forEach((typoRes: any) => {
-        // new result object
-        let typoResult: TADPROC_RESULT = {
-          cfg: typoRes.cfg,
-          result: typoRes.result,
-          workflow: {
-            alertThreshold: null,
-            interdictionThreshold: null,
-          },
-          ruleResults: [],
-        }
+    if (result.length > 0) {
+      let response: TADPROC = {
+        status: result[0]?.report?.status,
+        stop: false,
+        color: "n",
+        results: [],
+      }
+      // DOUBLE CHECK THIS LOGIC
+      if (result[0]?.report?.status === "NALT") {
+        response.color = "g"
+      } else if (result[0]?.report?.status === "ALRT") {
+        response.color = "y"
+      }
 
-        // modify result object
-        typoRes.ruleResults.forEach((result: RuleResult) => {
-          typoResult.ruleResults.push(result)
-        })
-
-        typoResult.workflow.interdictionThreshold = typoRes.workflow.interdictionThreshold
-          ? typoRes.workflow.interdictionThreshold
-          : null
-
-        typoResult.workflow.alertThreshold = typoRes.workflow.alertThreshold ? typoRes.workflow.alertThreshold : null
-
-        if (typoResult.workflow.interdictionThreshold !== null) {
-          if (typoRes.result >= typoResult.workflow.interdictionThreshold) {
-            response.stop = true
-            response.color = "r"
+      let tr = result[0]?.report?.tadpResult?.typologyResult
+      // LOOP HERE
+      if (tr.length > 0) {
+        tr.forEach((typoRes: any) => {
+          // new result object
+          let typoResult: TADPROC_RESULT = {
+            cfg: typoRes.cfg,
+            result: typoRes.result,
+            workflow: {
+              alertThreshold: null,
+              interdictionThreshold: null,
+            },
+            ruleResults: [],
           }
-        }
 
-        response.results.push(typoResult)
-      })
+          // modify result object
+          typoRes.ruleResults.forEach((result: RuleResult) => {
+            typoResult.ruleResults.push(result)
+          })
+
+          typoResult.workflow.interdictionThreshold = typoRes.workflow.interdictionThreshold
+            ? typoRes.workflow.interdictionThreshold
+            : null
+
+          typoResult.workflow.alertThreshold = typoRes.workflow.alertThreshold ? typoRes.workflow.alertThreshold : null
+
+          // Add this somewhere else...
+
+          if (typoResult.workflow.interdictionThreshold !== null) {
+            if (typoRes.result >= typoResult.workflow.interdictionThreshold) {
+              response.stop = true
+              response.color = "r"
+            }
+          }
+
+          response.results.push(typoResult)
+        })
+      }
+      await db.close()
+
+      return response
     }
-
-    db.close()
-
-    return response
+  } catch (err) {
+    console.log("TadProc Results Error: ", err)
   }
 }
 
@@ -182,15 +186,20 @@ const getTypologyDetails = async (cfg: string, config: DBConfig) => {
   const db = getConfigConnection(config)
   await getCollection("typologyConfiguration", db)
   let result = []
-  const results = await db.query(aql`FOR typo IN typologyConfiguration FILTER typo.cfg == ${cfg} RETURN typo`)
 
-  for await (let typo of results) {
-    result.push(typo)
+  try {
+    const results = await db.query(aql`FOR typo IN typologyConfiguration FILTER typo.cfg == ${cfg} RETURN typo`)
+
+    for await (let typo of results) {
+      result.push(typo)
+    }
+
+    await db.close()
+
+    return result
+  } catch (err) {
+    console.log("Typology Details Error: ", err)
   }
-
-  db.close()
-
-  return result
 }
 
 export const getNetworkMap = async (config: DBConfig) => {
@@ -200,7 +209,7 @@ export const getNetworkMap = async (config: DBConfig) => {
 
   let result = []
   const results = await db.query(aql`FOR c IN networkConfiguration FILTER c.active == true RETURN c`)
-
+  await db.close()
   for await (let config of results) {
     result.push(config)
   }
@@ -231,6 +240,7 @@ export const getNetworkMap = async (config: DBConfig) => {
             ruleDescription: "",
             color: "n",
             result: null,
+            wght: 0,
             linkedTypologies: [],
             ruleBands: [],
           }
@@ -294,7 +304,8 @@ export const getNetworkMap = async (config: DBConfig) => {
             }
             rule.ruleBands.push(newBand)
           })
-        } else if (result[0].config.hasOwnProperty("exitConditions")) {
+        }
+        if (result[0].config.hasOwnProperty("exitConditions")) {
           result[0].config.exitConditions.forEach((item: RuleBand) => {
             let newCondition: RuleBand = {
               subRuleRef: item.subRuleRef,
@@ -315,14 +326,16 @@ export const getNetworkMap = async (config: DBConfig) => {
     }
   })
   typologiesRes.forEach(async (typology) => {
-    let typo = await getTypologyDetails(typology.id, config)
-    typology.typoDescription = typo[0].desc
-    typology.workflow.interdictionThreshold = typo[0].workflow.hasOwnProperty("interdictionThreshold")
-      ? typo[0].workflow.interdictionThreshold
-      : null
-    typology.workflow.alertThreshold = typo[0].workflow.hasOwnProperty("alertThreshold")
-      ? typo[0].workflow.alertThreshold
-      : null
+    let typo: any[] | undefined = await getTypologyDetails(typology.id, config)
+    if (typo !== undefined) {
+      typology.typoDescription = typo[0].desc
+      typology.workflow.interdictionThreshold = typo[0].workflow.hasOwnProperty("interdictionThreshold")
+        ? typo[0].workflow.interdictionThreshold
+        : null
+      typology.workflow.alertThreshold = typo[0].workflow.hasOwnProperty("alertThreshold")
+        ? typo[0].workflow.alertThreshold
+        : null
+    }
   })
   finalRules.sort((a, b) => a.title - b.title)
   typologiesRes.sort((a, b) => a.title - b.title)

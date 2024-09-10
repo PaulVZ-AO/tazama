@@ -11,6 +11,7 @@ interface Context {
   edLights: EDLightsManager
   rules: Rule[]
   tadpLights: TADPROC
+  tadProcResults: TADPROC | null
   createRules: () => void
   createTypologies: () => void
   updateRules: (rules: Rule[]) => void
@@ -30,6 +31,7 @@ const ProcessorContext = createContext<Context>({
   rules: ruleInitialState,
   typologies: [],
   tadpLights: defaultTadProcLights,
+  tadProcResults: null,
   createRules: () => {},
   createTypologies: () => {},
   updateRules: (rules: Rule[]) => {},

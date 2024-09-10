@@ -664,6 +664,7 @@ const EntityProvider = ({ children }: Props) => {
     } catch (error) {
       dispatch({ type: ACTIONS.SET_DEBTOR_ACCOUNT_PACS008_FAIL })
       console.log("ERROR DEBTOR ACCOUNT PACS008: ", error)
+      return error
     }
   }
 

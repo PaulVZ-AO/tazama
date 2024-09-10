@@ -12,6 +12,7 @@ export interface Rule {
   ruleDescription: string
   color: "r" | "g" | "y" | "n"
   result: any
+  wght: number
   linkedTypologies: string[]
   ruleBands: RuleBand[]
 }

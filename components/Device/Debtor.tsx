@@ -20,15 +20,6 @@ interface LightsManager {
   ED: EDLights
 }
 
-interface TadProcLightsManager {
-  TADPROC: {
-    result: any
-    color: "r" | "g" | "y" | "n"
-    stop: boolean
-    status: string
-  }
-}
-
 interface DebtorProps {
   selectedEntity: number
   isDebtor?: boolean
@@ -93,12 +84,16 @@ export function DebtorDevice(props: DebtorProps) {
         }, 1000)
       }
     } catch (error: any) {
-      const errMsg: any = JSON.parse(error.response.data.split("\n").slice(1).join("\n"))
+      let errMsg: any
+      if (error.response.data) {
+        errMsg = JSON.stringify(error.response.data).split(".")[0]
+      }
+
       let data: EDLights = {
         pacs008: true,
         pacs002: false,
         color: "r",
-        error: `PACS002: ${sentanceCase(errMsg.errorMessage.split("-")[0])}`,
+        error: `PACS002: ${errMsg}`,
       }
       let newData: LightsManager = {
         ED: data,

@@ -19,7 +19,6 @@ const handle = app.getRequestHandler()
 
 const handleMsg = async (msg, socket, room) => {
   const decodedMessage = frms.default.decode(msg.data)
-
   await socket.to(room).emit(room, decodedMessage)
 }
 
@@ -125,6 +124,7 @@ app.prepare().then(() => {
 
     socket.on("disconnect", () => {
       console.log("Client disconnected")
+      return socket.disconnected
     })
   })
 

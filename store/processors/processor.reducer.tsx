@@ -79,6 +79,7 @@ const ProcessorReducer = (state: any, action: any) => {
       return {
         ...state,
         tadprocLoading: true,
+        tadpLights: defaultTadProcLights,
       }
     case ACTIONS.UPDATE_TADPROC_SUCCESS:
       return {
@@ -127,6 +128,16 @@ const ProcessorReducer = (state: any, action: any) => {
         ...state,
       }
 
+    case ACTIONS.RESET_TADPROC_RESULTS:
+      return {
+        ...state,
+      }
+    case ACTIONS.SET_TADPROC_RESULTS:
+      return {
+        ...state,
+        tadProcResults: action.payload,
+      }
+
     case ACTIONS.RESET_ALL_LIGHTS:
       return {
         ...state,
@@ -134,6 +145,7 @@ const ProcessorReducer = (state: any, action: any) => {
         rules: state.rules.map((rule: any) => ({ ...rule, color: "n" })),
         typologies: state.typologies.map((typo: any) => ({ ...typo, color: "n" })),
         edLights: defaultEDLights,
+        tadProcResults: null,
       }
   }
 }

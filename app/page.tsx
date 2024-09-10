@@ -159,6 +159,7 @@ const Web = () => {
 
   function RuleResult() {
     if (hoveredRule === null && selectedRule === null) return null
+
     return (
       <div
         className="cursor-pointer rounded-xl p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"
@@ -179,9 +180,14 @@ const Web = () => {
           </div>
           <hr className="mb-2 border-black" />
           <div className="align-center mb-2 grid w-full grid-cols-4 justify-center gap-4 text-center">
-            <p className="align-center col-span-1 flex h-8 w-full flex-row justify-center border-2 border-black px-4 py-2 text-center text-xs">
-              {hoveredRule ? hoveredRule.result : selectedRule && selectedRule.result}
-            </p>
+            <div className="flex flex-col gap-1">
+              <p className="align-center col-span-1 flex h-8 w-full flex-row justify-center border-2 border-black px-4 py-2 text-center text-xs">
+                {hoveredRule ? hoveredRule.result : selectedRule && selectedRule.result}
+              </p>
+              <p className="align-center col-span-1 flex h-8 w-full flex-row justify-center border-2 border-black px-4 py-2 text-center text-xs">
+                {hoveredRule ? hoveredRule.wght : selectedRule && selectedRule.wght}
+              </p>
+            </div>
             <p className="align-center col-span-3 flex size-full flex-row justify-center border-2 border-black px-4 py-2 text-center text-xs">
               {hoveredRule
                 ? hoveredRule.result
@@ -773,8 +779,17 @@ const Web = () => {
               Tadproc
             </h2>
 
-            <div className="flex min-h-80 items-center justify-center">
+            <div className="relative flex min-h-80 items-center justify-center">
               <StatusIndicator large={true} colour={procCtx.tadpLights.color} />
+
+              {procCtx.tadpLights.color === "y" ||
+                (procCtx.tadpLights.color === "r" && (
+                  <div className="absolute bottom-16 flex items-center justify-center text-center">
+                    <p className="mb-5 rounded-lg bg-gradient-to-r from-gray-100 to-gray-200 px-5 py-2 text-center text-xs uppercase shadow-lg">
+                      {procCtx.tadpLights.status}
+                    </p>
+                  </div>
+                ))}
             </div>
           </div>
         </div>
