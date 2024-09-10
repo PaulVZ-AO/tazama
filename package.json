@@ -1,6 +1,6 @@
 {
   "name": "next-enterprise",
-  "version": "1.0.1",
+  "version": "1.0.11",
   "private": true,
   "scripts": {
     "dev": "cross-env FORCE_COLOR=1 nodemon server.js",
@@ -53,6 +53,7 @@
     "arangojs": "^9.0.0",
     "axios": "^1.7.3",
     "class-variance-authority": "^0.7.0",
+    "crypto": "^1.0.1",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "lodash": "^4.17.21",
@@ -63,6 +64,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "sass": "^1.77.8",
+    "shelljs": "^0.8.5",
     "socket.io": "^4.7.5",
     "socket.io-client": "^4.7.5",
     "socket.io-nats-adapter": "^0.2.1",

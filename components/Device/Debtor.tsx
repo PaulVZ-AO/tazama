@@ -1,7 +1,7 @@
 import axios from "axios"
 import dotenv from "../../node_modules/dotenv/lib/main"
 import Image from "next/image"
-import React, { useContext, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { TimeComponent } from "components/timeComponent/TimeComponent"
 import EntityContext from "store/entities/entity.context"
 import { sentanceCase } from "utils/helpers"
@@ -48,12 +48,13 @@ export function DebtorDevice(props: DebtorProps) {
 
   const creditorEntity = entityCtx.creditorEntities
 
-  ;(async () => {
-    const cfg: any = await procCtx.getUIConfig()
-    console.log("-------------> CONFIG: ", JSON.parse(cfg))
-    const parsedConfig: any = JSON.parse(cfg)
-    setTmsUrl(parsedConfig.tmsServerUrl)
-  })()
+  useEffect(() => {
+    ;(async () => {
+      const cfg: any = await procCtx.getUIConfig()
+      const parsedConfig: any = JSON.parse(cfg)
+      setTmsUrl(parsedConfig.tmsServerUrl)
+    })()
+  }, [])
 
   // const tmsUrl = process.env.NEXT_PUBLIC_TMS_SERVER_URL
 
@@ -91,7 +92,6 @@ export function DebtorDevice(props: DebtorProps) {
           props.setStarted(false)
         }, 1000)
       }
-      console.log("Test POST PACS002 response: ", response.data)
     } catch (error: any) {
       const errMsg: any = JSON.parse(error.response.data.split("\n").slice(1).join("\n"))
       let data: EDLights = {
@@ -134,10 +134,8 @@ export function DebtorDevice(props: DebtorProps) {
           await postPacs002()
         }, 1000)
       }
-      console.log("Test POST PACS008 response: ", response.data)
     } catch (error: any) {
       const errMsg: any = JSON.parse(error.response.data.split("\n").slice(1).join("\n"))
-      console.log("PACS008 ERROR: ")
       let data: any = {
         pacs008: props.lights.ED.pacs008,
         pacs002: false,
@@ -155,13 +153,12 @@ export function DebtorDevice(props: DebtorProps) {
     }
   }
   return (
-    <div className="relative col-span-4" style={{ height: "505px" }}>
+    <div className="relative col-span-4" style={{ height: "505px", width: "auto" }}>
       <Image
         src="/device.svg"
-        width="250"
-        height="505"
-        className="absolute inset-x-0 mx-auto"
-        style={{ maxWidth: "250px", minWidth: "250px" }}
+        width={250}
+        height={505}
+        className="absolute inset-x-0 mx-auto h-auto"
         alt="device info"
         priority={true}
       />

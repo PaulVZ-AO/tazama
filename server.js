@@ -7,7 +7,7 @@ const { Server } = require("socket.io")
 const { createServer } = require("http")
 const { parse } = require("url")
 
-const app = next({ dev: process.env.NODE_ENV !== "production" })
+const app = next({ dev: process.env.NODE_ENV !== "production", customServer: true, quiet: true, turbo: true })
 
 let natsUrl = { url: null }
 
@@ -15,7 +15,7 @@ const port = process.env.PORT
 
 const handle = app.getRequestHandler()
 
-const sc = NATS.StringCodec()
+// const sc = NATS.StringCodec()
 
 const handleMsg = async (msg, socket, room) => {
   const decodedMessage = frms.default.decode(msg.data)
@@ -64,18 +64,14 @@ app.prepare().then(() => {
     })
 
     socket.on("uiconfig", (config) => {
-      console.log("UI Config:", config)
       if (config !== null && config !== undefined) {
         natsUrl.url = config.cmsNatsHosting
       }
     })
 
     socket.on("subscriptions", (message) => {
-      console.log("Subscriptions:", message)
-
       message.subscriptions.forEach((subscription) => {
         if (!NATSSubscriptions.includes(subscription)) {
-          // console.log("Adding subscription:", subscription)
           NATSSubscriptions.push(subscription)
         }
       })
@@ -101,7 +97,7 @@ app.prepare().then(() => {
       if (sub === ">") {
         socket.emit("subscriptions", `Subscribed to all rules`)
       } else {
-        console.log("Subscribed to ", sub)
+        // console.log("Subscribed to ", sub)
         socket.emit("subscriptions", `Subscribed to ${sub}`)
       }
     })
@@ -112,19 +108,8 @@ app.prepare().then(() => {
     const all = nc.subscribe(">", { queue: "MONITORING1" })
     // const pubRule901 = nc.subscribe("pub-rule-016@1.0.0", { queue: "MONITORING_RULE_PUBLISHER" })
     // const subRule901 = nc.subscribe("sub-rule-016@1.0.0", { queue: "MONITORING_RULE_SUBSCRIBER" })
-    const type001 = nc.subscribe("typology-999@1.0.0", { queue: "MONITORING_TYPOLOGY" })
+    // const type001 = nc.subscribe("typology-999@1.0.0", { queue: "MONITORING_TYPOLOGY" })
     const cms = nc.subscribe("cms", { queue: "MONITORING_CMS" })
-
-    // subscriptions.push(connected)
-    // subscriptions.push(all)
-    // // subscriptions.push(pubRule901)
-    // // subscriptions.push(subRule901)
-    // // subscriptions.push(cms)
-    // subscriptions.push(type001)
-
-    // subscriptions.forEach(async (sub) => {
-    //   return await messageListener(sub, socket)
-    // })
 
     ;(async () => {
       for await (const msg of connected) await handleMsg(msg, io, "connection")
@@ -132,15 +117,6 @@ app.prepare().then(() => {
     ;(async () => {
       for await (const msg of all) await handleMsg(msg, io, "stream")
     })()
-    // ;(async () => {
-    //   for await (const msg of type001) await handleMsg(msg, io, "typoResponse")
-    // })()
-    // ;(async () => {
-    //   for await (const msg of pubRule901) await handleMsg(msg, io, "ruleResponse")
-    // })()
-    // ;(async () => {
-    //   for await (const msg of subRule901) await handleMsg(msg, io, "ruleRequest")
-    // })()
     ;(async () => {
       for await (const msg of cms) await handleMsg(msg, io, "tadProc")
     })()

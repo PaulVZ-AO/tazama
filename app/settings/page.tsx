@@ -2,13 +2,15 @@
 
 import React, { useContext, useEffect, useState } from "react"
 import EntityContext from "store/entities/entity.context"
+import Link from "next/link"
 import { UIConfiguration } from "store/entities/entity.interface"
 import ResetModal from "./ResetModal"
 import ConfigModal from "./ConfigModal"
 import { uiConfigInitialState } from "store/entities/entity.initialState"
+import Image from "next/image"
 
 const Settings = () => {
-  const entityCtx = useContext(EntityContext)
+  const entityCtx: any = useContext(EntityContext)
   const [config, setConfig] = useState<UIConfiguration>()
   const [showModal, setShowModal] = useState(false)
   const [showConfigModal, setShowConfigModal] = useState(false)
@@ -28,14 +30,6 @@ const Settings = () => {
     }
   }, [entityCtx.uiConfig])
 
-  useEffect(() => {
-    console.log("CONFIG: ", entityCtx.uiConfig)
-  }, [config])
-
-  useEffect(() => {
-    console.log("CONFIG: ", config)
-  }, [config])
-
   const handleReset = async () => {
     await entityCtx.reset()
     window.location.replace("/")
@@ -52,21 +46,16 @@ const Settings = () => {
       entityCtx.setUiConfig(configData)
       setShowConfigModal(false)
       setConfig(configData)
+      window.location.replace("/")
     }
   }
 
   const handleConfigUpdateCancel = async () => {
-    const backupConfig = localStorage.getItem("UI_CONFIG_BU")
-    if (backupConfig) {
-      const backup: any = JSON.parse(backupConfig)
-      setConfig(backup)
-      entityCtx.setUiConfig(backup)
-      localStorage.removeItem("UI_CONFIG_BU")
-    }
+    window.location.replace("/")
   }
 
   return (
-    <div className="bg-slate-300/25 p-10">
+    <div className=" bg-slate-300/25 p-10" style={{ minHeight: `calc(100vh - 81px)` }}>
       <div className="grid grid-cols-12 gap-5">
         <div className="col-span-4"></div>
         <div className="col-span-4">
@@ -91,13 +80,6 @@ const Settings = () => {
               />
             </div>
           </div>
-
-          {/* <div className="col-span-full">
-            <label htmlFor="tms_key">Key / Token</label>
-            <div className="my-2">
-              <input id="tms_key" type="text" className="w-full rounded-lg p-2" placeholder={config?.tmsKey} />
-            </div>
-          </div> */}
 
           <div className="col-span-full">
             <hr className="mb-2 border-black" />
@@ -223,18 +205,21 @@ const Settings = () => {
             </div>
           </div>
           <div className="col-span-full">
-            <label htmlFor="argo_db">Data Base Name</label>
+            <hr className="mb-2 border-black" />
+          </div>
+          <div className="col-span-full">
+            <label htmlFor="argo_pwd">Websocket IP Address</label>
             <div className="my-2">
               <input
-                id="tms_key"
+                id="ip_address"
                 type="text"
                 className="w-full rounded-lg p-2"
-                value={config?.dbName || ""}
+                value={config?.wsIpAddress || ""}
                 onChange={(e) => {
                   if (config !== undefined) {
                     setConfig({
                       ...config,
-                      dbName: e.target.value,
+                      wsIpAddress: e.target.value,
                     })
                   }
                 }}
@@ -272,6 +257,14 @@ const Settings = () => {
             Reset
           </button>
         </div>
+      </div>
+
+      <div className="absolute bottom-[2%] flex justify-start gap-2 opacity-70">
+        <span style={{ textShadow: "1px 1px white" }}> Powered by</span>
+
+        <Link href="https://weareao.group/" rel="noopener noreferrer" target="_blank">
+          <Image src="/image.png" alt="AO logo" width={45} height={45} className=" grayscale" />
+        </Link>
       </div>
 
       <ResetModal show={showModal} onClose={() => setShowModal(false)} onConfirm={handleReset} />

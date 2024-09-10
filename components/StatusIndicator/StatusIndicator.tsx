@@ -15,9 +15,7 @@ export interface StatusIndicatorProps {
 }
 
 export function StatusIndicator({ ...props }: StatusIndicatorProps) {
-  useEffect(() => {
-    console.log(props.rule)
-  }, [props?.rule])
+  useEffect(() => {}, [props?.rule])
   let src = ""
   let size = 20
 

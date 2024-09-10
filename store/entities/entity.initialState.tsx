@@ -1,14 +1,17 @@
+import dotenv from "dotenv"
 import { PACS002, PACS008, SelectedCreditor, SelectedDebtor, UIConfiguration } from "./entity.interface"
 
-const TMS_SERVER_URL = process.env.NEXT_PUBLIC_TMS_SERVER_URL || "http://localhost:5000"
-const TMS_KEY = process.env.NEXT_PUBLIC_TMS_KEY || "no key set"
-const CMS_NATS_HOSTING = process.env.NEXT_PUBLIC_CMS_NATS_HOSTING || "nats://localhost:4222"
-const NATS_USERNAME = process.env.NEXT_PUBLIC_NATS_USERNAME || "nats_username"
-const NATS_PASSWORD = process.env.NEXT_PUBLIC_NATS_PASSWORD || "nats_password"
-const ARANGO_DB_HOSTING = process.env.NEXT_PUBLIC_ARANGO_DB_HOSTING || "http://localhost:8529"
-const DB_USER = process.env.NEXT_PUBLIC_DB_USER || "root"
-const DB_PASSWORD = process.env.NEXT_PUBLIC_DB_PASSWORD || "root_password"
-const DB_NAME = process.env.NEXT_PUBLIC_DB_NAME || "tms_db"
+dotenv.config()
+
+const TMS_SERVER_URL = process.env.NEXT_PUBLIC_TMS_SERVER_URL
+const TMS_KEY = process.env.NEXT_PUBLIC_TMS_KEY
+const CMS_NATS_HOSTING = process.env.NEXT_PUBLIC_CMS_NATS_HOSTING
+const NATS_USERNAME = process.env.NEXT_PUBLIC_NATS_USERNAME
+const NATS_PASSWORD = process.env.NEXT_PUBLIC_NATS_PASSWORD
+const ARANGO_DB_HOSTING = process.env.NEXT_PUBLIC_ARANGO_DB_HOSTING
+const DB_USER = process.env.NEXT_PUBLIC_DB_USER
+const DB_PASSWORD = process.env.NEXT_PUBLIC_DB_PASSWORD
+const WS_URL = process.env.NEXT_PUBLIC_WS_URL
 
 export const creditorInitialState: SelectedCreditor = {
   creditorSelectedIndex: undefined,
@@ -222,15 +225,15 @@ export const pacs002InitialState: PACS002 = {
 }
 
 export const uiConfigInitialState: UIConfiguration = {
-  tmsServerUrl: TMS_SERVER_URL,
-  tmsKey: TMS_KEY,
-  cmsNatsHosting: CMS_NATS_HOSTING,
-  natsUsername: NATS_USERNAME,
-  natsPassword: NATS_PASSWORD,
-  arangoDBHosting: ARANGO_DB_HOSTING,
-  dbUser: DB_USER,
-  dbPassword: DB_PASSWORD,
-  dbName: DB_NAME,
+  tmsServerUrl: TMS_SERVER_URL !== undefined ? TMS_SERVER_URL : "",
+  tmsKey: TMS_KEY !== undefined ? TMS_KEY : "",
+  cmsNatsHosting: CMS_NATS_HOSTING !== undefined ? CMS_NATS_HOSTING : "",
+  natsUsername: NATS_USERNAME !== undefined ? NATS_USERNAME : "",
+  natsPassword: NATS_PASSWORD !== undefined ? NATS_PASSWORD : "",
+  arangoDBHosting: ARANGO_DB_HOSTING !== undefined ? ARANGO_DB_HOSTING : "",
+  dbUser: DB_USER !== undefined ? DB_USER : "",
+  dbPassword: DB_PASSWORD !== undefined ? DB_PASSWORD : "",
+  wsIpAddress: WS_URL !== undefined ? WS_URL : "",
 }
 
 export const rulesLightsInitialState = []

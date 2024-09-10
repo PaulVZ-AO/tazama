@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react"
 import EntityContext from "store/entities/entity.context"
+import { PACS008 } from "store/entities/entity.interface"
 
 interface Props {
   isVisible: boolean
@@ -42,22 +43,23 @@ const TransactionModal = ({ ...props }: Props) => {
   // Save transaction updates
   const handleSave = async () => {
     if (validateForm()) {
-      const updates = {
+      const updates: PACS008 = {
+        ...entityCtx.pacs008,
         FIToFICstmrCdtTrf: {
+          ...entityCtx.pacs008.FIToFICstmrCdtTrf,
           CdtTrfTxInf: {
+            ...entityCtx.pacs008.FIToFICstmrCdtTrf.CdtTrfTxInf,
             IntrBkSttlmAmt: {
               Amt: {
-                Amt: props.formValues.amount,
+                ...entityCtx.pacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.IntrBkSttlmAmt.Amt,
+                Amt: parseFloat(props.formValues.amount),
               },
             },
             InstdAmt: {
               Amt: {
-                Amt: props.formValues.amount,
+                ...entityCtx.pacs008.FIToFICstmrCdtTrf.CdtTrfTxInf.InstdAmt.Amt,
+                Amt: parseFloat(props.formValues.amount),
               },
-            },
-            PmtId: {
-              InstrId: props.formValues.purpose,
-              EndToEndId: props.formValues.description,
             },
             Purp: {
               Cd: props.formValues.purpose,
@@ -69,6 +71,7 @@ const TransactionModal = ({ ...props }: Props) => {
           SplmtryData: {
             Envlp: {
               Doc: {
+                ...entityCtx.pacs008.FIToFICstmrCdtTrf.SplmtryData.Envlp.Doc,
                 InitgPty: {
                   Glctn: {
                     Lat: props.formValues.latitude,

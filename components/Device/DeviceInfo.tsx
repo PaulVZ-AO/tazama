@@ -191,7 +191,7 @@ export function DeviceInfo(props: DeviceProps) {
               </p>
               <p>Status: {pacs002Data.TxInfAndSts.TxSts}</p>
 
-              <hr className="mt-2" />
+              {/* <hr className="mt-2" />
               <button className="m-auto mt-2 flex items-center text-blue-500">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -208,7 +208,7 @@ export function DeviceInfo(props: DeviceProps) {
                   />
                 </svg>
                 edit
-              </button>
+              </button> */}
             </div>
           </>
         ) : null}
