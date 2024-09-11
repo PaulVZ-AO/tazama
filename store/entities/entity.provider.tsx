@@ -895,7 +895,7 @@ const EntityProvider = ({ children }: Props) => {
       // updatedPacs002.FIToFIPmtSts.TxInfAndSts.OrgnlInstrId = pacs008Data.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.InstrId
       // updatedPacs002.FIToFIPmtSts.TxInfAndSts.OrgnlEndToEndId =
       //   pacs008Data.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.EndToEndId
-      updatedPacs002.FIToFIPmtSts.TxInfAndSts.TxSts = update?.FIToFIPmtSts?.TxInfAndSts?.TxSts || "ACC"
+      updatedPacs002.FIToFIPmtSts.TxInfAndSts.TxSts = update?.FIToFIPmtSts?.TxInfAndSts?.TxSts || "ACCC"
       // updatedPacs002.FIToFIPmtSts.TxInfAndSts.AccptncDtTm =
       //   update.FIToFIPmtSts?.TxInfAndSts.AccptncDtTm || new Date().toISOString()
 
