@@ -879,6 +879,37 @@ const EntityProvider = ({ children }: Props) => {
     }
   }
 
+  const updateStatus = async (update: PACS002) => {
+    try {
+      dispatch({ type: ACTIONS.UPDATE_STATUS_LOADING })
+
+      const updatedPacs002: PACS002 = { ...state.pacs002 }
+
+      // let pacs008Data: PACS008 = state.pacs008
+
+      // // GrpHdr
+      // updatedPacs002.FIToFIPmtSts.GrpHdr.MsgId = update.FIToFIPmtSts?.GrpHdr.MsgId || uuidv4().replaceAll("-", "")
+      // updatedPacs002.FIToFIPmtSts.GrpHdr.CreDtTm = update.FIToFIPmtSts?.GrpHdr.CreDtTm || new Date().toISOString()
+
+      // // TxInfAndSts
+      // updatedPacs002.FIToFIPmtSts.TxInfAndSts.OrgnlInstrId = pacs008Data.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.InstrId
+      // updatedPacs002.FIToFIPmtSts.TxInfAndSts.OrgnlEndToEndId =
+      //   pacs008Data.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.EndToEndId
+      updatedPacs002.FIToFIPmtSts.TxInfAndSts.TxSts = update?.FIToFIPmtSts?.TxInfAndSts?.TxSts || "ACC"
+      // updatedPacs002.FIToFIPmtSts.TxInfAndSts.AccptncDtTm =
+      //   update.FIToFIPmtSts?.TxInfAndSts.AccptncDtTm || new Date().toISOString()
+
+      console.log(updatedPacs002, "changed")
+
+      dispatch({ type: ACTIONS.UPDATE_STATUS_SUCCESS, payload: updatedPacs002 })
+
+      localStorage.setItem("PACS002", JSON.stringify(updatedPacs002))
+    } catch (error) {
+      dispatch({ type: ACTIONS.UPDATE_STATUS_FAIL })
+      console.log("PACS002 ERROR: ", error)
+    }
+  }
+
   return (
     <EntityContext.Provider
       value={{
@@ -933,6 +964,7 @@ const EntityProvider = ({ children }: Props) => {
         cloneEntity,
         cloneCreditorEntity,
         setUiConfig,
+        updateStatus,
       }}
     >
       {children}
