@@ -3,7 +3,6 @@ import EntityContext from "store/entities/entity.context"
 import { DebtorAccount, DebtorEntity } from "store/entities/entity.interface"
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
-import "../../styles/datePickerStyles.css"
 
 interface Props {
   color?: string
