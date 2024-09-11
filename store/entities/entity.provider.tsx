@@ -182,7 +182,6 @@ const EntityProvider = ({ children }: Props) => {
       dispatch({ type: ACTIONS.GENERATE_PACS002_LOADING })
       let pacs002Payload: PACS002 = state.pacs002
       let pacs008Data: PACS008 = state.pacs008
-
       // GrpHdr
       pacs002Payload.FIToFIPmtSts.GrpHdr.MsgId = uuidv4().replaceAll("-", "")
       pacs002Payload.FIToFIPmtSts.GrpHdr.CreDtTm = new Date().toISOString()
@@ -191,7 +190,7 @@ const EntityProvider = ({ children }: Props) => {
       pacs002Payload.FIToFIPmtSts.TxInfAndSts.OrgnlInstrId = pacs008Data.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.InstrId
       pacs002Payload.FIToFIPmtSts.TxInfAndSts.OrgnlEndToEndId =
         pacs008Data.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.EndToEndId
-      pacs002Payload.FIToFIPmtSts.TxInfAndSts.TxSts = "ACCC"
+      pacs002Payload.FIToFIPmtSts.TxInfAndSts.TxSts = pacs002Payload.FIToFIPmtSts.TxInfAndSts.TxSts || "ACCC"
       pacs002Payload.FIToFIPmtSts.TxInfAndSts.AccptncDtTm = new Date().toISOString()
       dispatch({ type: ACTIONS.GENERATE_PACS002_SUCCESS, payload: pacs002Payload })
       localStorage.setItem("PACS002", JSON.stringify(state.pacs002))
@@ -213,8 +212,7 @@ const EntityProvider = ({ children }: Props) => {
         localStorage.setItem("SELECTED_DEBTOR", JSON.stringify(state.selectedDebtorEntity))
       }
     } catch (error) {
-      console.log("ERROR happened on Debtor")
-      console.log(error)
+      console.log("ERROR happened on Debtor", error)
     }
   }
 
@@ -231,8 +229,7 @@ const EntityProvider = ({ children }: Props) => {
         localStorage.setItem("SELECTED_CREDITOR", JSON.stringify(state.selectedCreditorEntity))
       }
     } catch (error) {
-      console.log("ERROR happened on Creditors")
-      console.log(error)
+      console.log("ERROR happened on Creditors", error)
     }
   }
 
@@ -885,22 +882,7 @@ const EntityProvider = ({ children }: Props) => {
       dispatch({ type: ACTIONS.UPDATE_STATUS_LOADING })
 
       const updatedPacs002: PACS002 = { ...state.pacs002 }
-
-      // let pacs008Data: PACS008 = state.pacs008
-
-      // // GrpHdr
-      // updatedPacs002.FIToFIPmtSts.GrpHdr.MsgId = update.FIToFIPmtSts?.GrpHdr.MsgId || uuidv4().replaceAll("-", "")
-      // updatedPacs002.FIToFIPmtSts.GrpHdr.CreDtTm = update.FIToFIPmtSts?.GrpHdr.CreDtTm || new Date().toISOString()
-
-      // // TxInfAndSts
-      // updatedPacs002.FIToFIPmtSts.TxInfAndSts.OrgnlInstrId = pacs008Data.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.InstrId
-      // updatedPacs002.FIToFIPmtSts.TxInfAndSts.OrgnlEndToEndId =
-      //   pacs008Data.FIToFICstmrCdtTrf.CdtTrfTxInf.PmtId.EndToEndId
       updatedPacs002.FIToFIPmtSts.TxInfAndSts.TxSts = update?.FIToFIPmtSts?.TxInfAndSts?.TxSts || "ACCC"
-      // updatedPacs002.FIToFIPmtSts.TxInfAndSts.AccptncDtTm =
-      //   update.FIToFIPmtSts?.TxInfAndSts.AccptncDtTm || new Date().toISOString()
-
-      console.log(updatedPacs002, "changed")
 
       dispatch({ type: ACTIONS.UPDATE_STATUS_SUCCESS, payload: updatedPacs002 })
 

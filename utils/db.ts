@@ -149,7 +149,7 @@ export const getTADPROCResult = async (transactionID: string, config: DBConfig) 
             },
             ruleResults: [],
           }
-
+          // #################################################################################################
           // modify result object
           typoRes.ruleResults.forEach((result: RuleResult) => {
             typoResult.ruleResults.push(result)
@@ -217,8 +217,6 @@ export const getNetworkMap = async (config: DBConfig) => {
   if (result.length > 0) {
     result[0].messages.forEach((element: any) => {
       element.typologies.forEach((typology: any) => {
-        // console.log("TYPO DESC: ", typo[0].desc)
-
         let newTypology: Typology = {
           id: typology.cfg,
           title: typology.cfg.split("@")[0],
@@ -278,7 +276,6 @@ export const getNetworkMap = async (config: DBConfig) => {
   }
   finalRules.forEach(async (rule) => {
     const resRule = await ruleData.find((r) => r.id === rule.rule)
-    console.log("RULED", rule.rule, resRule)
     if (result.length > 0) {
       rule.ruleDescription = resRule.desc
       if (resRule.config.hasOwnProperty("bands")) {
@@ -321,57 +318,7 @@ export const getNetworkMap = async (config: DBConfig) => {
       })
     }
   })
-  console.log("RuleData", ruleData)
-  // finalRules.forEach(async (rule) => {
-  //   let result = []
-  //   // query for rules
-  //   const results = await db.query(aql`FOR c IN ruleConfiguration FILTER c.id == ${rule.rule} RETURN c`)
-  //   // loop through array cursor and push results in array
-  //   for await (let r of results) {
-  //     result.push(r)
-  //     if (result.length > 0) {
-  //       rule.ruleDescription = result[0].desc
-  //       if (result[0].config.hasOwnProperty("bands")) {
-  //         result[0].config.bands.forEach((band: RuleBand) => {
-  //           let newBand = {
-  //             subRuleRef: band.subRuleRef,
-  //             lowerLimit: band.lowerLimit ? band.lowerLimit : null,
-  //             upperLimit: band.upperLimit ? band.upperLimit : null,
-  //             reason: band.reason,
-  //           }
-  //           rule.ruleBands.push(newBand)
-  //         })
-  //       } else if (result[0].config.hasOwnProperty("cases")) {
-  //         result[0].config.cases.forEach((item: RuleBand) => {
-  //           let newBand: RuleBand = {
-  //             subRuleRef: item.subRuleRef,
-  //             lowerLimit: item.lowerLimit ? item.lowerLimit : null,
-  //             upperLimit: item.upperLimit ? item.upperLimit : null,
-  //             reason: item.reason,
-  //           }
-  //           rule.ruleBands.push(newBand)
-  //         })
-  //       }
-  //       if (result[0].config.hasOwnProperty("exitConditions")) {
-  //         result[0].config.exitConditions.forEach((item: RuleBand) => {
-  //           let newCondition: RuleBand = {
-  //             subRuleRef: item.subRuleRef,
-  //             lowerLimit: item.lowerLimit ? item.lowerLimit : null,
-  //             upperLimit: item.upperLimit ? item.upperLimit : null,
-  //             reason: item.reason,
-  //           }
-  //           rule.ruleBands.push(newCondition)
-  //         })
-  //       }
 
-  //       typologiesRes.forEach(async (typology) => {
-  //         if (typology.linkedRules.includes(rule.title)) {
-  //           rule.linkedTypologies.push(typology.title)
-  //         }
-  //       })
-  //     }
-  //   }
-  // })
   await getCollection("typologyConfiguration", db)
   const typoData: any[] = []
 
@@ -383,7 +330,6 @@ export const getNetworkMap = async (config: DBConfig) => {
 
   typologiesRes.forEach(async (typology) => {
     const typo = await typoData.find((t) => t.cfg === typology.id)
-    console.log("TYPO", typology.id, typo)
     // let typo: any[] | undefined = await getTypologyDetails(typology.id, config)
     if (typo !== undefined) {
       typology.typoDescription = typo.desc

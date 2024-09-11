@@ -140,6 +140,12 @@ const ProcessorReducer = (state: any, action: any) => {
         // tadpLights: action.payload,
       }
 
+    case ACTIONS.TURN_RULE_LIGHTS_GREEN:
+      return {
+        ...state,
+        rules: state.rules.map((rule: any) => ({ ...rule, color: "g" })),
+      }
+
     case ACTIONS.RESET_ALL_LIGHTS:
       return {
         ...state,

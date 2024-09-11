@@ -34,10 +34,6 @@ const Web = () => {
   const entityCtx: any = useContext(EntityContext)
   const procCtx: any = useContext(ProcessorContext)
 
-  useEffect(() => {
-    console.log("useEffect", entityCtx.pacs008)
-  }, [entityCtx.pacs008])
-
   const handleRuleMouseEnter = (type: any) => {
     setHoveredType(null) // fallback if stats is stuck
     setHoveredRule(type)

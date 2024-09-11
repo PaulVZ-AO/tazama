@@ -1,11 +1,11 @@
 {
   "name": "tazama-demo",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "private": true,
   "scripts": {
     "dev": "cross-env FORCE_COLOR=1 nodemon server.js",
     "build": "next build",
-    "start": "node server.js",
+    "start": "NODE_ENV=production node server.js",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "prettier": "prettier --check \"**/*.{js,jsx,ts,tsx}\"",

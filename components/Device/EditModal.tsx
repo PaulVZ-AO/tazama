@@ -20,10 +20,6 @@ const EditModal = ({ ...props }: Props) => {
     setErrors("")
   }
 
-  useEffect(() => {
-    console.log(entityCtx.pacs002)
-  }, [entityCtx.pacs002])
-
   if (!props.isVisible) return null
 
   const validateForm = () => {
@@ -31,7 +27,6 @@ const EditModal = ({ ...props }: Props) => {
 
     if (!props.value.status) {
       newErrors = "status is required"
-
     }
 
     setErrors(newErrors)
@@ -93,10 +88,10 @@ const EditModal = ({ ...props }: Props) => {
                 <label htmlFor="modal-Nm">Status</label>
                 <input
                   type="text"
-                  className="w-full"
+                  className="w-full uppercase"
                   value={props.value.status}
                   onChange={(e) => props.onChange(e, "status")}
-                  maxLength={18}
+                  maxLength={4}
                 />
                 {errors && <p className="text-red-500">{errors}</p>}
               </div>

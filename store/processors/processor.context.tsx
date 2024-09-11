@@ -22,6 +22,7 @@ interface Context {
   resetAllLights: () => void
   getUIConfig: () => void
   handleTadProc: (msgId: string) => void
+  ruleLightsGreen: () => void
 }
 
 const ProcessorContext = createContext<Context>({
@@ -44,6 +45,7 @@ const ProcessorContext = createContext<Context>({
   resetAllLights: () => {},
   getUIConfig: () => {},
   handleTadProc: (msgId: string) => {},
+  ruleLightsGreen: () => {},
 })
 
 export default ProcessorContext

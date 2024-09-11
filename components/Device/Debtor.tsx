@@ -108,6 +108,7 @@ export function DebtorDevice(props: DebtorProps) {
   const postPacs008 = async () => {
     try {
       props.setStarted(true)
+
       const response = await axios.post(`${tmsUrl}/v1/evaluate/iso20022/pacs.008.001.10`, entityCtx.pacs008, {
         headers: { "Content-Type": "application/json" },
       })
@@ -126,8 +127,9 @@ export function DebtorDevice(props: DebtorProps) {
           props.setLights(newData)
         }
         setTimeout(async () => {
+          await procCtx.ruleLightsGreen()
           await postPacs002()
-        }, 1000)
+        }, 800)
       }
     } catch (error: any) {
       const errMsg: any = JSON.parse(error.response.data.split("\n").slice(1).join("\n"))
