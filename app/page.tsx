@@ -206,7 +206,7 @@ const Web = () => {
   function TypeResult() {
     if (hoveredType === null && selectedType === null) return null
     return (
-      <div className="mb-5 rounded-xl p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
+      <div className="mb-5 cursor-pointer rounded-xl p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
         <h3 className="text-center uppercase">Typology Results</h3>
         <div className="mb-2 p-2 text-center">
           {hoveredType && hoveredType.id ? hoveredType.id : selectedType ? selectedType.id : ""}
@@ -498,8 +498,24 @@ const Web = () => {
                   resetAllLights={() => procCtx.resetAllLights()}
                 />
               </div>
-              <div className="col-span-4 flex items-center justify-between px-5">
+              <div className="relative col-span-4 flex items-center justify-between px-5">
                 <ProcessIndicator started={started} stop={procCtx.tadpLights.stop} />
+                {procCtx.tadpLights.stop && (
+                  <Image
+                    src="/stop.png"
+                    width="250"
+                    height="250"
+                    className="absolute inset-0 m-auto"
+                    style={{
+                      position: "absolute",
+                      zIndex: 1,
+                      // maxWidth: "280px",
+                      minWidth: "280px",
+                    }}
+                    alt="stop"
+                    priority={true}
+                  />
+                )}
               </div>
               <div className="col-span-4">
                 <DebtorDevice
@@ -752,13 +768,14 @@ const Web = () => {
                         }}
                         onMouseLeave={() => handleTypeMouseLeave()}
                         onClick={() => {
-                          if (selectedType === null) {
-                            handleTypeClick(type)
-                          } else if (selectedType === type) {
-                            handleTypeClickClose()
-                          } else {
-                            handleTypeClick(type)
-                          }
+                          handleTypeClick(type)
+                          // if (selectedType === null) {
+                          //   handleTypeClick(type)
+                          // } else if (selectedType === type) {
+                          //   handleTypeClickClose()
+                          // } else {
+                          //   handleTypeClick(type)
+                          // }
                         }}
                       >
                         <StatusIndicator colour={type.color} /> &nbsp;
@@ -767,7 +784,12 @@ const Web = () => {
                     ))}
                 </div>
               </div>
-              <div className="col-span-6 px-5">
+              <div
+                className="col-span-6 px-5"
+                onClick={() => {
+                  handleTypeClickClose()
+                }}
+              >
                 <TypeResult />
               </div>
             </div>
@@ -793,24 +815,6 @@ const Web = () => {
             </div>
           </div>
         </div>
-        {procCtx.tadpLights.stop && (
-          <Image
-            src="/stop.png"
-            width="250"
-            height="250"
-            className="absolute inset-0 m-auto"
-            style={{
-              position: "absolute",
-              top: -355,
-              right: `${window.innerWidth / 2}`,
-              zIndex: 1,
-              maxWidth: "250px",
-              minWidth: "250px",
-            }}
-            alt="stop"
-            priority={true}
-          />
-        )}
 
         {showModal && (
           <DebtorModal

@@ -38,7 +38,7 @@
 `#8 opened 3 days ago by Sandy-at-Tazama`
 
 - [x] Is Bug
-- [ ] Fixed
+- [x] Fixed
 - [ ] Detmar
 
 ### BUG: typology light grey and not one of RAG
@@ -46,13 +46,13 @@
 `#6 opened 3 days ago by Sandy-at-Tazama`
 
 - [x] Is Bug
-- [ ] Fixed
+- [x] Fixed
 
 ### Bug: date format on update entity
 
 `#5 opened 3 days ago by Sandy-at-Tazama`
 
-- [ ] Is Bug
+- [x] Is Bug
 - [ ] Fixed
 - [ ] Sahra
 - Note: ```Need to see how this is is possible with the date picker that must be used```
@@ -84,5 +84,5 @@
 `#1 opened 4 days ago by Sandy-at-Tazama`
 
 - [x] Is Bug
-- [ ] Fixed
+- [x] Fixed
 - [ ] Detmar
