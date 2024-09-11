@@ -75,6 +75,7 @@ interface Context {
   cloneEntity: (entity: any, account: any) => void,
   cloneCreditorEntity: (creditorEntity: any, account: any) => void,
   setUiConfig: (UiConfig: UIConfiguration) => void,
+  updateStatus: (x: any) => void,
 }
 
 const EntityContext = createContext<Context>({
@@ -133,6 +134,7 @@ const EntityContext = createContext<Context>({
   cloneEntity: () => {},
   cloneCreditorEntity: () => {},
   setUiConfig: () => {},
+  updateStatus: () => {},
 })
 
 export default EntityContext

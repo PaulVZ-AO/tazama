@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react"
 import EntityContext from "store/entities/entity.context"
 import TransactionModal from "./TransactionModal"
+import EditModal from "./EditModal"
 
 interface DeviceProps {
   selectedEntity: number
@@ -13,12 +14,17 @@ export function DeviceInfo(props: DeviceProps) {
   const [getPacs008, setGetPacs008] = useState<any>()
   const [isTransaction, setIsTransaction] = useState<boolean>(false)
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
+  const [isEditModalVisible, setIsEditModalVisible] = useState<boolean>(false)
   const [formValues, setFormValues] = useState({
     amount: "",
     description: "",
     purpose: "",
     latitude: "",
     longitude: "",
+  })
+
+  const [statusValue, setStatusValue] = useState({
+    status: "",
   })
 
   const accountIndex = entityCtx.selectedDebtorEntity.debtorAccountSelectedIndex
@@ -49,10 +55,19 @@ export function DeviceInfo(props: DeviceProps) {
     // Implement save logic here
     setIsModalVisible(false)
   }
+  const handleEditSave = () => {
+    setIsEditModalVisible(false)
+  }
 
   const handleModalChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
     setFormValues({
       ...formValues,
+      [field]: e.target.value,
+    })
+  }
+  const handleEditModalChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
+    setStatusValue({
+      ...statusValue,
       [field]: e.target.value,
     })
   }
@@ -80,6 +95,11 @@ export function DeviceInfo(props: DeviceProps) {
   const creditorEntity = entityCtx.creditorEntities[props.selectedEntity]
 
   const pacs002Data = entityCtx.pacs002.FIToFIPmtSts
+
+  const handleStatusEdit = () => {
+    setStatusValue({ status: pacs002Data.TxInfAndSts.TxSts || "" })
+    setIsEditModalVisible(true)
+  }
 
   if (props.isDebtor) {
     return (
@@ -189,10 +209,12 @@ export function DeviceInfo(props: DeviceProps) {
               <p className="truncate">
                 ID: {creditorEntity?.CreditorAccounts[creditorAccountIndex || 0]?.CdtrAcct.Id.Othr[0].Id}
               </p>
+            </div>
+            <div className="m-2 rounded-md border bg-gray-100 p-2 text-sm shadow-sm">
               <p>Status: {pacs002Data.TxInfAndSts.TxSts}</p>
 
-              {/* <hr className="mt-2" />
-              <button className="m-auto mt-2 flex items-center text-blue-500">
+              <hr className="mt-2" />
+              <button className="m-auto mt-2 flex items-center text-blue-500" onClick={handleStatusEdit}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -208,10 +230,18 @@ export function DeviceInfo(props: DeviceProps) {
                   />
                 </svg>
                 edit
-              </button> */}
+              </button>
             </div>
           </>
         ) : null}
+
+        <EditModal
+          isVisible={isEditModalVisible}
+          value={statusValue}
+          onChange={handleEditModalChange}
+          onSave={handleEditSave}
+          onCancel={() => setIsEditModalVisible(false)}
+        />
       </>
     )
   }
