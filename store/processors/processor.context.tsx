@@ -11,6 +11,8 @@ interface Context {
   edLights: EDLightsManager
   rules: Rule[]
   tadpLights: TADPROC
+  tadProcResults: TADPROC
+  msgId: string | undefined
   createRules: () => void
   createTypologies: () => void
   updateRules: (rules: Rule[]) => void
@@ -19,6 +21,8 @@ interface Context {
   updateEDLights: (data: EDLightsManager) => void
   resetAllLights: () => void
   getUIConfig: () => void
+  handleTadProc: (msgId: string) => void
+  ruleLightsGreen: () => void
 }
 
 const ProcessorContext = createContext<Context>({
@@ -30,6 +34,8 @@ const ProcessorContext = createContext<Context>({
   rules: ruleInitialState,
   typologies: [],
   tadpLights: defaultTadProcLights,
+  tadProcResults: defaultTadProcLights,
+  msgId: "",
   createRules: () => {},
   createTypologies: () => {},
   updateRules: (rules: Rule[]) => {},
@@ -38,6 +44,8 @@ const ProcessorContext = createContext<Context>({
   updateTadpLights: () => {},
   resetAllLights: () => {},
   getUIConfig: () => {},
+  handleTadProc: (msgId: string) => {},
+  ruleLightsGreen: () => {},
 })
 
 export default ProcessorContext

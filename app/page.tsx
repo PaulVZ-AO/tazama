@@ -34,10 +34,6 @@ const Web = () => {
   const entityCtx: any = useContext(EntityContext)
   const procCtx: any = useContext(ProcessorContext)
 
-  useEffect(() => {
-    console.log("useEffect", entityCtx.pacs008)
-  }, [entityCtx.pacs008])
-
   const handleRuleMouseEnter = (type: any) => {
     setHoveredType(null) // fallback if stats is stuck
     setHoveredRule(type)
@@ -159,6 +155,7 @@ const Web = () => {
 
   function RuleResult() {
     if (hoveredRule === null && selectedRule === null) return null
+
     return (
       <div
         className="cursor-pointer rounded-xl p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"
@@ -179,9 +176,14 @@ const Web = () => {
           </div>
           <hr className="mb-2 border-black" />
           <div className="align-center mb-2 grid w-full grid-cols-4 justify-center gap-4 text-center">
-            <p className="align-center col-span-1 flex h-8 w-full flex-row justify-center border-2 border-black px-4 py-2 text-center text-xs">
-              {hoveredRule ? hoveredRule.result : selectedRule && selectedRule.result}
-            </p>
+            <div className="flex flex-col gap-1">
+              <p className="align-center col-span-1 flex h-8 w-full flex-row justify-center border-2 border-black px-4 py-2 text-center text-xs">
+                {hoveredRule ? hoveredRule.result : selectedRule && selectedRule.result}
+              </p>
+              <p className="align-center col-span-1 flex h-8 w-full flex-row justify-center border-2 border-black px-4 py-2 text-center text-xs">
+                {hoveredRule ? hoveredRule.wght : selectedRule && selectedRule.wght}
+              </p>
+            </div>
             <p className="align-center col-span-3 flex size-full flex-row justify-center border-2 border-black px-4 py-2 text-center text-xs">
               {hoveredRule
                 ? hoveredRule.result
@@ -200,7 +202,7 @@ const Web = () => {
   function TypeResult() {
     if (hoveredType === null && selectedType === null) return null
     return (
-      <div className="mb-5 rounded-xl p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
+      <div className="mb-5 cursor-pointer rounded-xl p-5 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]">
         <h3 className="text-center uppercase">Typology Results</h3>
         <div className="mb-2 p-2 text-center">
           {hoveredType && hoveredType.id ? hoveredType.id : selectedType ? selectedType.id : ""}
@@ -492,8 +494,24 @@ const Web = () => {
                   resetAllLights={() => procCtx.resetAllLights()}
                 />
               </div>
-              <div className="col-span-4 flex items-center justify-between px-5">
+              <div className="relative col-span-4 flex items-center justify-between px-5">
                 <ProcessIndicator started={started} stop={procCtx.tadpLights.stop} />
+                {procCtx.tadpLights.stop && (
+                  <Image
+                    src="/stop.png"
+                    width="250"
+                    height="250"
+                    className="absolute inset-0 m-auto"
+                    style={{
+                      position: "absolute",
+                      zIndex: 1,
+                      // maxWidth: "280px",
+                      minWidth: "280px",
+                    }}
+                    alt="stop"
+                    priority={true}
+                  />
+                )}
               </div>
               <div className="col-span-4">
                 <DebtorDevice
@@ -746,13 +764,14 @@ const Web = () => {
                         }}
                         onMouseLeave={() => handleTypeMouseLeave()}
                         onClick={() => {
-                          if (selectedType === null) {
-                            handleTypeClick(type)
-                          } else if (selectedType === type) {
-                            handleTypeClickClose()
-                          } else {
-                            handleTypeClick(type)
-                          }
+                          handleTypeClick(type)
+                          // if (selectedType === null) {
+                          //   handleTypeClick(type)
+                          // } else if (selectedType === type) {
+                          //   handleTypeClickClose()
+                          // } else {
+                          //   handleTypeClick(type)
+                          // }
                         }}
                       >
                         <StatusIndicator colour={type.color} /> &nbsp;
@@ -761,7 +780,12 @@ const Web = () => {
                     ))}
                 </div>
               </div>
-              <div className="col-span-6 px-5">
+              <div
+                className="col-span-6 px-5"
+                onClick={() => {
+                  handleTypeClickClose()
+                }}
+              >
                 <TypeResult />
               </div>
             </div>
@@ -773,29 +797,20 @@ const Web = () => {
               Tadproc
             </h2>
 
-            <div className="flex min-h-80 items-center justify-center">
+            <div className="relative flex min-h-80 items-center justify-center">
               <StatusIndicator large={true} colour={procCtx.tadpLights.color} />
+
+              {procCtx.tadpLights.color === "y" ||
+                (procCtx.tadpLights.color === "r" && (
+                  <div className="absolute bottom-16 flex items-center justify-center text-center">
+                    <p className="mb-5 rounded-lg bg-gradient-to-r from-gray-100 to-gray-200 px-5 py-2 text-center text-xs uppercase shadow-lg">
+                      {procCtx.tadpLights.status}
+                    </p>
+                  </div>
+                ))}
             </div>
           </div>
         </div>
-        {procCtx.tadpLights.stop && (
-          <Image
-            src="/stop.png"
-            width="250"
-            height="250"
-            className="absolute inset-0 m-auto"
-            style={{
-              position: "absolute",
-              top: -355,
-              right: `${window.innerWidth / 2}`,
-              zIndex: 1,
-              maxWidth: "250px",
-              minWidth: "250px",
-            }}
-            alt="stop"
-            priority={true}
-          />
-        )}
 
         {showModal && (
           <DebtorModal

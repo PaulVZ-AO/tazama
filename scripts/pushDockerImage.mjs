@@ -1,6 +1,6 @@
+import shell from "shelljs"
 import fs from "fs"
 import readline from "readline"
-import shell from "shelljs"
 
 const dockerPath = "../docker-compose.dev.yml"
 
