@@ -96,7 +96,6 @@ app.prepare().then(() => {
       if (sub === ">") {
         socket.emit("subscriptions", `Subscribed to all rules`)
       } else {
-        // console.log("Subscribed to ", sub)
         socket.emit("subscriptions", `Subscribed to ${sub}`)
       }
     })
@@ -105,9 +104,6 @@ app.prepare().then(() => {
 
     const connected = nc.subscribe("connection")
     const all = nc.subscribe(">", { queue: "MONITORING1" })
-    // const pubRule901 = nc.subscribe("pub-rule-016@1.0.0", { queue: "MONITORING_RULE_PUBLISHER" })
-    // const subRule901 = nc.subscribe("sub-rule-016@1.0.0", { queue: "MONITORING_RULE_SUBSCRIBER" })
-    // const type001 = nc.subscribe("typology-999@1.0.0", { queue: "MONITORING_TYPOLOGY" })
     const cms = nc.subscribe("cms", { queue: "MONITORING_CMS" })
 
     ;(async () => {
