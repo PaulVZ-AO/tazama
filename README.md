@@ -1,23 +1,5 @@
 <img width="400px" height="100px" src="https://tazama.org/logo.svg" alt="tazama logo"> </br>
 
-<<<<<<< Updated upstream
-# Tazama Demo Application</br> 
-![GitHub License][github-license-badge] </br>
-![typescript][typescript] ![typescript][typescript]
-
-Welcome to the Tazama Demo Application. This demo app is used to demo. 🌍
-
-> [!NOTE]
-> **[`Tazama`](https://tazama.org/index.html)** Open Source Real-Time Transaction Monitoring Software for Fraud and Money Laundering Detection
-
-## Features
-
-In this demo:
-
-- 🏎️ **[Next.js](https://nextjs.org/)** - Fast by default, with config optimized for performance (with **App Directory**)
-- 💅 **[Tailwind CSS](https://tailwindcss.com/)** - A utility-first CSS framework for rapid UI development
-- ✨ **[NodeJs](https://eslint.org/)** - Custom NodeJs backend.
-=======
 # Tazama Demo Application</br>
 >
 > [!NOTE]
@@ -34,22 +16,21 @@ Welcome to the Tazama Demo Application. This demo app is used to demo the Tazama
 In this demo:
 
 - <img width="15px" height="15px" src="./public/square_logo.png" alt="tazama logo"> **[Full-Stack-Tazama-Docker](https://github.com/tazama-lf/Full-Stack-Docker-Tazama)** - Setup the Rules and Typologies Using Docker Compose from the Tazama Repository. Follow the instructions in the readme.md
-- 💻 **[Demo GUI](#)** - Use the easy to setup GUI to demo the Tazama Open Source Real-Time Transaction Monitoring System that dynamically builds the UI based on the configured rules and typologies
->>>>>>> Stashed changes
+- 💻 **[Demo UI](#)** - Use the easy to setup UI to demo the Tazama Open Source Real-Time Transaction Monitoring System that dynamically builds the UI based on the configured rules and typologies
 
 ## Table of Contents
 
 - [Tazama Demo Application](#tazama-demo-application)
   - [Requirements](#requirements)
   - [Table of Contents](#table-of-contents)
-  - [🎯 Getting Started](#-getting-started)
-  - [📃 Scripts Overview](#-scripts-overview)
-  - [🔗 Coupling Graph](#-coupling-graph)
-  - [🎨 Styling and Design System](#-styling-and-design-system)
-  - [📜 License](#-license)
+  - [Getting Started](#getting-started)
+    - [Setup UI](#setup-ui)
+    - [Defaults will load from the .env file](#defaults-will-load-from-the-env-file)
+  - [Troubleshooting](#troubleshooting)
+  - [License](#license)
   - [Contributors](#contributors)
 
-## 🎯 Getting Started
+## Getting Started
 
 To get started by running the demo locally and NOT in the docker container, follow these steps:
 
@@ -82,47 +63,28 @@ yarn dev
 
 6. Open [http://localhost:3001](http://localhost:3001) with your browser to see the result.
 
-## 📃 Scripts Overview
+### Setup UI
 
-The following scripts are available in the `package.json`:
+1. First Load
 
-- `dev`: Starts the development server with colorized output
-- `build`: Builds the app for production
-- `start`: Starts the production server
-- `lint`: Lints the code using ESLint
-- `lint:fix`: Automatically fixes linting errors
-- `prettier`: Checks the code for proper formatting
-- `prettier:fix`: Automatically fixes formatting issues
-- `analyze`: Analyzes the bundle sizes for Client, Server and Edge environments
-- `storybook`: Starts the Storybook server
-- `build-storybook`: Builds the Storybook for deployment
-- `test`: Runs unit and integration tests
-- `e2e:headless`: Runs end-to-end tests in headless mode
-- `e2e:ui`: Runs end-to-end tests with UI
-- `format`: Formats the code with Prettier
-- `postinstall`: Applies patches to external dependencies
-- `preinstall`: Ensures the project is installed with Yarn
-- `coupling-graph`: **Generates a coupling and cohesion graph for the components**
+>  <img width="60%" height="full" src="./public/first_load.png" alt="main"><br/>
 
-## 🔗 Coupling Graph
+2. Click the gear icon on the top right for Settings
 
-The `coupling-graph` script is a useful tool that helps visualize the coupling and connections between your project's internal modules. It's built using the [Madge](https://github.com/pahen/madge) library. To generate the graph, simply run the following command:
+> <img width="60%" height="full" src="./public/settings.png" alt="settings"><br/>
 
-```bash
-yarn coupling-graph
-```
+### Defaults will load from the .env file
 
-This will create a `graph.svg` file, which contains a graphical representation of the connections between your components. You can open the file with any SVG-compatible viewer.
+- TMS API Host URL: `http://localhost:5000` **Check what port number is being used by the TMS server on the docker instance **(Default Port: 5000)***
+- CMS NATS Hosting: `http://localhost:14222` if run outside of docker-compose else `nats://nats:4222` **Check what port number is being used by the NATS server on the docker instance **(Default Port: 4222)***
+- Arango DB Hosting: `http://localhost:18529` **Check what port number is being used by the TMS server on the docker instance **(Default Port: 8529)***
+- Websocket IP Address: `http://localhost:3001` **If run if run outside of docker-compose else `http://{your_ip_address}:3001` **(Default Port: 3001)***
 
-![graph](https://user-images.githubusercontent.com/28964599/233662744-3ba89713-8466-49cd-9be7-e6fb38191f58.png)
+## Troubleshooting
 
-## 🎨 Styling and Design System
+testing
 
-This boilerplate uses Tailwind CSS for styling and CVA for creating a powerful, easy-to-use design system. If you want to learn more about the setup, check out this fantastic video by Vercel:
-
-[![Styling and Design System](https://img.youtube.com/vi/T-Zv73yZ_QI/0.jpg)](https://www.youtube.com/watch?v=T-Zv73yZ_QI&ab_channel=Vercel)
-
-## 📜 License
+## License
 
 This project is licensed under the Apache License Version 2.0. For more information, see the [LICENSE](./LICENSE) file.
 
