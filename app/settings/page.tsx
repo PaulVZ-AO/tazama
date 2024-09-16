@@ -1,16 +1,16 @@
 "use client"
 
+import Image from "next/image"
+import Link from "next/link"
 import React, { useContext, useEffect, useState } from "react"
 import EntityContext from "store/entities/entity.context"
-import Link from "next/link"
-import { UIConfiguration } from "store/entities/entity.interface"
-import ResetModal from "./ResetModal"
-import ConfigModal from "./ConfigModal"
 import { uiConfigInitialState } from "store/entities/entity.initialState"
-import Image from "next/image"
+import { UIConfiguration } from "store/entities/entity.interface"
+import ConfigModal from "./ConfigModal"
+import ResetModal from "./ResetModal"
 
 const Settings = () => {
-  const entityCtx: any = useContext(EntityContext)
+  const entityCtx = useContext(EntityContext)
   const [config, setConfig] = useState<UIConfiguration>()
   const [showModal, setShowModal] = useState(false)
   const [showConfigModal, setShowConfigModal] = useState(false)
