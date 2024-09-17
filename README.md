@@ -93,7 +93,7 @@ yarn dev
 ### Network Setup
 
 1. Follow the **[Full-Stack-Tazama-Docker](https://github.com/tazama-lf/Full-Stack-Docker-Tazama)** setup guide.
-2. Add the following to the **[Full-Stack-Tazama-Docker](https://github.com/tazama-lf/Full-Stack-Docker-Tazama)** docker-compose.yaml
+2. Add the following to the **[Full-Stack-Tazama-Docker](https://github.com/tazama-lf/Full-Stack-Docker-Tazama)** docker-compose.yaml found in the root directory
 
 ```yaml
 demo:
@@ -113,7 +113,30 @@ demo:
 > **Note* - Make sure to update the image to the most recent version
 > ruhfuskdev/tazama-demo:`{current_version}` eg: `v1.0.16`
 
-3. From the **[Full-Stack-Tazama-Docker](https://github.com/tazama-lf/Full-Stack-Docker-Tazama)** directory run:
+3. Navigate to the `env` directory in the 
+
+  ```text
+  demo.env file:
+# SPDX-License-Identifier: Apache-2.0
+
+NODE_ENV=dev
+NEXT_PUBLIC_URL="http://{server_ip_address}:3001"
+PORT="3001"
+NEXT_PUBLIC_TMS_SERVER_URL="http://{server_ip_address}:5000"
+NEXT_PUBLIC_TMS_KEY=""
+NEXT_PUBLIC_CMS_NATS_HOSTING="nats://nats:4222"
+NEXT_PUBLIC_NATS_USERNAME=""
+NEXT_PUBLIC_NATS_PASSWORD=""
+NEXT_PUBLIC_ARANGO_DB_HOSTING="http://{server_ip_address}:18529"
+NEXT_PUBLIC_DB_USER="root"
+NEXT_PUBLIC_DB_PASSWORD=""
+NEXT_PUBLIC_WS_URL="http://{your_machines_ip_address}:3001"
+
+NEXT_PUBLIC_NATS_SUBSCRIPTIONS="['connection', '>', 'typology-999@1.0.0']"
+
+  ```
+
+4. From the **[Full-Stack-Tazama-Docker](https://github.com/tazama-lf/Full-Stack-Docker-Tazama)** directory run:
 
    ```bash
    docker compose pull demo
@@ -124,9 +147,9 @@ demo:
    docker compose up demo -d
    ```
 
-4. Navigate to: [http://localhost:3001](http://localhost:3001)
+5. Navigate to: [http://localhost:3001](http://localhost:3001)
 
-5. To bring the demo container down run:
+6. To bring the demo container down run:
 
    ```bash
    docker compose down demo --remove-orphans
