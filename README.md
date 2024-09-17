@@ -29,6 +29,10 @@ What you need:
     - [Network Setup](#network-setup)
     - [Setup UI](#setup-ui)
     - [Settings Screen](#settings-screen)
+  - [Tag and Release](#tag-and-release)
+    - [Versioning](#versioning)
+    - [Tag, Build and Push to Docker Hub](#tag-build-and-push-to-docker-hub)
+    - [Reverting version changes if the build fails](#reverting-version-changes-if-the-build-fails)
   - [License](#license)
   - [Contributors](#contributors)
 
@@ -109,6 +113,25 @@ demo:
 > **Note* - Make sure to update the image to the most recent version
 > ruhfuskdev/tazama-demo:`{current_version}` eg: `v1.0.16`
 
+3. From the **[Full-Stack-Tazama-Docker](https://github.com/tazama-lf/Full-Stack-Docker-Tazama)** directory run:
+
+   ```bash
+   docker compose pull demo
+   ```
+
+   then:
+   ```bash
+   docker compose up demo -d
+   ```
+
+4. Navigate to: [http://localhost:3001](http://localhost:3001)
+
+5. To bring the demo container down run:
+
+   ```bash
+   docker compose down demo --remove-orphans
+   ```
+
 <a><div align="right">[Top](#table-of-contents)</div></a>
 
 ### Setup UI
@@ -136,6 +159,59 @@ demo:
 
 - Websocket IP Address: `http://localhost:3001`
   > **If run locally use `http://localhost:3001` else if run on a network or hosted use `http://{your_ip_address}:3001` **(Default Port: 3001)***
+
+<a><div align="right">[Top](#table-of-contents)</div></a>
+
+## Tag and Release
+
+### Versioning
+
+> Format: v1.0.16
+> 
+> Given a version number MAJOR.MINOR.PATCH, increment the:
+>
+> MAJOR version when you make incompatible API changes,
+MINOR version when you add functionality in a backwards-compatible manner, and PATCH version when you make backwards-compatible bug fixes. Additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.
+
+In this section the following script will update the `PATCH` version in the package.json file and update the docker-compose.dev.yml file.
+
+<a><div align="right">[Top](#table-of-contents)</div></a>
+
+### Tag, Build and Push to Docker Hub
+
+1. From the root of the project directory run:
+
+   ```bash
+   sudo chmod +x ./tag.sh
+   ```
+
+2. When you are ready to create a new image, run `./tag.sh` from the command line.
+
+   ```bash
+   ./tag.sh
+   ```
+  
+   > **This will build the Docker Image and Push it to Docker Hub*
+
+<a><div align="right">[Top](#table-of-contents)</div></a>
+
+### Reverting version changes if the build fails
+
+If the build fails run the following script to revert changes made to the `docker-compose.dev.yml` and the `package.json` files.
+
+1. From the root of the project directory run:
+
+   ```bash
+   sudo chmod +x ./revertTag.sh
+   ```
+
+2. When you are ready to create a new image, run `./tag.sh` from the command line.
+
+   ```bash
+   ./revertTag.sh
+   ```
+
+3. Fix the build issues and run the `./tag.sh` script again to Tag and Release the Demo
 
 <a><div align="right">[Top](#table-of-contents)</div></a>
 
