@@ -114,7 +114,7 @@ demo:
 > **Note* - Make sure to update the image to the most recent version
 > tazamaorg/demo-ui:`{current_version}` eg: `v1.0.16`
 
-3. Navigate to the `env` directory in the 
+3. Navigate to the `env` directory in the **[Full-Stack-Tazama-Docker](https://github.com/tazama-lf/Full-Stack-Docker-Tazama)** folder:
 
   ```text
   demo.env file:
