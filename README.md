@@ -33,6 +33,7 @@ What you need:
     - [Versioning](#versioning)
     - [Tag, Build and Push to Docker Hub](#tag-build-and-push-to-docker-hub)
     - [Reverting version changes if the build fails](#reverting-version-changes-if-the-build-fails)
+    - [Create Docker Image for Dev Testing](#create-docker-image-for-dev-testing)
   - [License](#license)
   - [Contributors](#contributors)
 
@@ -97,7 +98,7 @@ yarn dev
 
 ```yaml
 demo:
-    image: ruhfuskdev/tazama-demo:v1.0.16
+    image: tazamaorg/demo-ui:v1.0.16
     env_file:
       - path: ./env/demo.env
         required: true
@@ -111,7 +112,7 @@ demo:
 ```
 
 > **Note* - Make sure to update the image to the most recent version
-> ruhfuskdev/tazama-demo:`{current_version}` eg: `v1.0.16`
+> tazamaorg/demo-ui:`{current_version}` eg: `v1.0.16`
 
 3. Navigate to the `env` directory in the 
 
@@ -235,6 +236,52 @@ If the build fails run the following script to revert changes made to the `docke
    ```
 
 3. Fix the build issues and run the `./tag.sh` script again to Tag and Release the Demo
+
+<a><div align="right">[Top](#table-of-contents)</div></a>
+
+### Create Docker Image for Dev Testing
+
+1. Build the Docker image
+
+   ```bash
+   COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose -f docker-compose.dev.yml build
+   ```
+
+2. Tag the Docker Image
+
+   ```bash
+   docker tag tazamaorg/demo-ui:{version} tazamaorg/demo-ui:{version}-dev
+   ```
+
+   > **Note: Check The `docker-compose.dev.yml` file to see what the version will be and update above command by replacing {version} with eg. v1.0.16*
+3. Push the image to docker hub
+
+   If you want to push the Docker image to Dockerhub for a distribution and testing:
+
+   ```bash
+   docker push tazamaorg/demo-ui:{version}-dev
+   ```
+
+   > **Note: Check The `docker-compose.dev.yml` file to see what the version will be and update above command by replacing {version} with eg. v1.0.16*
+
+4. To use the Docker Image in the **[Full-Stack-Tazama-Docker](https://github.com/tazama-lf/Full-Stack-Docker-Tazama)** stack, update the following:
+
+    ```yaml
+    demo:
+      image: tazamaorg/demo-ui:{version}-dev
+      env_file:
+        - path: ./env/demo.env
+          required: true
+      restart: always
+      depends_on:
+        - tms
+        - arango
+        - nats
+      ports:
+        - '3001:3001'
+    ```
+
+    > **Note: Check The `docker-compose.dev.yml` file to see what the version will be and update above command by replacing {version} with eg. v1.0.16*
 
 <a><div align="right">[Top](#table-of-contents)</div></a>
 

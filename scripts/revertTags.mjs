@@ -61,7 +61,7 @@ const updateDockerFile = async (buildV) => {
   })
 
   file.on("line", async (line) => {
-    if (line.includes("image: ruhfuskdev/tazama-demo:")) {
+    if (line.includes("image: tazamaorg/demo-ui:")) {
       let currentLine = line
 
       let newLine
