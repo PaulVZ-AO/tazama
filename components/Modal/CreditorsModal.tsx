@@ -18,11 +18,38 @@ const CreditorModal = ({ ...props }: Props) => {
   const [customEntity, setCustomEntity] = useState<CreditorEntity | undefined>(undefined)
   const [activeSection, setActiveSection] = useState<"Entity" | "Accounts">("Entity")
   const [customAccounts, setCustomAccounts] = useState<CreditorAccount[]>([])
+  const [saved, setSaved] = useState<boolean>(false)
+  const [editing, setEditing] = useState<boolean>(false)
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
 
-  function handleClick() {
+  useEffect(() => {
+    if (saved === true) {
+      setTimeout(() => {
+        setSaved(false)
+      }, 3000)
+    }
+  }, [saved])
+
+  function handleClose() {
+    if (props.selectedEntity) {
+      entityCtx.setCreditorPacs008(props.selectedEntity)
+      entityCtx.setCreditorAccountPacs008(props.selectedEntity, 0)
+    }
     setCustomEntity(undefined)
+    setCustomAccounts([])
     props.setModal(!props.showModal)
+  }
+
+  function handleCancel() {
+    if (props.entity !== undefined) {
+      if (entityCtx.creditorEntities.length > 0 && typeof props.selectedEntity === "number") {
+        setCustomEntity(entityCtx.creditorEntities[props.selectedEntity]?.CreditorEntity)
+        setCustomAccounts(entityCtx.creditorEntities[props.selectedEntity]?.CreditorAccounts || [])
+        entityCtx.selectCreditorEntity(props.selectedEntity, 0)
+      }
+      setEditing(false)
+      setSaved(false)
+    }
   }
 
   useEffect(() => {
@@ -30,6 +57,7 @@ const CreditorModal = ({ ...props }: Props) => {
       if (entityCtx.creditorEntities.length > 0 && typeof props.selectedEntity === "number") {
         setCustomEntity(entityCtx.creditorEntities[props.selectedEntity]?.CreditorEntity)
         setCustomAccounts(entityCtx.creditorEntities[props.selectedEntity]?.CreditorAccounts || [])
+        entityCtx.selectCreditorEntity(props.selectedEntity, 0)
       }
     }
   }, [props.entity])
@@ -74,15 +102,6 @@ const CreditorModal = ({ ...props }: Props) => {
 
   // Swap between Entities and Accounts
   const handleSectionChange = (section: "Entity" | "Accounts") => {
-    if (typeof props.selectedEntity === "number" && props.entity) {
-      if (section === "Entity") {
-        // Reset customEntity to the initial value
-        setCustomEntity(entityCtx.creditorEntities[props.selectedEntity]?.CreditorEntity)
-      } else if (section === "Accounts") {
-        // Reset customAccounts to the initial value
-        setCustomAccounts(entityCtx.creditorEntities[props.selectedEntity]?.CreditorAccounts || [])
-      }
-    }
     setActiveSection(section)
   }
 
@@ -104,7 +123,7 @@ const CreditorModal = ({ ...props }: Props) => {
               <h2>{props.modalTitle}</h2>
               <button
                 className="absolute right-5 rounded-full bg-gradient-to-r from-gray-200 to-gray-100 p-1 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]"
-                onClick={handleClick}
+                onClick={handleClose}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
                   <path
@@ -160,6 +179,10 @@ const CreditorModal = ({ ...props }: Props) => {
                         className="w-full"
                         value={customEntity?.Cdtr.Nm || ""}
                         maxLength={140}
+                        onKeyDown={() => {
+                          setEditing(true)
+                          setSaved(false)
+                        }}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
                             setCustomEntity({
@@ -186,6 +209,14 @@ const CreditorModal = ({ ...props }: Props) => {
                             ? new Date(customEntity?.Cdtr.Id.PrvtId.DtAndPlcOfBirth.BirthDt)
                             : null
                         }
+                        onKeyDown={() => {
+                          setEditing(true)
+                          setSaved(false)
+                        }}
+                        onCalendarOpen={() => {
+                          setEditing(true)
+                          setSaved(false)
+                        }}
                         onChange={(date) => {
                           if (customEntity !== undefined) {
                             const formattedDate = date?.toISOString().split("T")[0] || "" // Format the date as YYYY-MM-DD
@@ -233,6 +264,10 @@ const CreditorModal = ({ ...props }: Props) => {
                         id="modal-CityOfBirth"
                         className="w-full"
                         value={customEntity?.Cdtr.Id.PrvtId.DtAndPlcOfBirth.CityOfBirth || ""}
+                        onKeyDown={() => {
+                          setEditing(true)
+                          setSaved(false)
+                        }}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
                             setCustomEntity({
@@ -263,6 +298,10 @@ const CreditorModal = ({ ...props }: Props) => {
                         id="modal-CtryOfBirth"
                         className="w-full"
                         value={customEntity?.Cdtr.Id.PrvtId.DtAndPlcOfBirth.CtryOfBirth || ""}
+                        onKeyDown={() => {
+                          setEditing(true)
+                          setSaved(false)
+                        }}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
                             setCustomEntity({
@@ -293,6 +332,10 @@ const CreditorModal = ({ ...props }: Props) => {
                         value={customEntity?.Cdtr.Id.PrvtId.Othr[0].Id || ""}
                         id="modal-ID"
                         maxLength={35}
+                        onKeyDown={() => {
+                          setEditing(true)
+                          setSaved(false)
+                        }}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
                             setCustomEntity({
@@ -328,6 +371,10 @@ const CreditorModal = ({ ...props }: Props) => {
                         className="w-full"
                         value={customEntity?.Cdtr.CtctDtls.MobNb || ""}
                         maxLength={35}
+                        onKeyDown={() => {
+                          setEditing(true)
+                          setSaved(false)
+                        }}
                         onChange={(e) => {
                           if (customEntity !== undefined) {
                             setCustomEntity({
@@ -346,29 +393,6 @@ const CreditorModal = ({ ...props }: Props) => {
                       {errors.MobNb && <p className="text-red-500">{errors.MobNb}</p>}
                     </div>
                   </div>
-                </div>
-                <div className="flex">
-                  <button
-                    type="button"
-                    className="m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)] hover:shadow-inner"
-                    onClick={async () => {
-                      if (customEntity !== undefined && typeof props.selectedEntity === "number") {
-                        if (validateForm()) {
-                          await entityCtx.updateCreditorEntity(customEntity, props.selectedEntity)
-                          handleClick()
-                        }
-                      }
-                    }}
-                  >
-                    Save
-                  </button>
-                  <button
-                    type="button"
-                    className="m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-inner"
-                    onClick={handleClick}
-                  >
-                    Cancel
-                  </button>
                 </div>
               </>
             )}
@@ -404,6 +428,10 @@ const CreditorModal = ({ ...props }: Props) => {
                               className="w-full rounded-lg bg-gray-200 p-2 shadow-inner"
                               value={accountDetail.CdtrAcct.Nm}
                               maxLength={35}
+                              onKeyDown={() => {
+                                setEditing(true)
+                                setSaved(false)
+                              }}
                               onChange={(e) => {
                                 handleAccountChange(index, {
                                   ...accountDetail,
@@ -443,31 +471,79 @@ const CreditorModal = ({ ...props }: Props) => {
                     </div>
                   ))}
                 </div>
-                <div className="flex">
-                  <button
-                    type="button"
-                    className="m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)] hover:shadow-inner"
-                    onClick={async () => {
-                      if (props.selectedEntity !== undefined) {
-                        if (validateForm()) {
-                          await entityCtx.updateCreditorAccount(customAccounts, props.selectedEntity)
-                          handleClick()
-                        }
-                      }
-                    }}
-                  >
-                    Save
-                  </button>
-                  <button
-                    type="button"
-                    className="m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-inner"
-                    onClick={handleClick}
-                  >
-                    Cancel
-                  </button>
-                </div>
               </>
             )}
+            {saved && (
+              <div className="m-5 flex justify-center gap-2">
+                <svg
+                  version="1.1"
+                  id="Capa_1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  xmlnsXlink="http://www.w3.org/1999/xlink"
+                  viewBox="0 0 50 50"
+                  width={30}
+                  height={30}
+                  xmlSpace="preserve"
+                >
+                  <circle className="fill-green-700" cx="25" cy="25" r="25" />
+                  <polyline
+                    fill="none"
+                    stroke="#FFFFFF"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeMiterlimit={10}
+                    points="38,15 22,33 12,25 "
+                  />
+                </svg>
+                <p className="text-center text-lg text-green-700">Entity Saved Successfully</p>
+              </div>
+            )}
+            <div className="flex">
+              <button
+                type="button"
+                disabled={!editing}
+                className={`m-5 w-full ${
+                  !editing && "text-gray-400"
+                } rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)] hover:shadow-inner`}
+                onClick={async () => {
+                  if (customEntity !== undefined && typeof props.selectedEntity === "number") {
+                    if (validateForm()) {
+                      await entityCtx.updateCreditorEntity(customEntity, props.selectedEntity)
+                      await entityCtx.setCreditorPacs008(props.selectedEntity)
+
+                      await entityCtx.updateCreditorAccount(customAccounts, props.selectedEntity)
+                      await entityCtx.setCreditorAccountPacs008(props.selectedEntity, 0)
+
+                      setCustomEntity(entityCtx.creditorEntities[props.selectedEntity]?.CreditorEntity)
+                      setCustomAccounts(entityCtx.creditorEntities[props.selectedEntity]?.CreditorAccounts || [])
+
+                      setSaved(true)
+                      setEditing(false)
+                    }
+                  }
+                }}
+              >
+                Save
+              </button>
+              {!editing ? (
+                <button
+                  type="button"
+                  className="m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-inner"
+                  onClick={handleClose}
+                >
+                  Close
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="m-5 w-full rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 py-2 shadow-inner"
+                  onClick={handleCancel}
+                >
+                  Cancel
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>

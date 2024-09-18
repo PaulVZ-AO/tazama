@@ -41,7 +41,7 @@ const EditModal = ({ ...props }: Props) => {
           ...entityCtx.pacs002.FIToFIPmtSts,
           TxInfAndSts: {
             ...entityCtx.pacs002.FIToFIPmtSts.TxInfAndSts,
-            TxSts: props.value.status,
+            TxSts: props.value.status.toUpperCase(),
           },
         },
       }

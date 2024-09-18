@@ -13,7 +13,7 @@ const readDockerFile = async () => {
   })
 
   file.on("line", async (line) => {
-    if (line.includes("image: ruhfuskdev/tazama-demo:")) {
+    if (line.includes("image: tazamaorg/demo-ui:")) {
       let image = line.split(" ")
       image = image[image.length - 1]
       shell.exec(`docker push ${image}`)
