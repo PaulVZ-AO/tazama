@@ -315,7 +315,7 @@ This project is licensed under the Apache License Version 2.0. For more informat
 
 ```mermaid
     flowchart TD
-        A[HandleTransaction] --> |Start| B{Checks of rule's configuration}
+        A[TransactionBegin] --> |Start| B{Checks of rule's configuration}
         B --> |Log message| D[return]
         B --> C{Exit conditions checks for payload}
         C --> |Log message| K[return]
