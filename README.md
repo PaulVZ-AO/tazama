@@ -313,6 +313,21 @@ This project is licensed under the Apache License Version 2.0. For more informat
   </tfoot>
 </table>
 
+```mermaid
+    flowchart TD
+        A[HandleTransaction] --> |Start| B{Checks of rule's configuration}
+        B --> |Log message| D[return]
+        B --> C{Exit conditions checks for payload}
+        C --> |Log message| K[return]
+        C --> E(Data Retrieval)
+        E --> F{Exit conditions checks for retrieved data}
+        F --> |Log message| J[return]
+        F --> L("(Rule-specific)query post-processing")
+        L --> U(Determine outcome)
+        U --> Q[Return outcome]    
+
+```
+
 <a><div align="right">[Top](#table-of-contents)</div></a>
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
