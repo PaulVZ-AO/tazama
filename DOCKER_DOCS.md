@@ -10,12 +10,6 @@ Run this command to build the docker image for DEVELOPMENT
 COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose -f docker-compose.dev.yml build
 ```
 
-Run this command to build the docker image for DEVELOPMENT
-
-```bash
-COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose -f docker-compose.production.yml build
-```
-
 ### Docker Compose
 
 #### Run Containers

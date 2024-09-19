@@ -21,6 +21,14 @@ const config = withPlugins([[withBundleAnalyzer({ enabled: env.ANALYZE })]], {
       { source: "/ping", destination: "/api/health" },
     ]
   },
+  async headers() {
+    return [
+      {
+        source: "/",
+        headers: [{ key: "Cache-Control", value: "no-cache, no-store, must-revalidate, proxy-revalidate, max-age-0" }],
+      },
+    ]
+  },
 })
 
 export default config
